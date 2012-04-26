@@ -1,4 +1,7 @@
+#!/bin/false
+
 package Net::Proxmox::VE;
+
 use Carp qw( croak );
 use strict;
 use warnings;
@@ -6,16 +9,30 @@ use LWP::UserAgent;
 use HTTP::Headers;
 use HTTP::Request::Common qw(GET POST DELETE);
 use JSON qw(decode_json);
+#use namespace::sweep; # like autoclean, but with no Mooses
 
 sub new {
-    my $class = shift;
-    my %params = @_;
 
-    unless (%params) {
-        croak "new requires a hash for params";
+    my $c = shift;
+    my @p = @_;
+    my $class = ref($c) || $c;
+
+    my %params;
+
+    if (scalar @p == 1) {
+
+        croak 'new() requires a hash for params'
+            unless ref $p[0] eq 'HASH';
+
+        %params = %{$p[0]};
+
+    } else {
+        %params = @p 
+            or croak 'new() requires a hash for params';
     }
-    croak "host param is required"     unless $params{'host'};
-    croak "password param is required" unless $params{'password'};
+
+    croak 'host param is required'     unless $params{'host'};
+    croak 'password param is required' unless $params{'password'};
 
     $params{port}     ||= 8006;
     $params{username} ||= 'root';
@@ -28,8 +45,10 @@ sub new {
     $self->{'ticket_life'}      = 7200; # 2 Hours
 
     bless $self, $class;
-    return $self;
+    return $self
+
 }
+
 sub url_prefix {
     my $self = shift || return;
 
@@ -39,7 +58,7 @@ sub url_prefix {
         . ':'
         . $self->{params}->{port};
 
-    return $url_prefix;
+    return $url_prefix
 }
 
 sub login {
@@ -71,9 +90,8 @@ sub login {
             $self->{ticket_timestamp} = $request_time;
             return 1;
     }
-    else {
-        return;
-    }
+
+    return
     
 }
 
@@ -90,12 +108,14 @@ sub check_login_ticket {
         && $self->{ticket_timestamp}
         && $self->{ticket_timestamp} < (time() + $self->{ticket_life})
     ) {
-        return 1;
+        return 1
     }
     else {
         $self->{ticket} = undef;
         $self->{ticket_timestamp} = undef;
     }
+
+    return
 }
 
 
@@ -104,13 +124,12 @@ sub action {
     my %params = @_;
 
     unless (%params) {
-        croak "new requires a hash for params";
+        croak 'new requires a hash for params';
     }
-    croak "path param is required"     unless $params{'path'};
+    croak 'path param is required'     unless $params{'path'};
     
     $params{method} ||= 'GET';
     $params{post_data} ||= {};
-
 
     # Check its a valid method
     unless (
@@ -183,7 +202,7 @@ sub action {
             print "DEBUG: request failed: " . $request->as_string . "\n";
             print "DEBUG: response status: " . $response->status_line . "\n";
         }
-        return;
+        return
     }
 }
 
@@ -211,4 +230,4 @@ sub delete {
     #XXX todo
 }
 
-1;
+1
