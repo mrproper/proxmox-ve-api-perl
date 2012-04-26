@@ -4,6 +4,7 @@ use strict;
 use warnings;
 use LWP::UserAgent;
 use HTTP::Headers;
+use HTTP::Request::Common qw(GET POST DELETE);
 use JSON qw(decode_json);
 
 sub new {
@@ -54,10 +55,10 @@ sub login {
     my $request_time = time();
     my $response = $ua->post(
         $url,
-        [
+        {
             'username' => $self->{params}->{username} . '@' . $self->{params}->{realm},
             'password' => $self->{params}->{password},
-        ],
+        },
     );
 
     if ($response->is_success) {
@@ -71,7 +72,7 @@ sub login {
             return 1;
     }
     else {
-        return 0;
+        return;
     }
     
 }
@@ -108,7 +109,7 @@ sub action {
     croak "path param is required"     unless $params{'path'};
     
     $params{method} ||= 'GET';
-    $params{post_params} ||= {};
+    $params{post_data} ||= {};
 
 
     # Check its a valid method
@@ -125,54 +126,64 @@ sub action {
     $params{path} =~ s/^\///;
         
     unless ($self->check_login_ticket) {
-        print "DEBUG: here1\n";
-        return 0 unless $self->login();
+        print "DEBUG: invalid login ticket\n"
+            if $self->{debug};
+        return unless $self->login();
     }
 
-    print "DEBUG: here2\n";
     my $url = $self->url_prefix . '/api2/json/' . $params{path};
 
-    my $response;
-    my $header_obj = HTTP::Headers->new();
-    $header_obj->header('Cookie' => 'PVEAuthCookie=' . $self->{ticket}->{ticket});
+    # Setup the useragent
     my $ua = LWP::UserAgent->new();
     $ua->ssl_opts(verify_hostname => undef); # Add only if test environment here
-    $ua->default_headers($header_obj);
 
-    if ($params{method} eq 'PUT') {
-        # XXX add post data
-        $header_obj->header('CSRFPreventionToken' => $self->{ticket}->{CSRFPreventionToken});
-        $response = $ua->post(
-            $url,
-            
-        );
+    # Setup the request object
+    my $request = HTTP::Request->new();
+    $request->uri($url);
+    $request->header('Cookie' => 'PVEAuthCookie=' . $self->{ticket}->{ticket});
+
+    my $response;
+
+    # all methods other than get require the prevention token
+    # (ie anything that makes modification)
+    unless ($params{method} eq 'GET') {
+        $request->header('CSRFPreventionToken' => $self->{ticket}->{CSRFPreventionToken});
     }
-    elsif ($params{method} eq 'POST') {
-        # XXX add post data
-        $header_obj->header('CSRFPreventionToken' => $self->{ticket}->{CSRFPreventionToken});
-        $response = $ua->post($url);
+
+    # Not sure why but the php api for proxmox ve uses PUT instead of post for
+    # most things, the api doc only lists GET|POST|DELETE
+    # so we'll just force POST from PUT
+    if (
+        $params{method} eq 'PUT'
+        || $params{method} eq 'POST'
+    ) {
+        $request->method('POST');
+        my $content = join '&', map { $_ . '=' . $params{post_data}->{$_} } sort keys %{$params{post_data}};
+        $request->content($content);
+        $response = $ua->request($request);
     }
-    elsif ($params{method} eq 'DELETE') {
-        # XXX add post data
-        $header_obj->header('CSRFPreventionToken' => $self->{ticket}->{CSRFPreventionToken});
-        $response = $ua->delete($url);
-    }
-    elsif ($params{method} eq 'GET') {
-        $response = $ua->get($url);
+    elsif (
+        $params{method} eq 'GET'
+        || $params{method} eq 'DELETE'
+    ) {
+        $request->method($params{method});
+        $response = $ua->request($request);
     }
 
     if ($response->is_success) {
+        print "DEBUG: successful request: " . $request->as_string . "\n"
+            if $self->{debug};
+
         my $content = $response->decoded_content;
-            my $data = decode_json $response->decoded_content;
-            use Data::Dumper;
-            print Dumper $data;
-            return 1;
+        my $data = decode_json $response->decoded_content;
+        return exists $data->{data} ? $data->{data} : undef ;
     }
     else {
-        print $response->status_line;
-        print $response->request->as_string;
-        print "DEBUG: bad\n";
-        return 0;
+        if ($self->{debug}) {
+            print "DEBUG: request failed: " . $request->as_string . "\n";
+            print "DEBUG: response status: " . $response->status_line . "\n";
+        }
+        return;
     }
 }
 
