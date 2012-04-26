@@ -37,7 +37,7 @@ sub new {
     $params{port}     ||= 8006;
     $params{username} ||= 'root';
     $params{realm}    ||= 'pam';
-    $params{debug}    ||= 0; # XXX do something with this
+    $params{debug}    ||= undef;
 
     my $self->{params}          = \%params;
     $self->{'ticket'}           = undef;
@@ -83,7 +83,7 @@ sub login {
     if ($response->is_success) {
         my $content = $response->decoded_content;
             my $login_ticket_data = decode_json $response->decoded_content;
-            $self->{ticket} = $login_ticket_data->{'data'};
+            $self->{ticket} = $login_ticket_data->{data};
             # We use request time as the time to get the json ticket is undetermined,
             # id rather have a ticket a few seconds shorter than have a ticket that incorrectly
             # says its valid for a couple more
@@ -100,11 +100,11 @@ sub check_login_ticket {
 
     if (
         $self->{ticket}
-        && ref $self->{ticket} eq ref {}
+        && ref $self->{ticket} eq 'HASH'
         && $self->{ticket}
-        && $self->{ticket}->{'ticket'}
-        && $self->{ticket}->{'CSRFPreventionToken'}
-        && $self->{ticket}->{'username'} eq $self->{params}->{username} . '@' . $self->{params}->{realm}
+        && $self->{ticket}->{ticket}
+        && $self->{ticket}->{CSRFPreventionToken}
+        && $self->{ticket}->{username} eq $self->{params}->{username} . '@' . $self->{params}->{realm}
         && $self->{ticket_timestamp}
         && $self->{ticket_timestamp} < (time() + $self->{ticket_life})
     ) {
@@ -126,14 +126,14 @@ sub action {
     unless (%params) {
         croak 'new requires a hash for params';
     }
-    croak 'path param is required'     unless $params{'path'};
+    croak 'path param is required' unless $params{path};
     
-    $params{method} ||= 'GET';
+    $params{method}    ||= 'GET';
     $params{post_data} ||= {};
 
     # Check its a valid method
     unless (
-        $params{method} eq 'GET'
+        $params{method}    eq 'GET'
         || $params{method} eq 'PUT'
         || $params{method} eq 'POST'
         || $params{method} eq 'DELETE'
@@ -173,7 +173,7 @@ sub action {
     # most things, the api doc only lists GET|POST|DELETE
     # so we'll just force POST from PUT
     if (
-        $params{method} eq 'PUT'
+        $params{method}    eq 'PUT'
         || $params{method} eq 'POST'
     ) {
         $request->method('POST');
@@ -182,7 +182,7 @@ sub action {
         $response = $ua->request($request);
     }
     elsif (
-        $params{method} eq 'GET'
+        $params{method}    eq 'GET'
         || $params{method} eq 'DELETE'
     ) {
         $request->method($params{method});
@@ -195,7 +195,17 @@ sub action {
 
         my $content = $response->decoded_content;
         my $data = decode_json $response->decoded_content;
-        return exists $data->{data} ? $data->{data} : undef ;
+        # If we have a data key but its empty, treat it as a failure
+        if (
+            ref $data eq 'HASH'
+            && exists $data->{data}
+            && keys %{$data->{data}}
+        ){
+            return exists $data->{data}
+        }
+        else {
+            return
+        }
     }
     else {
         if ($self->{debug}) {
