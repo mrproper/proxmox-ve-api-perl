@@ -32,15 +32,21 @@ die "invalid login ticket\n" unless $pve->check_login_ticket;
 
 
 # list nodes in cluster
-print Dumper $pve->action(path => '/nodes',        method => 'GET');
+print $pve->get('/nodes')
+    ? "INFO: List Nodes Successful\n"
+    : "WARNING: List Nodes Failed\n";
 
-# list nodes in cluster
-print Dumper $pve->action(path => '/access/users', method => 'GET');
+# list users in cluster
+print $pve->get('/access/users')
+    ? "INFO: List Users Successful\n"
+    : "WARNING: List Users Failed\n";
 
 # Create a test user
-print Dumper $pve->action(
-    path      => '/access/users',
-    method    => 'POST',
-    post_data => {'userid' => 'testuser@foobar'}
-);
-print Dumper $pve->action(path => '/access/users/testuser@foobar', method => 'DELETE');
+print $pve->put('/access/users',{'userid' => 'testuser@foobar'})
+    ? "INFO: Create User Successful\n"
+    : "WARNING: Create User Failed\n";
+
+# Delete a test user
+print $pve->delete('/access/users/testuser@foobar')
+    ? "INFO: Delete User Successful\n"
+    : "WARNING: Delete User Failed\n";

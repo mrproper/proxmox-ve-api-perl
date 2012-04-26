@@ -88,8 +88,13 @@ sub login {
             # id rather have a ticket a few seconds shorter than have a ticket that incorrectly
             # says its valid for a couple more
             $self->{ticket_timestamp} = $request_time;
+            print "DEBUG: login successful\n"
+                if $self->{params}->{debug};
             return 1;
     }
+
+    print "DEBUG: login not successful\n"
+        if $self->{params}->{debug};
 
     return
     
@@ -122,7 +127,7 @@ sub check_login_ticket {
 sub action {
     my $self = shift || return;
     my %params = @_;
-
+    
     unless (%params) {
         croak 'new requires a hash for params';
     }
@@ -146,7 +151,7 @@ sub action {
         
     unless ($self->check_login_ticket) {
         print "DEBUG: invalid login ticket\n"
-            if $self->{debug};
+            if $self->{params}->{debug};
         return unless $self->login();
     }
 
@@ -170,7 +175,8 @@ sub action {
     }
 
     # Not sure why but the php api for proxmox ve uses PUT instead of post for
-    # most things, the api doc only lists GET|POST|DELETE
+    # most things, the api doc only lists GET|POST|DELETE and the api returns 'PUT' as
+    # an unrecognised method
     # so we'll just force POST from PUT
     if (
         $params{method}    eq 'PUT'
@@ -191,53 +197,94 @@ sub action {
 
     if ($response->is_success) {
         print "DEBUG: successful request: " . $request->as_string . "\n"
-            if $self->{debug};
+            if $self->{params}->{debug};
 
         my $content = $response->decoded_content;
         my $data = decode_json $response->decoded_content;
-        # If we have a data key but its empty, treat it as a failure
-        if (
-            ref $data eq 'HASH'
-            && exists $data->{data}
-            && keys %{$data->{data}}
+        # DELETE operations return no data
+        # otherwise if we have a data key but its empty, treat it as a failure
+        if ($params{method} eq 'DELETE') {
+            return 1;
+        }
+        elsif (
+                ref($data) eq 'HASH'
+                && exists $data->{data}
         ){
-            return exists $data->{data}
+            return $data->{data} || 1;
         }
         else {
             return
         }
     }
     else {
-        if ($self->{debug}) {
-            print "DEBUG: request failed: " . $request->as_string . "\n";
-            print "DEBUG: response status: " . $response->status_line . "\n";
-        }
+        print "WARNING: request failed: " . $request->as_string . "\n";
+        print "WARNING: response status: " . $response->status_line . "\n";
         return
     }
 }
 
 sub reload_node_list {
-    #XXX todo
+    my $self = shift || return;
+
+    my $node_list = $self->action(path => '/nodes', method => 'GET');
+    if (@{$node_list} > 0) {
+        $self->{node_list} = $node_list;
+        return 1;
+    }
+   
+    print "ERROR: empty list of nodes in this cluster.\n";
+
+    return
 }
 
 sub get_node_list {
-    #XXX todo
+    my $self = shift || return;
+
+    if ($self->{node_list}) {
+        return $self->{node_list};
+    }
+    elsif ($self->reload_node_list) {
+        return $self->{node_list};
+    }
+
+    return
 }
 
 sub get {
-    #XXX todo
-}
-
-sub put {
-    #XXX todo
-}
-
-sub post {
-    #XXX todo
+    my $self = shift || return;
+    my $path = shift || return;
+    
+    if ($self->get_node_list) {
+        return $self->action(path => $path, method => 'GET');
+    }
+    return
 }
 
 sub delete {
-    #XXX todo
+    my $self = shift || return;
+    my $path = shift || return;
+    
+    if ($self->get_node_list) {
+        return $self->action(path => $path, method => 'DELETE');
+    }
+    return
 }
+
+sub put {
+    my $self = shift;
+    return $self->post(@_);
+}
+
+sub post {
+    my $self      = shift || return;    
+    my $path      = shift || return;
+    my $post_data = shift || return;
+
+    if ($self->get_node_list) {
+        return $self->action(path => $path, method => 'POST', post_data => $post_data);
+    }
+    return;
+}
+
 
 1
