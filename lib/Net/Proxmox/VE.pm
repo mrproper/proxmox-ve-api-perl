@@ -11,128 +11,47 @@ use HTTP::Request::Common qw(GET POST DELETE);
 use JSON qw(decode_json);
 #use namespace::sweep; # like autoclean, but with no Mooses
 
-sub new {
+=head1 NAME
 
-    my $c = shift;
-    my @p = @_;
-    my $class = ref($c) || $c;
+Net::Proxmox::VE - Pure perl API for Proxmox virtualisation
 
-    my %params;
+=head1 SYNOPSIS
 
-    if (scalar @p == 1) {
+    use Net::Proxmox::VE;
 
-        croak 'new() requires a hash for params'
-            unless ref $p[0] eq 'HASH';
+    %args = (
+        host => 'proxmox1.local.domain',
+        user => 'root', # optional
+        password => 'barpassword',
+        port => 8006,   # optional
+        realm => 'pam', # optional
 
-        %params = %{$p[0]};
 
-    } else {
-        %params = @p 
-            or croak 'new() requires a hash for params';
-    }
-
-    croak 'host param is required'     unless $params{'host'};
-    croak 'password param is required' unless $params{'password'};
-
-    $params{port}     ||= 8006;
-    $params{username} ||= 'root';
-    $params{realm}    ||= 'pam';
-    $params{debug}    ||= undef;
-
-    my $self->{params}          = \%params;
-    $self->{'ticket'}           = undef;
-    $self->{'ticket_timestamp'} = undef;
-    $self->{'ticket_life'}      = 7200; # 2 Hours
-
-    bless $self, $class;
-    return $self
-
-}
-
-sub url_prefix {
-    my $self = shift || return;
-
-    # Prepare login request
-    my $url_prefix = 'https://'
-        . $self->{params}->{host}
-        . ':'
-        . $self->{params}->{port};
-
-    return $url_prefix
-}
-
-sub login {
-    my $self = shift || return;
-        
-    # Prepare login request
-    my $url = $self->url_prefix . '/api2/json/access/ticket';
-    
-    my $ua = LWP::UserAgent->new();
-    $ua->ssl_opts(verify_hostname => undef); # Add only if test environment here
-
-    # Perform login request
-    my $request_time = time();
-    my $response = $ua->post(
-        $url,
-        {
-            'username' => $self->{params}->{username} . '@' . $self->{params}->{realm},
-            'password' => $self->{params}->{password},
-        },
     );
 
-    if ($response->is_success) {
-        my $content = $response->decoded_content;
-            my $login_ticket_data = decode_json $response->decoded_content;
-            $self->{ticket} = $login_ticket_data->{data};
-            # We use request time as the time to get the json ticket is undetermined,
-            # id rather have a ticket a few seconds shorter than have a ticket that incorrectly
-            # says its valid for a couple more
-            $self->{ticket_timestamp} = $request_time;
-            print "DEBUG: login successful\n"
-                if $self->{params}->{debug};
-            return 1;
-    }
+    $host1 = Net::Proxmox::VE->new(%args);
 
-    print "DEBUG: login not successful\n"
-        if $self->{params}->{debug};
+    $host1->login() or die ('Couldnt log in to proxmox host');
 
-    return
-    
-}
 
-sub check_login_ticket {
-    my $self = shift || return;
 
-    if (
-        $self->{ticket}
-        && ref $self->{ticket} eq 'HASH'
-        && $self->{ticket}
-        && $self->{ticket}->{ticket}
-        && $self->{ticket}->{CSRFPreventionToken}
-        && $self->{ticket}->{username} eq $self->{params}->{username} . '@' . $self->{params}->{realm}
-        && $self->{ticket_timestamp}
-        && $self->{ticket_timestamp} < (time() + $self->{ticket_life})
-    ) {
-        return 1
-    }
-    else {
-        $self->{ticket} = undef;
-        $self->{ticket_timestamp} = undef;
-    }
+=head1 DESCRIPTION
 
-    return
-}
+Lorem ipsom dolor.
 
+=head1 METHODS
+
+=cut
 
 sub action {
     my $self = shift || return;
     my %params = @_;
-    
+
     unless (%params) {
         croak 'new requires a hash for params';
     }
     croak 'path param is required' unless $params{path};
-    
+
     $params{method}    ||= 'GET';
     $params{post_data} ||= {};
 
@@ -148,7 +67,7 @@ sub action {
 
     # Strip prefixed / to path if present
     $params{path} =~ s/^\///;
-        
+
     unless ($self->check_login_ticket) {
         print "DEBUG: invalid login ticket\n"
             if $self->{params}->{debug};
@@ -223,17 +142,71 @@ sub action {
     }
 }
 
-sub reload_node_list {
+sub check_login_ticket {
     my $self = shift || return;
 
-    my $node_list = $self->action(path => '/nodes', method => 'GET');
-    if (@{$node_list} > 0) {
-        $self->{node_list} = $node_list;
-        return 1;
+    if (
+        $self->{ticket}
+        && ref $self->{ticket} eq 'HASH'
+        && $self->{ticket}
+        && $self->{ticket}->{ticket}
+        && $self->{ticket}->{CSRFPreventionToken}
+        && $self->{ticket}->{username} eq $self->{params}->{username} . '@' . $self->{params}->{realm}
+        && $self->{ticket_timestamp}
+        && $self->{ticket_timestamp} < (time() + $self->{ticket_life})
+    ) {
+        return 1
     }
-   
-    print "ERROR: empty list of nodes in this cluster.\n";
+    else {
+        $self->{ticket} = undef;
+        $self->{ticket_timestamp} = undef;
+    }
 
+    return
+}
+
+=head2 debug
+
+Has a single optional argument of 1 or 0 representing enable or disable debugging.
+
+Undef (ie no argument) leaves the debug status untouched, making this method call simply a query.
+
+Returns the resultant debug status (perl style true or false)
+
+=cut
+
+sub debug {
+    my $self = shift || return;
+    my $d = shift;
+
+    if ($d) {
+        $self->{debug} = 1;
+    } elsif ($d ne undef) {
+        $self->{debug} = 0;
+    }
+
+    return 1 if $self->{debug};
+    return
+
+}
+
+sub delete {
+    my $self = shift || return;
+    my $path = shift || return;
+
+    if ($self->get_node_list) {
+        return $self->action(path => $path, method => 'DELETE');
+    }
+    return
+}
+
+sub get {
+    my $self = shift || return;
+    my $path = shift || return;
+
+    if ($self->get_node_list) {
+        return $self->action(path => $path, method => 'GET');
+    }
     return
 }
 
@@ -250,33 +223,137 @@ sub get_node_list {
     return
 }
 
-sub get {
+=head2 login
+
+Initiates the log in to the PVE Server using JSON API, and potentially obtains an Access Ticket.
+
+Returns true if success
+
+=cut
+
+sub login {
     my $self = shift || return;
-    my $path = shift || return;
-    
-    if ($self->get_node_list) {
-        return $self->action(path => $path, method => 'GET');
+
+    # Prepare login request
+    my $url = $self->url_prefix . '/api2/json/access/ticket';
+
+    my $ua = LWP::UserAgent->new();
+    $ua->ssl_opts(verify_hostname => undef); # Add only if test environment here
+
+    # Perform login request
+    my $request_time = time();
+    my $response = $ua->post(
+        $url,
+        {
+            'username' => $self->{params}->{username} . '@' . $self->{params}->{realm},
+            'password' => $self->{params}->{password},
+        },
+    );
+
+    if ($response->is_success) {
+        my $content = $response->decoded_content;
+            my $login_ticket_data = decode_json $response->decoded_content;
+            $self->{ticket} = $login_ticket_data->{data};
+            # We use request time as the time to get the json ticket is undetermined,
+            # id rather have a ticket a few seconds shorter than have a ticket that incorrectly
+            # says its valid for a couple more
+            $self->{ticket_timestamp} = $request_time;
+            print "DEBUG: login successful\n"
+                if $self->{params}->{debug};
+            return 1;
     }
+
+    print "DEBUG: login not successful\n"
+        if $self->{params}->{debug};
+
     return
+
 }
 
-sub delete {
-    my $self = shift || return;
-    my $path = shift || return;
-    
-    if ($self->get_node_list) {
-        return $self->action(path => $path, method => 'DELETE');
-    }
-    return
-}
+=head2 new
 
-sub put {
-    my $self = shift;
-    return $self->post(@_);
+Creates the Net::Proxmox::VE object and returns it.
+
+Examples...
+
+  my $obj = Net::Proxmox::VE->new(%args);
+  my $obj = Net::Proxmox::VE->new(\%args);
+
+Valid arguments are...
+
+=over 4
+
+=item I<host>
+
+Proxmox host instance to interact with. Required so no default.
+
+=item I<username>
+
+User name used for authentication. Defaults to 'root', optional.
+
+=item I<password>
+
+Pass word user for authentication. Required so no default.
+
+=item I<port>
+
+TCP port number used to by the Proxmox host instance. Defaults to 8006, optional.
+
+=item I<realm>
+
+Authentication realm to request against. Defaults to 'pam' (local auth), optional.
+
+=item I<debug>
+
+Enabling debugging of this API (not related to proxmox debugging in any way). Defaults to false, optional.
+
+=back
+
+=cut
+
+sub new {
+
+    my $c = shift;
+    my @p = @_;
+    my $class = ref($c) || $c;
+
+    my %params;
+
+    if (scalar @p == 1) {
+
+        croak 'new() requires a hash for params'
+            unless ref $p[0] eq 'HASH';
+
+        %params = %{$p[0]};
+
+    } elsif (scalar @p % 2 != 0) { # 'unless' is better than != but anyway
+        croak 'new() called with an odd number of parameters'
+
+    } else {
+        %params = @p
+            or croak 'new() requires a hash for params';
+    }
+
+    croak 'host param is required'     unless $params{'host'};
+    croak 'password param is required' unless $params{'password'};
+
+    $params{port}     ||= 8006;
+    $params{username} ||= 'root';
+    $params{realm}    ||= 'pam';
+    $params{debug}    ||= undef;
+
+    my $self->{params}          = \%params;
+    $self->{'ticket'}           = undef;
+    $self->{'ticket_timestamp'} = undef;
+    $self->{'ticket_life'}      = 7200; # 2 Hours
+
+    bless $self, $class;
+    return $self
+
 }
 
 sub post {
-    my $self      = shift || return;    
+    my $self      = shift || return;
     my $path      = shift || return;
     my $post_data = shift || return;
 
@@ -286,5 +363,43 @@ sub post {
     return;
 }
 
+sub put {
+    my $self = shift;
+    return $self->post(@_);
+}
+
+sub reload_node_list {
+    my $self = shift || return;
+
+    my $node_list = $self->action(path => '/nodes', method => 'GET');
+    if (@{$node_list} > 0) {
+        $self->{node_list} = $node_list;
+        return 1;
+    }
+
+    print "ERROR: empty list of nodes in this cluster.\n";
+
+    return
+}
+
+sub url_prefix {
+    my $self = shift || return;
+
+    # Prepare login request
+    my $url_prefix = 'https://'
+        . $self->{params}->{host}
+        . ':'
+        . $self->{params}->{port};
+
+    return $url_prefix
+}
+
+=head1 SEE ALSO
+
+=head1 SUPPORT
+
+=head1 AUTHORS
+
+=cut
 
 1
