@@ -11,6 +11,10 @@ use HTTP::Request::Common qw(GET POST DELETE);
 use JSON qw(decode_json);
 #use namespace::sweep; # like autoclean, but with no Mooses
 
+=head1 VERSION
+
+version 1.0
+
 =head1 NAME
 
 Net::Proxmox::VE - Pure perl API for Proxmox virtualisation
