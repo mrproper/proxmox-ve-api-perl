@@ -13,7 +13,11 @@ use JSON qw(decode_json);
 
 =head1 VERSION
 
-version 1.0
+VERSION 1.0
+
+=cut
+
+use constant VERSION => 1.0;
 
 =head1 NAME
 
