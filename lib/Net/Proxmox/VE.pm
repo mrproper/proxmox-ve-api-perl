@@ -173,8 +173,8 @@ sub api_version_check {
     my $data = $self->action(path => '/version', method => 'GET');
 
     if (ref $data eq 'HASH'
-        && $data{version}
-        && $data{version} >= 2.0
+        && $data->{version}
+        && $data->{version} >= 2.0
     ) {
         return 1;
     }
