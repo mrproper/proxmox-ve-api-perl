@@ -30,6 +30,8 @@ my $pve = Net::Proxmox::VE->new(
 die "login failed\n"         unless $pve->login;
 die "invalid login ticket\n" unless $pve->check_login_ticket;
 
+# get version
+print Dumper $pve->get('/version');
 
 # list nodes in cluster
 print $pve->get('/nodes')

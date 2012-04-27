@@ -5,7 +5,7 @@ use strict;
 use Module::Build;
 my $build = Module::Build->new(
     dist_name => q|Net::Proxmox|,
-    dist_author => q|Brendan Beveridge <>, Dean Hamstead <dean@fragfest.com.au>|,
+    dist_author => q|Brendan Beveridge <brendan@nodeintegration.com.au>, Dean Hamstead <dean@fragfest.com.au>|,
     license => q|perl|,
     module_name => q|Net::Proxmox|,
     requires    => {

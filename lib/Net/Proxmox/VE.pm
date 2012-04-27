@@ -20,24 +20,32 @@ Net::Proxmox::VE - Pure perl API for Proxmox virtualisation
     use Net::Proxmox::VE;
 
     %args = (
-        host => 'proxmox1.local.domain',
-        user => 'root', # optional
+        host     => 'proxmox.local.domain',
         password => 'barpassword',
-        port => 8006,   # optional
-        realm => 'pam', # optional
+        user     => 'root', # optional
+        port     => 8006,   # optional
+        realm    => 'pam',  # optional
 
 
     );
 
-    $host1 = Net::Proxmox::VE->new(%args);
+    $host = Net::Proxmox::VE->new(%args);
 
-    $host1->login() or die ('Couldnt log in to proxmox host');
+    $host->login() or die ('Couldnt log in to proxmox host');
 
 
 
 =head1 DESCRIPTION
 
-Lorem ipsom dolor.
+This Class provides the framework for talking to Proxmox VE 2.0 API instances.
+This just provides a get/delete/put/post abstraction layer as methods on Proxmox VE REST API
+This also handles the ticket headers required for authentication
+
+More details on the API can be found here:
+http://pve.proxmox.com/wiki/Proxmox_VE_API
+http://pve.proxmox.com/pve2-api-doc/
+
+This class provides the building blocks for someone wanting to use PHP to talk to Proxmox 2.0. Relatively simple piece of code, just provides a get/put/post/delete abstraction layer as methods on top of Proxmox's REST API, while also handling the Login Ticket headers required for authentication.
 
 =head1 METHODS
 
@@ -142,6 +150,39 @@ sub action {
     }
 }
 
+=head2 api_version_check
+
+Checks that the api we are talking to is at least version 2.0
+
+Returns true if the api version is at least 2.0 (perl style true or false)
+
+=cut
+
+
+sub api_version_check {
+    my $self = shift || return;
+
+    my $data = $self->action(path => '/version', method => 'GET');
+
+    if (ref $data eq 'HASH'
+        && $data{version}
+        && $data{version} >= 2.0
+    ) {
+        return 1;
+    }
+
+    return
+}
+
+=head2 check_login_ticket
+
+Verifies if the objects login ticket is valid and not expired
+
+Returns true if valid 
+Returns false and undefines the login ticket if invalid
+
+=cut
+
 sub check_login_ticket {
     my $self = shift || return;
 
@@ -190,6 +231,13 @@ sub debug {
 
 }
 
+=head2 delete
+
+An action helper method that just takes a path as an argument and returns the
+value of action with the DELETE method
+
+=cut
+
 sub delete {
     my $self = shift || return;
     my $path = shift || return;
@@ -199,6 +247,13 @@ sub delete {
     }
     return
 }
+
+=head2 get
+
+An action helper method that just takes a path as an argument and returns the
+value of action with the GET method
+
+=cut
 
 sub get {
     my $self = shift || return;
@@ -210,6 +265,12 @@ sub get {
     return
 }
 
+=head2 get_node_list
+
+Returns the clusters node list from the object,
+if thats not defined it calls reload_node_list and returns the node_list
+
+=cut
 sub get_node_list {
     my $self = shift || return;
 
@@ -352,6 +413,14 @@ sub new {
 
 }
 
+=head2 post
+
+An action helper method that takes two parameters:
+path
+hash ref to post data
+your returned what action with the POST method returns
+
+=cut
 sub post {
     my $self      = shift || return;
     my $path      = shift || return;
@@ -363,16 +432,33 @@ sub post {
     return;
 }
 
+=head2 put
+
+An action helper method that takes two parameters:
+path
+hash ref to post data
+your returned what post returns 
+
+=cut
 sub put {
     my $self = shift;
     return $self->post(@_);
 }
 
+=head2 reload_node_list
+
+gets and sets the list of nodes in the cluster into $self->{node_list}
+returns false if there is no nodes listed or an arrayref is not returns from action
+
+=cut
 sub reload_node_list {
     my $self = shift || return;
 
     my $node_list = $self->action(path => '/nodes', method => 'GET');
-    if (@{$node_list} > 0) {
+    if (
+        ref $node_list eq 'ARRAY'
+        && @{$node_list} > 0
+    ){
         $self->{node_list} = $node_list;
         return 1;
     }
@@ -382,6 +468,11 @@ sub reload_node_list {
     return
 }
 
+=head2 url_prefix
+
+returns the url prefix used in the rest api calls
+
+=cut
 sub url_prefix {
     my $self = shift || return;
 
@@ -393,12 +484,14 @@ sub url_prefix {
 
     return $url_prefix
 }
-
 =head1 SEE ALSO
 
 =head1 SUPPORT
 
 =head1 AUTHORS
+
+Brendan Beveridge <brendan@nodeintegration.com.au>,
+Dean Hamstead <dean@fragfest.com.au>
 
 =cut
 
