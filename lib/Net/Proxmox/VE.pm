@@ -17,7 +17,7 @@ VERSION 1.0
 
 =cut
 
-use constant VERSION => 1.0;
+our $VERSION = 1.0;
 
 =head1 NAME
 

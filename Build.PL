@@ -4,10 +4,9 @@ use warnings;
 use strict;
 use Module::Build;
 my $build = Module::Build->new(
-    dist_name => q|Net::Proxmox|,
     dist_author => q|Brendan Beveridge <brendan@nodeintegration.com.au>, Dean Hamstead <dean@fragfest.com.au>|,
     license => q|perl|,
-    module_name => q|Net::Proxmox|,
+    module_name => q|Net::Proxmox::VE|,
     requires    => {
         Carp       => 0,
         JSON       => 0,

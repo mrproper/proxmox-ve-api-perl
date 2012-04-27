@@ -1,9 +1,8 @@
 Build.PL
-lib/Net/Proxmox.pm
 lib/Net/Proxmox/VE.pm
 MANIFEST			This list of files
 pve.pl
-README.md
+README.pod
 t/.perlcriticrc
 t/00.load.t
 t/01.pod.t
