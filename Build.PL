@@ -8,10 +8,11 @@ my $build = Module::Build->new(
     license => q|perl|,
     module_name => q|Net::Proxmox::VE|,
     requires    => {
-        Carp       => 0,
-        JSON       => 0,
-        'LWP::UserAgent' => 0,
-        'HTTP::Headers' => 0,
+        Carp                    => 0,
+        JSON                    => 0,
+        'LWP::UserAgent'        => 0,
+        'HTTP::Headers'         => 0,
+        'HTTP::Request::Common' => 0,
     },
     build_requires => {
     #    'Test::Trap' => 0,
