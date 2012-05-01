@@ -15,7 +15,8 @@ my $build = Module::Build->new(
         'HTTP::Request::Common' => 0,
     },
     build_requires => {
-    #    'Test::Trap' => 0,
+         'Test::More' => 0,
+         'Test::Trap' => 0,
     },
 );
 $build->create_build_script();

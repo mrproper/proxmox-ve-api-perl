@@ -33,8 +33,6 @@ Net::Proxmox::VE - Pure perl API for Proxmox virtualisation
         user     => 'root', # optional
         port     => 8006,   # optional
         realm    => 'pam',  # optional
-
-
     );
 
     $host = Net::Proxmox::VE->new(%args);
@@ -72,17 +70,12 @@ sub action {
     $params{post_data} ||= {};
 
     # Check its a valid method
-    unless (
-        $params{method}    eq 'GET'
-        || $params{method} eq 'PUT'
-        || $params{method} eq 'POST'
-        || $params{method} eq 'DELETE'
-    ){
-        croak "invalid http method specified: $params{method}";
-    }
+
+    croak "invalid http method specified: $params{method}"
+        unless $params{method} =~ m/^(GET|PUT|POST|DELETE)$/;
 
     # Strip prefixed / to path if present
-    $params{path} =~ s/^\///;
+    $params{path} =~ s{^/}{};
 
     unless ($self->check_login_ticket) {
         print "DEBUG: invalid login ticket\n"
@@ -113,21 +106,18 @@ sub action {
     # most things, the api doc only lists GET|POST|DELETE and the api returns 'PUT' as
     # an unrecognised method
     # so we'll just force POST from PUT
-    if (
-        $params{method}    eq 'PUT'
-        || $params{method} eq 'POST'
-    ) {
+    if ( $params{method}    =~ m/^(PUT|POST)$/) {
         $request->method('POST');
         my $content = join '&', map { $_ . '=' . $params{post_data}->{$_} } sort keys %{$params{post_data}};
         $request->content($content);
         $response = $ua->request($request);
     }
-    elsif (
-        $params{method}    eq 'GET'
-        || $params{method} eq 'DELETE'
-    ) {
+    elsif ( $params{method} =~ m/^(GET|DELETE)$/ ) {
         $request->method($params{method});
         $response = $ua->request($request);
+    }
+    else  {
+        # this shouldnt happen
     }
 
     if ($response->is_success) {
@@ -142,7 +132,7 @@ sub action {
             return 1;
         }
         elsif (
-                ref($data) eq 'HASH'
+                ref $data eq 'HASH'
                 && exists $data->{data}
         ){
             return $data->{data} || 1;
@@ -166,11 +156,16 @@ Returns true if the api version is at least 2.0 (perl style true or false)
 
 =cut
 
+sub _get_api_version {
+    my $self = shift || return;
+    my $data = $self->action(path => '/version', method => 'GET');
+    return $data
+}
 
 sub api_version_check {
     my $self = shift || return;
 
-    my $data = $self->action(path => '/version', method => 'GET');
+    my $data = $self->_get_api_version;
 
     if (ref $data eq 'HASH'
         && $data->{version}
@@ -186,8 +181,8 @@ sub api_version_check {
 
 Verifies if the objects login ticket is valid and not expired
 
-Returns true if valid 
-Returns false and undefines the login ticket if invalid
+Returns true if valid
+Returns false and clears the the login ticket details inside the object if invalid
 
 =cut
 
@@ -207,8 +202,25 @@ sub check_login_ticket {
         return 1
     }
     else {
+        $self->clear_login_ticket;
+    }
+
+    return
+}
+
+=head2 clear_login_ticket
+
+Clears the login ticket inside the object
+
+=cut
+
+sub clear_login_ticket {
+    my $self = shift || return;
+
+    if ($self->{ticket} or $self->{timestamp}) {
         $self->{ticket} = undef;
         $self->{ticket_timestamp} = undef;
+        return 1
     }
 
     return
@@ -230,7 +242,7 @@ sub debug {
 
     if ($d) {
         $self->{debug} = 1;
-    } elsif ($d ne undef) {
+    } elsif (defined $d) {
         $self->{debug} = 0;
     }
 
@@ -242,7 +254,7 @@ sub debug {
 =head2 delete
 
 An action helper method that just takes a path as an argument and returns the
-value of action with the DELETE method
+value of action() with the DELETE method
 
 =cut
 
@@ -250,7 +262,7 @@ sub delete {
     my $self = shift || return;
     my $path = shift || return;
 
-    if ($self->get_node_list) {
+    if ($self->get_nodes) {
         return $self->action(path => $path, method => 'DELETE');
     }
     return
@@ -267,27 +279,24 @@ sub get {
     my $self = shift || return;
     my $path = shift || return;
 
-    if ($self->get_node_list) {
+    if ($self->get_nodes) {
         return $self->action(path => $path, method => 'GET');
     }
     return
 }
 
-=head2 get_node_list
+=head2 get_nodes
 
 Returns the clusters node list from the object,
-if thats not defined it calls reload_node_list and returns the node_list
+if thats not defined it calls reload_nodes and returns the nodes
 
 =cut
-sub get_node_list {
+sub get_nodes {
     my $self = shift || return;
 
-    if ($self->{node_list}) {
-        return $self->{node_list};
-    }
-    elsif ($self->reload_node_list) {
-        return $self->{node_list};
-    }
+    return $self->{nodes}
+        if $self->{nodes} ||
+           $self->reload_nodes;
 
     return
 }
@@ -330,10 +339,12 @@ sub login {
             print "DEBUG: login successful\n"
                 if $self->{params}->{debug};
             return 1;
-    }
+    } else {
 
-    print "DEBUG: login not successful\n"
-        if $self->{params}->{debug};
+        print "DEBUG: login not successful\n"
+            if $self->{params}->{debug};
+
+    }
 
     return
 
@@ -423,18 +434,19 @@ sub new {
 
 =head2 post
 
-An action helper method that takes two parameters:
-path
-hash ref to post data
-your returned what action with the POST method returns
+An action helper method that takes two parameters: $path, \%post_data
+$path to post to,  hash ref to %post_data
+
+You are returned what action() with the POST method returns
 
 =cut
+
 sub post {
     my $self      = shift || return;
     my $path      = shift || return;
     my $post_data = shift || return;
 
-    if ($self->get_node_list) {
+    if ($self->get_nodes) {
         return $self->action(path => $path, method => 'POST', post_data => $post_data);
     }
     return;
@@ -445,7 +457,7 @@ sub post {
 An action helper method that takes two parameters:
 path
 hash ref to post data
-your returned what post returns 
+your returned what post returns
 
 =cut
 sub put {
@@ -453,21 +465,21 @@ sub put {
     return $self->post(@_);
 }
 
-=head2 reload_node_list
+=head2 reload_nodes
 
-gets and sets the list of nodes in the cluster into $self->{node_list}
+gets and sets the list of nodes in the cluster into $self->{node_cluster_list}
 returns false if there is no nodes listed or an arrayref is not returns from action
 
 =cut
-sub reload_node_list {
+sub reload_nodes {
     my $self = shift || return;
 
-    my $node_list = $self->action(path => '/nodes', method => 'GET');
+    my $nodes = $self->action(path => '/nodes', method => 'GET');
     if (
-        ref $node_list eq 'ARRAY'
-        && @{$node_list} > 0
+        ref $nodes eq 'ARRAY'
+        && @{$nodes} > 0
     ){
-        $self->{node_list} = $node_list;
+        $self->{nodes} = $nodes;
         return 1;
     }
 

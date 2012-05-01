@@ -1,7 +1,7 @@
 use strict;
 use warnings;
 
-use Test::More; my $tests = 4; # used later
+use Test::More; my $tests = 15; # used later
 use Test::Trap;
 
 if ( not $ENV{PROXMOX_TEST_URI} ) {
@@ -56,6 +56,50 @@ After the object is created, we should be able to log in ok
 
 ok($obj->login(), 'logged in to ' . $ENV{PROXMOX_TEST_URI});
 
+=head2 Check server version
+
+Manually check that the remote version is 2 or greater (also checks we can get the version)
+
+Then use the helper function
+
+=cut
+
+cmp_ok($obj->_get_api_version->{version}, '>=', 2, 'manually: check remote version is 2+');
+ok($obj->api_version_check, 'helper: check remote version is 2+');
+
+=head2 check the login ticket
+
+=cut
+
+ok($obj->check_login_ticket, 'login ticket should still be valid');
+
+=head2 check debug toggling
+
+=cut
+
+ok(!$obj->debug(),'debug off by default');
+ok($obj->debug(1),'debug toggled on and returns true');
+ok($obj->debug(),'debug now turned on');
+ok(!$obj->debug(0),'debug toggled off and returns false');
+ok(!$obj->debug(),'debug now turned off');
+
+=head2 cluster nodes
+
+=cut
+
+my $foo = $obj->get_nodes;
+use Data::Dumper;
+print Dumper( $foo );
+
+=head2 clear login ticket
+
+checks that the login ticket clears, also checks that the login ticket is now invalid
+
+=cut
+
+ok($obj->clear_login_ticket, 'clears the login ticket');
+ok(!$obj->clear_login_ticket, 'clearing doesnt clear any more');
+ok(!$obj->check_login_ticket, 'login ticket is now invalid');
 
 __END__
            %args = (
