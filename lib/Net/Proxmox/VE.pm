@@ -288,7 +288,7 @@ sub get {
     my @path = @_ or return; # using || breaks this
 
     if ($self->get_nodes) {
-        return $self->action(path => $path[0], method => 'GET');
+        return $self->action(path => join('/',@path), method => 'GET');
     }
     return
 }

@@ -3,7 +3,7 @@ use warnings;
 
 use Data::Dumper;
 
-use Test::More; my $tests = 16; # used later
+use Test::More; my $tests = 17; # used later
 use Test::Trap;
 if ( not $ENV{PROXMOX_TEST_URI} ) {
     my $msg = 'This test sucks.  Set $ENV{PROXMOX_TEST_URI} to a real running proxmox to run.';
@@ -109,9 +109,11 @@ checks users access stuff
 {
 
   my @index = $obj->access();
-print Dumper(\@index);
-  is_deeply(\@index,[map {{ subdir => $_ }} qw(users groups roles acl domains ticket password)], 'seven top level directories');
+  is_deeply(\@index,[map {{ subdir => $_ }} qw(users groups roles acl domains ticket password)], 'correct top level directories');
 
+  @index = $obj->access_domains();
+  ok(scalar @index == 2, 'two access domains');
+  
 }
 
 __END__

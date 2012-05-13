@@ -30,7 +30,7 @@ sub access_domains {
     unless (@a) {
 
         my $domains = $self->get($base,'domains');
-        return $domains;
+        return wantarray ? @$domains : $domains;
 
     # if there is a single argument, return a single realm instance as an object
     } elsif (@a == 1) {
