@@ -9,7 +9,12 @@ use LWP::UserAgent;
 use HTTP::Headers;
 use HTTP::Request::Common qw(GET POST DELETE);
 use JSON qw(decode_json);
-#use namespace::sweep; # like autoclean, but with no Mooses
+
+use Net::Proxmox::VE::Access;
+use Net::Proxmox::VE::Cluster;
+#use Net::Proxmox::VE::Nodes;
+use Net::Proxmox::VE::Pools;
+use Net::Proxmox::VE::Storage;
 
 =head1 VERSION
 
@@ -58,7 +63,7 @@ This class provides the building blocks for someone wanting to use PHP to talk t
 =cut
 
 sub action {
-    my $self = shift || return;
+    my $self = shift or return;
     my %params = @_;
 
     unless (%params) {
@@ -77,6 +82,9 @@ sub action {
     # Strip prefixed / to path if present
     $params{path} =~ s{^/}{};
 
+    # Collapse duplicate slashes
+    $params{path} =~ s{//+}{/};
+
     unless ($self->check_login_ticket) {
         print "DEBUG: invalid login ticket\n"
             if $self->{params}->{debug};
@@ -86,8 +94,7 @@ sub action {
     my $url = $self->url_prefix . '/api2/json/' . $params{path};
 
     # Setup the useragent
-    my $ua = LWP::UserAgent->new();
-    $ua->ssl_opts(verify_hostname => undef); # Add only if test environment here
+    my $ua = LWP::UserAgent->new( ssl_opts => {verify_hostname => undef} );
 
     # Setup the request object
     my $request = HTTP::Request->new();
@@ -125,7 +132,7 @@ sub action {
             if $self->{params}->{debug};
 
         my $content = $response->decoded_content;
-        my $data = decode_json $response->decoded_content;
+        my $data = decode_json( $response->decoded_content );
         # DELETE operations return no data
         # otherwise if we have a data key but its empty, treat it as a failure
         if ($params{method} eq 'DELETE') {
@@ -144,8 +151,9 @@ sub action {
     else {
         print "WARNING: request failed: " . $request->as_string . "\n";
         print "WARNING: response status: " . $response->status_line . "\n";
-        return
     }
+    return
+
 }
 
 =head2 api_version_check
@@ -157,13 +165,13 @@ Returns true if the api version is at least 2.0 (perl style true or false)
 =cut
 
 sub _get_api_version {
-    my $self = shift || return;
+    my $self = shift or return;
     my $data = $self->action(path => '/version', method => 'GET');
     return $data
 }
 
 sub api_version_check {
-    my $self = shift || return;
+    my $self = shift or return;
 
     my $data = $self->_get_api_version;
 
@@ -187,7 +195,7 @@ Returns false and clears the the login ticket details inside the object if inval
 =cut
 
 sub check_login_ticket {
-    my $self = shift || return;
+    my $self = shift or return;
 
     if (
         $self->{ticket}
@@ -215,7 +223,7 @@ Clears the login ticket inside the object
 =cut
 
 sub clear_login_ticket {
-    my $self = shift || return;
+    my $self = shift or return;
 
     if ($self->{ticket} or $self->{timestamp}) {
         $self->{ticket} = undef;
@@ -237,7 +245,7 @@ Returns the resultant debug status (perl style true or false)
 =cut
 
 sub debug {
-    my $self = shift || return;
+    my $self = shift or return;
     my $d = shift;
 
     if ($d) {
@@ -259,8 +267,8 @@ value of action() with the DELETE method
 =cut
 
 sub delete {
-    my $self = shift || return;
-    my $path = shift || return;
+    my $self = shift or return;
+    my $path = shift or return;
 
     if ($self->get_nodes) {
         return $self->action(path => $path, method => 'DELETE');
@@ -276,11 +284,11 @@ value of action with the GET method
 =cut
 
 sub get {
-    my $self = shift || return;
-    my $path = shift || return;
+    my $self = shift or return;
+    my @path = @_ or return; # using || breaks this
 
     if ($self->get_nodes) {
-        return $self->action(path => $path, method => 'GET');
+        return $self->action(path => $path[0], method => 'GET');
     }
     return
 }
@@ -291,8 +299,9 @@ Returns the clusters node list from the object,
 if thats not defined it calls reload_nodes and returns the nodes
 
 =cut
+
 sub get_nodes {
-    my $self = shift || return;
+    my $self = shift or return;
 
     return $self->{nodes}
         if $self->{nodes} ||
@@ -310,13 +319,12 @@ Returns true if success
 =cut
 
 sub login {
-    my $self = shift || return;
+    my $self = shift or return;
 
     # Prepare login request
     my $url = $self->url_prefix . '/api2/json/access/ticket';
 
-    my $ua = LWP::UserAgent->new();
-    $ua->ssl_opts(verify_hostname => undef); # Add only if test environment here
+    my $ua = LWP::UserAgent->new( ssl_opts => {verify_hostname => undef} );
 
     # Perform login request
     my $request_time = time();
@@ -330,7 +338,7 @@ sub login {
 
     if ($response->is_success) {
         my $content = $response->decoded_content;
-            my $login_ticket_data = decode_json $response->decoded_content;
+            my $login_ticket_data = decode_json( $response->decoded_content );
             $self->{ticket} = $login_ticket_data->{data};
             # We use request time as the time to get the json ticket is undetermined,
             # id rather have a ticket a few seconds shorter than have a ticket that incorrectly
@@ -347,7 +355,6 @@ sub login {
     }
 
     return
-
 }
 
 =head2 new
@@ -442,14 +449,20 @@ You are returned what action() with the POST method returns
 =cut
 
 sub post {
-    my $self      = shift || return;
-    my $path      = shift || return;
-    my $post_data = shift || return;
+    my $self      = shift or return;
+    my $path      = shift or return;
+    my $post_data = shift or return;
 
     if ($self->get_nodes) {
-        return $self->action(path => $path, method => 'POST', post_data => $post_data);
+
+        return $self->action(
+            path      => $path,
+            method    => 'POST',
+            post_data => $post_data
+            )
+
     }
-    return;
+    return
 }
 
 =head2 put
@@ -460,6 +473,7 @@ hash ref to post data
 your returned what post returns
 
 =cut
+
 sub put {
     my $self = shift;
     return $self->post(@_);
@@ -471,8 +485,9 @@ gets and sets the list of nodes in the cluster into $self->{node_cluster_list}
 returns false if there is no nodes listed or an arrayref is not returns from action
 
 =cut
+
 sub reload_nodes {
-    my $self = shift || return;
+    my $self = shift or return;
 
     my $nodes = $self->action(path => '/nodes', method => 'GET');
     if (
@@ -493,8 +508,9 @@ sub reload_nodes {
 returns the url prefix used in the rest api calls
 
 =cut
+
 sub url_prefix {
-    my $self = shift || return;
+    my $self = shift or return;
 
     # Prepare login request
     my $url_prefix = 'https://'
@@ -504,6 +520,7 @@ sub url_prefix {
 
     return $url_prefix
 }
+
 =head1 SEE ALSO
 
 =head1 SUPPORT

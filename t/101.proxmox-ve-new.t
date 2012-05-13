@@ -1,9 +1,10 @@
 use strict;
 use warnings;
 
-use Test::More; my $tests = 15; # used later
-use Test::Trap;
+use Data::Dumper;
 
+use Test::More; my $tests = 16; # used later
+use Test::Trap;
 if ( not $ENV{PROXMOX_TEST_URI} ) {
     my $msg = 'This test sucks.  Set $ENV{PROXMOX_TEST_URI} to a real running proxmox to run.';
     plan( skip_all => $msg );
@@ -88,8 +89,6 @@ ok(!$obj->debug(),'debug now turned off');
 =cut
 
 my $foo = $obj->get_nodes;
-use Data::Dumper;
-print Dumper( $foo );
 
 =head2 clear login ticket
 
@@ -100,6 +99,20 @@ checks that the login ticket clears, also checks that the login ticket is now in
 ok($obj->clear_login_ticket, 'clears the login ticket');
 ok(!$obj->clear_login_ticket, 'clearing doesnt clear any more');
 ok(!$obj->check_login_ticket, 'login ticket is now invalid');
+
+=head2 user access
+
+checks users access stuff
+
+=cut
+
+{
+
+  my @index = $obj->access();
+print Dumper(\@index);
+  is_deeply(\@index,[map {{ subdir => $_ }} qw(users groups roles acl domains ticket password)], 'seven top level directories');
+
+}
 
 __END__
            %args = (
