@@ -6,6 +6,12 @@ use strict;
 use warnings;
 use base 'Exporter';
 
+=head1 VERSION
+
+VERSION 0.1
+
+=cut
+
 our $VERSION = 0.1;
 our @EXPORT = qw( pools );
 
