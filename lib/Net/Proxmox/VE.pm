@@ -51,6 +51,8 @@ Any enchancements are greatly appreciated ! (use github, link below)
 Please dont be offended if we refactor and rework submissions.
 Perltidy with default settings is prefered style.
 
+Oh, our tests are all against a running server. Care to help make them better?
+
 =head1 DESCRIPTION
 
 This Class provides the framework for talking to Proxmox VE 2.0 API instances.
