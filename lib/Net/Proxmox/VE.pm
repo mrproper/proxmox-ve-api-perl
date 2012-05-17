@@ -12,15 +12,10 @@ use JSON qw(decode_json);
 
 use Net::Proxmox::VE::Access;
 use Net::Proxmox::VE::Cluster;
+
 #use Net::Proxmox::VE::Nodes;
 use Net::Proxmox::VE::Pools;
 use Net::Proxmox::VE::Storage;
-
-=head1 VERSION
-
-VERSION 0.001
-
-=cut
 
 our $VERSION = 0.001;
 
@@ -44,7 +39,17 @@ Net::Proxmox::VE - Pure perl API for Proxmox virtualisation
 
     $host->login() or die ('Couldnt log in to proxmox host');
 
+=head1 WARNING
 
+We are still moving things around and trying to come up with something
+that makes sense. We havent yet implemented all the API functions, 
+so far we only have a basic internal abstraction of the REST interface
+and a few modules for each function tree within the API.
+
+Any enchancements are greatly appreciated ! (use github, link below)
+
+Please dont be offended if we refactor and rework submissions.
+Perltidy with default settings is prefered style.
 
 =head1 DESCRIPTION
 
@@ -71,13 +76,13 @@ sub action {
     }
     croak 'path param is required' unless $params{path};
 
-    $params{method}    ||= 'GET';
+    $params{method} ||= 'GET';
     $params{post_data} ||= {};
 
     # Check its a valid method
 
     croak "invalid http method specified: $params{method}"
-        unless $params{method} =~ m/^(GET|PUT|POST|DELETE)$/;
+      unless $params{method} =~ m/^(GET|PUT|POST|DELETE)$/;
 
     # Strip prefixed / to path if present
     $params{path} =~ s{^/}{};
@@ -85,67 +90,72 @@ sub action {
     # Collapse duplicate slashes
     $params{path} =~ s{//+}{/};
 
-    unless ($self->check_login_ticket) {
+    unless ( $self->check_login_ticket ) {
         print "DEBUG: invalid login ticket\n"
-            if $self->{params}->{debug};
+          if $self->{params}->{debug};
         return unless $self->login();
     }
 
     my $url = $self->url_prefix . '/api2/json/' . $params{path};
 
     # Setup the useragent
-    my $ua = LWP::UserAgent->new( ssl_opts => {verify_hostname => undef} );
+    my $ua = LWP::UserAgent->new( ssl_opts => { verify_hostname => undef } );
 
     # Setup the request object
     my $request = HTTP::Request->new();
     $request->uri($url);
-    $request->header('Cookie' => 'PVEAuthCookie=' . $self->{ticket}->{ticket});
+    $request->header(
+        'Cookie' => 'PVEAuthCookie=' . $self->{ticket}->{ticket} );
 
     my $response;
 
     # all methods other than get require the prevention token
     # (ie anything that makes modification)
-    unless ($params{method} eq 'GET') {
-        $request->header('CSRFPreventionToken' => $self->{ticket}->{CSRFPreventionToken});
+    unless ( $params{method} eq 'GET' ) {
+        $request->header(
+            'CSRFPreventionToken' => $self->{ticket}->{CSRFPreventionToken} );
     }
 
-    # Not sure why but the php api for proxmox ve uses PUT instead of post for
-    # most things, the api doc only lists GET|POST|DELETE and the api returns 'PUT' as
-    # an unrecognised method
-    # so we'll just force POST from PUT
-    if ( $params{method}    =~ m/^(PUT|POST)$/) {
+# Not sure why but the php api for proxmox ve uses PUT instead of post for
+# most things, the api doc only lists GET|POST|DELETE and the api returns 'PUT' as
+# an unrecognised method
+# so we'll just force POST from PUT
+    if ( $params{method} =~ m/^(PUT|POST)$/ ) {
         $request->method('POST');
-        my $content = join '&', map { $_ . '=' . $params{post_data}->{$_} } sort keys %{$params{post_data}};
+        my $content = join '&',
+          map { $_ . '=' . $params{post_data}->{$_} }
+          sort keys %{ $params{post_data} };
         $request->content($content);
         $response = $ua->request($request);
     }
     elsif ( $params{method} =~ m/^(GET|DELETE)$/ ) {
-        $request->method($params{method});
+        $request->method( $params{method} );
         $response = $ua->request($request);
     }
-    else  {
+    else {
+
         # this shouldnt happen
     }
 
-    if ($response->is_success) {
+    if ( $response->is_success ) {
         print "DEBUG: successful request: " . $request->as_string . "\n"
-            if $self->{params}->{debug};
+          if $self->{params}->{debug};
 
         my $content = $response->decoded_content;
-        my $data = decode_json( $response->decoded_content );
+        my $data    = decode_json( $response->decoded_content );
+
         # DELETE operations return no data
         # otherwise if we have a data key but its empty, treat it as a failure
-        if ($params{method} eq 'DELETE') {
+        if ( $params{method} eq 'DELETE' ) {
             return 1;
         }
-        elsif (
-                ref $data eq 'HASH'
-                && exists $data->{data}
-        ){
+        elsif ( ref $data eq 'HASH'
+            && exists $data->{data} )
+        {
             return $data->{data} || 1;
         }
         else {
-            return
+            return;
         }
     }
     else {
@@ -166,8 +176,8 @@ Returns true if the api version is at least 2.0 (perl style true or false)
 
 sub _get_api_version {
     my $self = shift or return;
-    my $data = $self->action(path => '/version', method => 'GET');
-    return $data
+    my $data = $self->action( path => '/version', method => 'GET' );
+    return $data;
 }
 
 sub api_version_check {
@@ -175,14 +185,14 @@ sub api_version_check {
 
     my $data = $self->_get_api_version;
 
-    if (ref $data eq 'HASH'
+    if (   ref $data eq 'HASH'
         && $data->{version}
-        && $data->{version} >= 2.0
-    ) {
+        && $data->{version} >= 2.0 )
+    {
         return 1;
     }
 
-    return
+    return;
 }
 
 =head2 check_login_ticket
@@ -197,23 +207,23 @@ Returns false and clears the the login ticket details inside the object if inval
 sub check_login_ticket {
     my $self = shift or return;
 
-    if (
-        $self->{ticket}
+    if (   $self->{ticket}
         && ref $self->{ticket} eq 'HASH'
         && $self->{ticket}
         && $self->{ticket}->{ticket}
         && $self->{ticket}->{CSRFPreventionToken}
-        && $self->{ticket}->{username} eq $self->{params}->{username} . '@' . $self->{params}->{realm}
+        && $self->{ticket}->{username} eq $self->{params}->{username} . '@'
+        . $self->{params}->{realm}
         && $self->{ticket_timestamp}
-        && $self->{ticket_timestamp} < (time() + $self->{ticket_life})
-    ) {
-        return 1
+        && $self->{ticket_timestamp} < ( time() + $self->{ticket_life} ) )
+    {
+        return 1;
     }
     else {
         $self->clear_login_ticket;
     }
 
-    return
+    return;
 }
 
 =head2 clear_login_ticket
@@ -225,13 +235,13 @@ Clears the login ticket inside the object
 sub clear_login_ticket {
     my $self = shift or return;
 
-    if ($self->{ticket} or $self->{timestamp}) {
-        $self->{ticket} = undef;
+    if ( $self->{ticket} or $self->{timestamp} ) {
+        $self->{ticket}           = undef;
         $self->{ticket_timestamp} = undef;
-        return 1
+        return 1;
     }
 
-    return
+    return;
 }
 
 =head2 debug
@@ -250,7 +260,8 @@ sub debug {
 
     if ($d) {
         $self->{debug} = 1;
-    } elsif (defined $d) {
+    }
+    elsif ( defined $d ) {
         $self->{debug} = 0;
     }
 
@@ -270,10 +281,10 @@ sub delete {
     my $self = shift or return;
     my $path = shift or return;
 
-    if ($self->get_nodes) {
-        return $self->action(path => $path, method => 'DELETE');
+    if ( $self->get_nodes ) {
+        return $self->action( path => $path, method => 'DELETE' );
     }
-    return
+    return;
 }
 
 =head2 get
@@ -285,12 +296,12 @@ value of action with the GET method
 
 sub get {
     my $self = shift or return;
-    my @path = @_ or return; # using || breaks this
+    my @path = @_    or return;    # using || breaks this
 
-    if ($self->get_nodes) {
-        return $self->action(path => join('/',@path), method => 'GET');
+    if ( $self->get_nodes ) {
+        return $self->action( path => join( '/', @path ), method => 'GET' );
     }
-    return
+    return;
 }
 
 =head2 get_nodes
@@ -304,10 +315,10 @@ sub get_nodes {
     my $self = shift or return;
 
     return $self->{nodes}
-        if $self->{nodes} ||
-           $self->reload_nodes;
+      if $self->{nodes}
+          || $self->reload_nodes;
 
-    return
+    return;
 }
 
 =head2 login
@@ -324,37 +335,40 @@ sub login {
     # Prepare login request
     my $url = $self->url_prefix . '/api2/json/access/ticket';
 
-    my $ua = LWP::UserAgent->new( ssl_opts => {verify_hostname => undef} );
+    my $ua = LWP::UserAgent->new( ssl_opts => { verify_hostname => undef } );
 
     # Perform login request
     my $request_time = time();
-    my $response = $ua->post(
+    my $response     = $ua->post(
         $url,
         {
-            'username' => $self->{params}->{username} . '@' . $self->{params}->{realm},
+            'username' => $self->{params}->{username} . '@'
+              . $self->{params}->{realm},
             'password' => $self->{params}->{password},
         },
     );
 
-    if ($response->is_success) {
-        my $content = $response->decoded_content;
-            my $login_ticket_data = decode_json( $response->decoded_content );
-            $self->{ticket} = $login_ticket_data->{data};
-            # We use request time as the time to get the json ticket is undetermined,
-            # id rather have a ticket a few seconds shorter than have a ticket that incorrectly
-            # says its valid for a couple more
-            $self->{ticket_timestamp} = $request_time;
-            print "DEBUG: login successful\n"
-                if $self->{params}->{debug};
-            return 1;
-    } else {
+    if ( $response->is_success ) {
+        my $content           = $response->decoded_content;
+        my $login_ticket_data = decode_json( $response->decoded_content );
+        $self->{ticket} = $login_ticket_data->{data};
+
+# We use request time as the time to get the json ticket is undetermined,
+# id rather have a ticket a few seconds shorter than have a ticket that incorrectly
+# says its valid for a couple more
+        $self->{ticket_timestamp} = $request_time;
+        print "DEBUG: login successful\n"
+          if $self->{params}->{debug};
+        return 1;
+    }
+    else {
 
         print "DEBUG: login not successful\n"
-            if $self->{params}->{debug};
+          if $self->{params}->{debug};
 
     }
 
-    return
+    return;
 }
 
 =head2 new
@@ -400,25 +414,27 @@ Enabling debugging of this API (not related to proxmox debugging in any way). De
 
 sub new {
 
-    my $c = shift;
-    my @p = @_;
+    my $c     = shift;
+    my @p     = @_;
     my $class = ref($c) || $c;
 
     my %params;
 
-    if (scalar @p == 1) {
+    if ( scalar @p == 1 ) {
 
         croak 'new() requires a hash for params'
-            unless ref $p[0] eq 'HASH';
+          unless ref $p[0] eq 'HASH';
 
-        %params = %{$p[0]};
+        %params = %{ $p[0] };
 
-    } elsif (scalar @p % 2 != 0) { # 'unless' is better than != but anyway
+    }
+    elsif ( scalar @p % 2 != 0 ) {    # 'unless' is better than != but anyway
         croak 'new() called with an odd number of parameters'
 
-    } else {
+    }
+    else {
         %params = @p
-            or croak 'new() requires a hash for params';
+          or croak 'new() requires a hash for params';
     }
 
     croak 'host param is required'     unless $params{'host'};
@@ -429,10 +445,10 @@ sub new {
     $params{realm}    ||= 'pam';
     $params{debug}    ||= undef;
 
-    my $self->{params}          = \%params;
+    my $self->{params} = \%params;
     $self->{'ticket'}           = undef;
     $self->{'ticket_timestamp'} = undef;
-    $self->{'ticket_life'}      = 7200; # 2 Hours
+    $self->{'ticket_life'}      = 7200;    # 2 Hours
 
     bless $self, $class;
     return $self
@@ -453,16 +469,16 @@ sub post {
     my $path      = shift or return;
     my $post_data = shift or return;
 
-    if ($self->get_nodes) {
+    if ( $self->get_nodes ) {
 
         return $self->action(
             path      => $path,
             method    => 'POST',
             post_data => $post_data
-            )
+          )
 
     }
-    return
+    return;
 }
 
 =head2 put
@@ -489,18 +505,17 @@ returns false if there is no nodes listed or an arrayref is not returns from act
 sub reload_nodes {
     my $self = shift or return;
 
-    my $nodes = $self->action(path => '/nodes', method => 'GET');
-    if (
-        ref $nodes eq 'ARRAY'
-        && @{$nodes} > 0
-    ){
+    my $nodes = $self->action( path => '/nodes', method => 'GET' );
+    if ( ref $nodes eq 'ARRAY'
+        && @{$nodes} > 0 )
+    {
         $self->{nodes} = $nodes;
         return 1;
     }
 
     print "ERROR: empty list of nodes in this cluster.\n";
 
-    return
+    return;
 }
 
 =head2 url_prefix
@@ -513,22 +528,38 @@ sub url_prefix {
     my $self = shift or return;
 
     # Prepare login request
-    my $url_prefix = 'https://'
-        . $self->{params}->{host}
-        . ':'
-        . $self->{params}->{port};
+    my $url_prefix =
+      'https://' . $self->{params}->{host} . ':' . $self->{params}->{port};
 
-    return $url_prefix
+    return $url_prefix;
 }
 
 =head1 SEE ALSO
 
+=over 4
+
+=item Proxmox Website
+
+http://www.proxmox.com
+
+=item API reference
+
+http://pve.proxmox.com/pve2-api-doc
+
+=back
+
 =head1 SUPPORT
+
+ Contribute at http://github.com/mrproper/proxmox-ve-api-perl
+
+=head1 VERSION
+
+ 0.001
 
 =head1 AUTHORS
 
-Brendan Beveridge <brendan@nodeintegration.com.au>,
-Dean Hamstead <dean@fragfest.com.au>
+ Brendan Beveridge <brendan@nodeintegration.com.au>
+ Dean Hamstead <dean@fragfest.com.au>
 
 =cut
 
