@@ -18,11 +18,11 @@ use Net::Proxmox::VE::Storage;
 
 =head1 VERSION
 
-VERSION 1.0
+VERSION 0.001
 
 =cut
 
-our $VERSION = 1.0;
+our $VERSION = 0.001;
 
 =head1 NAME
 
