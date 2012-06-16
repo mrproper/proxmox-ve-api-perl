@@ -42,7 +42,7 @@ Try something like...
        $ENV{PROXMOX_TEST_URI} =~ m{^(\w+):(\w+)\@([\w\.]+):(\d+)/(\w+)$}
        or die q|PROXMOX_TEST_URI didnt match form 'user:pass@hostname:port/realm'|."\n";
 
-   trap { 
+   trap {
       $obj = Net::Proxmox::VE->new( host => $host, password => $pass, user => $user, port => $port, realm => $realm )
    };
    ok (! $trap->die, 'doesnt die with good arguments');
@@ -113,7 +113,7 @@ checks users access stuff
 
   @index = $obj->access_domains();
   ok(scalar @index == 2, 'two access domains');
-  
+
 }
 
 __END__
