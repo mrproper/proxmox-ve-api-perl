@@ -6,9 +6,21 @@ use strict;
 use warnings;
 use base 'Exporter';
 
-=head1 VERSION
+=head1 NAME
 
-VERSION 0.1
+Net::Proxmox::VE::Pools
+
+=head1 SYNOPSIS
+
+  $obj->pools();
+
+=head1 DESCRIPTION
+
+This module implements the 'pools' section of the Proxmox API for L<Net::Proxmox::VE>,
+you should use the API via that module. This documentation is for detailed reference.
+
+=head1 METHODS
+
 
 =cut
 
@@ -46,5 +58,16 @@ sub pools {
 sub new {
 
 }
+
+=head1 VERSION
+
+  VERSION 0.2
+
+=head1 AUTHORS
+
+ Dean Hamstead L<<dean@fragfest.com.au>>
+
+=cut
+
 
 1;
