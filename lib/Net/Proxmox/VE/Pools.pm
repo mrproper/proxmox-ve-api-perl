@@ -30,6 +30,14 @@ you should use the API via that module. This documentation is for detailed refer
 
 To be clear, this module isn't useful as a stand alone piece of software.
 
+=head1 NOTE
+
+String formats that are mentioned herein are done so for convenience and
+are defined in detail in the Proxmox API documents on the Proxmox project website.
+
+This module doesnt enforce them, it will send whatever garbage you provide
+straight to the server API. So garbage-in, garbage-out!
+
 =head1 METHODS
 
 =cut
@@ -200,11 +208,15 @@ sub update_pool {
 
 }
 
+=head1 SEE ALSO
+
+  L<Net::Proxmox::VE>
+
 =head1 VERSION
 
   VERSION 0.2
 
-=head1 AUTHORS
+=head1 AUTHOR
 
  Dean Hamstead L<<dean@fragfest.com.au>>
 

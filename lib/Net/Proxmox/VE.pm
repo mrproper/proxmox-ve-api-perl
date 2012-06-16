@@ -17,7 +17,7 @@ use Net::Proxmox::VE::Cluster;
 use Net::Proxmox::VE::Pools;
 use Net::Proxmox::VE::Storage;
 
-our $VERSION = 0.001;
+our $VERSION = 0.002;
 
 =head1 NAME
 
