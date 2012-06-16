@@ -42,7 +42,7 @@ Net::Proxmox::VE - Pure perl API for Proxmox virtualisation
 =head1 WARNING
 
 We are still moving things around and trying to come up with something
-that makes sense. We havent yet implemented all the API functions, 
+that makes sense. We havent yet implemented all the API functions,
 so far we only have a basic internal abstraction of the REST interface
 and a few modules for each function tree within the API.
 
@@ -281,12 +281,12 @@ value of action() with the DELETE method
 
 sub delete {
     my $self = shift or return;
-    my $path = shift or return;
+    my @path = @_    or return;    # using || breaks this
 
     if ( $self->get_nodes ) {
-        return $self->action( path => $path, method => 'DELETE' );
+        return $self->action( path => join( '/', @path ), method => 'DELETE' );
     }
-    return;
+    return
 }
 
 =head2 get
@@ -303,7 +303,7 @@ sub get {
     if ( $self->get_nodes ) {
         return $self->action( path => join( '/', @path ), method => 'GET' );
     }
-    return;
+    return
 }
 
 =head2 get_nodes

@@ -1,1 +1,6 @@
-Nothing yet
+Revision history for perl Net::Proxmox::VE
+
+0.02 2012-06-16
+
+- Finished up Pools.pm (dean)
+- Fiddled with Dist::Zilla plugins
