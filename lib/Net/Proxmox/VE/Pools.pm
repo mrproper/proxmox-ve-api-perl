@@ -205,7 +205,7 @@ sub update_pool {
         %args = @p;
     }
 
-    return $self->put( $base, $poolid, \%args );
+    return $self->put( $base, $poolid, \%args )
 
 }
 

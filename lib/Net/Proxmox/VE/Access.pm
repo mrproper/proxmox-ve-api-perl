@@ -9,7 +9,7 @@ use base 'Exporter';
 use LWP::UserAgent;
 use JSON qw(decode_json);
 
-our $VERSION = 0.2;
+our $VERSION = 0.3;
 our @EXPORT =
   qw( access access_domains check_login_ticket clear_login_ticket get_acl login update_acl update_password );
 
@@ -27,13 +27,14 @@ Net::Proxmox::VE::Access - Functions for the 'access' portion of the API
 
   my @domain_index = $obj->access_domains();
   my $domain = $obj->access_domains($realm);
-  eval{ $obj->access_domains(\%args) };
 
 =head1 METHODS
 
 =head2 access
 
 Without arguments, returns the 'Directory index':
+
+Note: Accessible by all authententicated users.
 
 =cut
 
@@ -49,9 +50,13 @@ sub access {
 
 =head2 access_domains
 
-Gets a list of pools (aka the Authentication domain index)
+Gets a list of access domains (aka the Authentication domain index)
 
-  @pools = $obj->pools();
+  @pools = $obj->access_domains();
+
+Note: Anyone can access that, because we need that list for the login box (before the user is authenticated).
+
+FIXME: currently this isn't implemented in this library.
 
 =cut
 
@@ -59,7 +64,7 @@ sub access_domains {
 
     my $self = shift or return;
 
-    return $self->get($base,'domains');
+    return $self->get( $base, 'domains' )
 
 }
 
@@ -76,17 +81,64 @@ I<%args> may items contain from the following list
 
 =item realm
 
-String. The name of the domain you wish to access, in pve-realm format. This is required,
+String. The id of the authentication domain you wish to add, in pve-realm format. This is required.
+
+=item type
+
+Enum. This is the server type and is either 'ad' or 'ldap'. This is required.
+
+=item base_dn
+
+String. LDAP base domain name. Optional.
 
 =item comment
 
-String. This is a comment associated with the new pool, this is optional
+String. This is a comment associated with the new domain, this is optional.
+
+=item default
+
+Boolean. Use this domain as the default. Optional.
+
+=item domain
+
+String. AD domain name. Optional.
+
+=item port
+
+Integer. Server port, user '0' if you want to use the default setting. Optional.
+
+=item secure
+
+Boolean. Use secure LDAPS protocol. Optional.
+
+=item user_attr
+
+String. LDAP user attribute name. Optional.
 
 =back
 
 =cut
 
 sub create_access_domains {
+
+    my $self = shift or return;
+    my @p = @_;
+
+    die 'No arguments for create_access_domains()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for create_access_domains()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for create_access_domains()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->post( $base, 'domains', \%args )
 
 }
 
@@ -107,11 +159,77 @@ sub get_access_domains {
     my $a = shift or die 'No realm for get_access_domains()';
     die 'realm must be a scalar for get_access_domains()' if ref $a;
 
-    return $self->get( $base, $a );
+    return $self->get( $base, 'domains', $a )
 
 }
 
+=head2 update_access_domains
+
+Updates (sets) a access domain's data
+
+  $ok = $obj->update_access_domains( 'realm', %args );
+  $ok = $obj->update_access_domains( 'realm', \%args );
+
+realm is a string in pve-realm format
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item base_dn
+
+String. LDAP base domain name. Optional.
+
+=item comment
+
+String. This is a comment associated with the new domain, this is optional.
+
+=item default
+
+Boolean. Use this domain as the default. Optional.
+
+=item domain
+
+String. AD domain name. Optional.
+
+=item port
+
+Integer. Server port, user '0' if you want to use the default setting. Optional.
+
+=item secure
+
+Boolean. Use secure LDAPS protocol. Optional.
+
+=item user_attr
+
+String. LDAP user attribute name. Optional.
+
+=back
+
+=cut
+
 sub update_access_domains {
+
+    my $self   = shift or return;
+    my $realm = shift or die 'No realm provided for update_access_domains()';
+    die 'realm must be a scalar for update_access_domains()' if ref $realm;
+    my @p = @_;
+
+    die 'No arguments for update_access_domains()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for update_access_domains()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for update_access_domains()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->put( $base, 'domains', $realm, \%args )
 
 }
 
@@ -130,7 +248,312 @@ sub delete_access_domains {
     my $self = shift or return;
     my $a    = shift or die 'No argument given for delete_access_domains()';
 
-    return $self->delete( $base, $a );
+    return $self->delete( $base, 'domains', $a )
+
+}
+
+=head2 access_groups
+
+Gets a list of access groups (aka the Group index)
+
+  @pools = $obj->access_groups();
+
+Note: The returned list is restricted to groups where you have 'User.Modify', 'Sys.Audit' or 'Group.Allocate' permissions on /access/groups/<<group>>.
+
+=cut
+
+sub access_groups {
+
+    my $self = shift or return;
+
+    return $self->get( $base, 'groups' )
+
+}
+
+=head2 create_access_groups
+
+Creates a new access group
+
+  $ok = $obj->create_access_groups( %args );
+  $ok = $obj->create_access_groups( \%args );
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item groupid
+
+String. The id of the access group you wish to add, in pve-groupid format. This is required.
+
+=item comment
+
+String. This is a comment associated with the new group, this is optional.
+
+=back
+
+=cut
+
+sub create_access_groups {
+
+    my $self = shift or return;
+    my @p = @_;
+
+    die 'No arguments for create_access_groups()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for create_access_groups()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for create_access_groups()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->post( $base, 'groups', \%args )
+
+}
+
+=head2 get_access_groups
+
+Gets a single access group
+
+  $ok = $obj->get_access_groups('groupid')
+
+groupid is a string in pve-groupid format
+
+=cut
+
+sub get_access_groups {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No groupid for get_access_groups()';
+    die 'groupid must be a scalar for get_access_groups()' if ref $a;
+
+    return $self->get( $base, 'groups', $a )
+
+}
+
+=head2 update_access_groups
+
+Updates (sets) a access group's data
+
+  $ok = $obj->update_access_groups( 'groupid', %args );
+  $ok = $obj->update_access_groups( 'groupid', \%args );
+
+groupid is a string in pve-groupid format
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item comment
+
+String. This is a comment associated with the new domain, this is optional.
+
+=back
+
+=cut
+
+sub update_access_groups {
+
+    my $self   = shift or return;
+    my $realm = shift or die 'No realm provided for update_access_groups()';
+    die 'realm must be a scalar for update_access_groups()' if ref $realm;
+    my @p = @_;
+
+    die 'No arguments for update_access_groups()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for update_access_groups()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for update_access_groups()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->put( $base, 'groups', $realm, \%args )
+
+}
+
+=head2 delete_access_groups
+
+Deletes a single access group
+
+  $ok = $obj->delete_access_groups('groupid')
+
+groupid is a string in pve-groupid format
+
+=cut
+
+sub delete_access_groups {
+
+    my $self = shift or return;
+    my $a    = shift or die 'No argument given for delete_access_groups()';
+
+    return $self->delete( $base, 'groups', $a )
+
+}
+
+
+=head2 access_roles
+
+Gets a list of access roles (aka the Role index)
+
+  @pools = $obj->access_roles();
+
+Note: Accessible by all authententicated users.
+
+=cut
+
+sub access_roles {
+
+    my $self = shift or return;
+
+    return $self->get( $base, 'roles' )
+
+}
+
+=head2 create_access_roles
+
+Creates a new access role
+
+  $ok = $obj->create_access_roles( %args );
+  $ok = $obj->create_access_roles( \%args );
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item roleid
+
+String. The id of the access role you wish to add, in pve-roleid format. This is required.
+
+=item privs
+
+String. A string in pve-string-list format. Optional.
+
+=back
+
+=cut
+
+sub create_access_roles {
+
+    my $self = shift or return;
+    my @p = @_;
+
+    die 'No arguments for create_access_roles()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for create_access_roles()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for create_access_roles()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->post( $base, 'roles', \%args )
+
+}
+
+=head2 get_access_roles
+
+Gets a single access role
+
+  $ok = $obj->get_access_roles('roleid')
+
+roleid is a string in pve-roleid format
+
+=cut
+
+sub get_access_roles {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No roleid for get_access_roles()';
+    die 'roleid must be a scalar for get_access_roles()' if ref $a;
+
+    return $self->get( $base, 'roles', $a )
+
+}
+
+=head2 update_access_roles
+
+Updates (sets) a access role's data
+
+  $ok = $obj->update_access_roles( 'roleid', %args );
+  $ok = $obj->update_access_roles( 'roleid', \%args );
+
+roleid is a string in pve-roleid format
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item privs
+
+String. A string in pve-priv-list format, this is required.
+
+=item append
+
+Booelean. Append privileges to existing. Optional.
+
+=back
+
+=cut
+
+sub update_access_roles {
+
+    my $self   = shift or return;
+    my $realm = shift or die 'No realm provided for update_access_roles()';
+    die 'realm must be a scalar for update_access_roles()' if ref $realm;
+    my @p = @_;
+
+    die 'No arguments for update_access_roles()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for update_access_roles()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for update_access_roles()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->put( $base, 'roles', $realm, \%args )
+
+}
+
+=head2 delete_access_roles
+
+Deletes a single access role
+
+  $ok = $obj->delete_access_roles('roleid')
+
+roleid is a string in pve-roleid format
+
+=cut
+
+sub delete_access_roles {
+
+    my $self = shift or return;
+    my $a    = shift or die 'No argument given for delete_access_roles()';
+
+    return $self->delete( $base, 'roles', $a )
 
 }
 
@@ -193,6 +616,8 @@ The returned list is restricted to objects where you have rights to modify permi
 
   $pool = $obj->get_acl();
 
+Note: The returned list is restricted to objects where you have rights to modify permissions.
+
 =cut
 
 sub get_acl {
@@ -236,9 +661,9 @@ sub login {
         my $login_ticket_data = decode_json( $response->decoded_content );
         $self->{ticket} = $login_ticket_data->{data};
 
-# We use request time as the time to get the json ticket is undetermined,
-# id rather have a ticket a few seconds shorter than have a ticket that incorrectly
-# says its valid for a couple more
+        # We use request time as the time to get the json ticket is undetermined,
+        # id rather have a ticket a few seconds shorter than have a ticket that incorrectly
+        # says its valid for a couple more
         $self->{ticket_timestamp} = $request_time;
         print "DEBUG: login successful\n"
           if $self->{params}->{debug};
@@ -339,6 +764,8 @@ String. User ID. Required.
 
 =back
 
+Note: Each user is allowed to change his own password. A user can change the password of another user if he has 'Realm.AllocateUser' (on the realm of user <<userid>>) and 'User.Modify' permission on /access/groups/<<group>> on a group where user <<userid>> is member of.
+
 =cut
 
 sub update_password {
@@ -370,7 +797,7 @@ sub update_password {
 
 =head1 VERSION
 
-  VERSION 0.2
+  VERSION 0.3
 
 =head1 AUTHORS
 
