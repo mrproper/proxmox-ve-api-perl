@@ -192,7 +192,7 @@ String. LDAP base domain name. Optional.
 
 =item comment
 
-String. This is a comment associated with the new domain, this is optional.
+String. This is a comment associated with the domain, this is optional.
 
 =item default
 
@@ -362,7 +362,7 @@ I<%args> may items contain from the following list
 
 =item comment
 
-String. This is a comment associated with the new domain, this is optional.
+String. This is a comment associated with the group, this is optional.
 
 =back
 
@@ -700,7 +700,7 @@ Boolean. Optional.
 
 =item comment
 
-String. This is a comment associated with the new user, this is optional.
+String. This is a comment associated with the user, this is optional.
 
 =item email
 
