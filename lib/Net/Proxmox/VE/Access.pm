@@ -7,9 +7,11 @@ use warnings;
 use base 'Exporter';
 
 use LWP::UserAgent;
+use JSON qw(decode_json);
 
-our $VERSION = 0.1;
-our @EXPORT = qw( access access_domains );
+
+our $VERSION = 0.2;
+our @EXPORT = qw( access access_domains check_login_ticket clear_login_ticket get_acl login update_acl update_password );
 
 =encoding utf8
 
@@ -328,15 +330,13 @@ sub update_password {
 
 }
 
-
-
 =head1 SEE ALSO
 
   L<Net::Proxmox::VE>
 
 =head1 VERSION
 
-  VERSION 0.1
+  VERSION 0.2
 
 =head1 AUTHORS
 

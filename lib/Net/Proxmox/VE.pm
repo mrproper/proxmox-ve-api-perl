@@ -158,7 +158,15 @@ sub action {
         if ( ref $data eq 'HASH'
             && exists $data->{data} )
         {
-            return $data->{data} || 1;
+            if (ref $data->{data}) {
+
+                return wantarray ? @{$data->{data}}
+                                 : $data->{data};
+
+            }
+
+            return $data->{data}
+
         }
 
         # just return true
@@ -273,8 +281,8 @@ sub get_nodes {
     my $self = shift or return;
 
     return $self->{nodes}
-      if $self->{nodes}
-          || $self->reload_nodes;
+      if ( $self->{nodes}
+          or $self->reload_nodes );
 
     return;
 }
