@@ -88,7 +88,7 @@ ok(!$obj->debug(),'debug now turned off');
 
 =cut
 
-my $foo = $obj->get_nodes;
+my $foo = $obj->nodes;
 
 =head2 clear login ticket
 

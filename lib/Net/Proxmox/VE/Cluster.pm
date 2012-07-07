@@ -39,8 +39,4 @@ sub cluster {
 
 }
 
-sub new {
-
-}
-
 1;

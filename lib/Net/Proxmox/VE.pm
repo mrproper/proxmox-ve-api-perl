@@ -9,11 +9,13 @@ use HTTP::Headers;
 use HTTP::Request::Common qw(GET POST DELETE);
 use JSON qw(decode_json);
 
+# done
+use Net::Proxmox::VE::Pools;
+
+# wip
 use Net::Proxmox::VE::Access;
 use Net::Proxmox::VE::Cluster;
-
-#use Net::Proxmox::VE::Nodes;
-use Net::Proxmox::VE::Pools;
+use Net::Proxmox::VE::Nodes;
 use Net::Proxmox::VE::Storage;
 
 our $VERSION = 0.002;
@@ -181,6 +183,17 @@ sub action {
 
 }
 
+=head2 api_version
+
+Returns the API version of the proxmox server we are talking to
+
+=cut
+
+sub api_version {
+    my $self = shift or return;
+    return $self->action( path => '/version', method => 'GET' );
+}
+
 =head2 api_version_check
 
 Checks that the api we are talking to is at least version 2.0
@@ -189,16 +202,10 @@ Returns true if the api version is at least 2.0 (perl style true or false)
 
 =cut
 
-sub _get_api_version {
-    my $self = shift or return;
-    my $data = $self->action( path => '/version', method => 'GET' );
-    return $data;
-}
-
 sub api_version_check {
     my $self = shift or return;
 
-    my $data = $self->_get_api_version;
+    my $data = $self->api_version;
 
     if (   ref $data eq 'HASH'
         && $data->{version}
@@ -247,7 +254,7 @@ sub delete {
     my $self = shift or return;
     my @path = @_    or return;    # using || breaks this
 
-    if ( $self->get_nodes ) {
+    if ( $self->nodes ) {
         return $self->action( path => join( '/', @path ), method => 'DELETE' );
     }
     return;
@@ -264,26 +271,9 @@ sub get {
     my $self = shift or return;
     my @path = @_    or return;    # using || breaks this
 
-    if ( $self->get_nodes ) {
+    if ( $self->nodes ) {
         return $self->action( path => join( '/', @path ), method => 'GET' );
     }
-    return;
-}
-
-=head2 get_nodes
-
-Returns the clusters node list from the object,
-if thats not defined it calls reload_nodes and returns the nodes
-
-=cut
-
-sub get_nodes {
-    my $self = shift or return;
-
-    return $self->{nodes}
-      if ( $self->{nodes}
-        or $self->reload_nodes );
-
     return;
 }
 
@@ -381,11 +371,12 @@ You are returned what action() with the POST method returns
 =cut
 
 sub post {
+
     my $self      = shift or return;
     my $path      = shift or return;
     my $post_data = shift or return;
 
-    if ( $self->get_nodes ) {
+    if ( $self->nodes ) {
 
         return $self->action(
             path      => $path,
@@ -411,28 +402,6 @@ sub put {
     return $self->post(@_);
 }
 
-=head2 reload_nodes
-
-gets and sets the list of nodes in the cluster into $self->{node_cluster_list}
-returns false if there is no nodes listed or an arrayref is not returns from action
-
-=cut
-
-sub reload_nodes {
-    my $self = shift or return;
-
-    my $nodes = $self->action( path => '/nodes', method => 'GET' );
-    if ( ref $nodes eq 'ARRAY'
-        && @{$nodes} > 0 )
-    {
-        $self->{nodes} = $nodes;
-        return 1;
-    }
-
-    print "ERROR: empty list of nodes in this cluster.\n";
-
-    return;
-}
 
 =head2 url_prefix
 
