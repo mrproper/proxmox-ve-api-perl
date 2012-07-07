@@ -11,7 +11,17 @@ use JSON qw(decode_json);
 
 our $VERSION = 0.3;
 our @EXPORT =
-  qw( access access_domains check_login_ticket clear_login_ticket get_acl login update_acl update_password );
+  qw(
+  access
+  access_domains access_groups access_roles
+  create_access_domains create_access_groups create_access_roles create_access_users
+  delete_access_domains delete_access_groups delete_access_roles delete_access_users
+  get_access_domains get_access_groups get_access_roles get_access_users
+  update_access_domains update_access_groups update_access_roles update_access_users
+  login check_login_ticket clear_login_ticket
+  get_acl update_acl
+  update_password
+  );
 
 =encoding utf8
 
@@ -554,6 +564,213 @@ sub delete_access_roles {
     my $a    = shift or die 'No argument given for delete_access_roles()';
 
     return $self->delete( $base, 'roles', $a )
+
+}
+
+
+=head2 access_users
+
+Gets a list of users (aka the User index)
+
+  @pools = $obj->access_users();
+
+Note: You need 'Realm.AllocateUser' on '/access/realm/<<realm>>' on the realm of user <<userid>>, and 'User.Modify' permissions to '/access/groups/<<group>>' for any group specified (or 'User.Modify' on '/access/groups' if you pass no groups.
+
+=cut
+
+sub access_users {
+
+    my $self = shift or return;
+
+    return $self->get( $base, 'users' )
+
+}
+
+=head2 create_access_users
+
+Creates a new user
+
+  $ok = $obj->create_access_users( %args );
+  $ok = $obj->create_access_users( \%args );
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item userid
+
+String. The id of the user you wish to add, in pve-userid format. This is required.
+
+=item comment
+
+String. This is a comment associated with the new user, this is optional.
+
+=item email
+
+String. The users email address in email-opt format. Optional.
+
+=item enable
+
+Boolean. If the user is enabled where the default is to be enabled. Disable with a 0 value. Optional.
+
+=item expire
+
+Integer. Account expiration date in seconds since epoch. 0 means never expire. Optional.
+
+=item firstname
+
+String. Optional.
+
+=item groups
+
+String. A string in pve-groupid-list format. Optional.
+
+=item lastname
+
+String. Optional.
+
+=item password
+
+String. The users initial passowrd. Optional.
+
+=back
+
+=cut
+
+sub create_access_users {
+
+    my $self = shift or return;
+    my @p = @_;
+
+    die 'No arguments for create_access_users()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for create_access_users()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for create_access_users()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->post( $base, 'users', \%args )
+
+}
+
+=head2 get_access_users
+
+Gets a single user
+
+  $ok = $obj->get_access_users('userid')
+
+userid is a string in pve-userid format
+
+=cut
+
+sub get_access_users {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No userid for get_access_users()';
+    die 'userid must be a scalar for get_access_users()' if ref $a;
+
+    return $self->get( $base, 'users', $a )
+
+}
+
+=head2 update_access_users
+
+Updates (sets) a user's configuration
+
+  $ok = $obj->update_access_users( 'userid', %args );
+  $ok = $obj->update_access_users( 'userid', \%args );
+
+userid is a string in pve-userid format
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item append
+
+Boolean. Optional.
+
+=item comment
+
+String. This is a comment associated with the new user, this is optional.
+
+=item email
+
+String. The users email address in email-opt format. Optional.
+
+=item enable
+
+Boolean. If the user is enabled where the default is to be enabled. Disable with a 0 value. Optional.
+
+=item expire
+
+Integer. Account expiration date in seconds since epoch. 0 means never expire. Optional.
+
+=item firstname
+
+String. Optional.
+
+=item groups
+
+String. A string in pve-groupid-list format. Optional.
+
+=item lastname
+
+String. Optional.
+
+=back
+
+=cut
+
+sub update_access_users {
+
+    my $self   = shift or return;
+    my $realm = shift or die 'No realm provided for update_access_users()';
+    die 'realm must be a scalar for update_access_users()' if ref $realm;
+    my @p = @_;
+
+    die 'No arguments for update_access_users()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for update_access_users()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for update_access_users()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->put( $base, 'users', $realm, \%args )
+
+}
+
+=head2 delete_access_users
+
+Deletes a single user
+
+  $ok = $obj->delete_access_users('userid')
+
+userid is a string in pve-userid format
+
+=cut
+
+sub delete_access_users {
+
+    my $self = shift or return;
+    my $a    = shift or die 'No argument given for delete_access_users()';
+
+    return $self->delete( $base, 'users', $a )
 
 }
 
