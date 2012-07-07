@@ -37,8 +37,4 @@ sub storage {
 
 }
 
-sub new {
-
-}
-
 1;

@@ -6,6 +6,8 @@ use strict;
 use warnings;
 use base 'Exporter';
 
+=encoding utf8
+
 =head1 NAME
 
 Net::Proxmox::VE::Pools

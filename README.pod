@@ -1,3 +1,5 @@
+=encoding utf8
+
 =head1 VERSION
 
 version 1.0
@@ -50,7 +52,7 @@ Returns true if the api version is at least 2.0 (perl style true or false)
 
 Verifies if the objects login ticket is valid and not expired
 
-Returns true if valid 
+Returns true if valid
 Returns false and undefines the login ticket if invalid
 
 =head2 debug
@@ -133,7 +135,7 @@ your returned what action with the POST method returns
 An action helper method that takes two parameters:
 path
 hash ref to post data
-your returned what post returns 
+your returned what post returns
 
 =head2 reload_node_list
 
