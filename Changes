@@ -1,5 +1,9 @@
 Revision history for perl Net::Proxmox::VE
 
+0.003 2012-07-07
+- Finished up Storage.pm (dean)
+- Moved lots of stuff around (dean)
+
 0.002 2012-06-16
 
 - Finished up Pools.pm (dean)
