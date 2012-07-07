@@ -9,9 +9,9 @@ use base 'Exporter';
 use LWP::UserAgent;
 use JSON qw(decode_json);
 
-
 our $VERSION = 0.2;
-our @EXPORT = qw( access access_domains check_login_ticket clear_login_ticket get_acl login update_acl update_password );
+our @EXPORT =
+  qw( access access_domains check_login_ticket clear_login_ticket get_acl login update_acl update_password );
 
 =encoding utf8
 
@@ -80,24 +80,25 @@ sub access_domains {
     # if no arguments, return a list
     unless (@a) {
 
-        my $domains = $self->get($base,'domains');
+        my $domains = $self->get( $base, 'domains' );
         return wantarray ? @$domains : $domains;
 
     # if there is a single argument, return a single realm instance as an object
-    } elsif (@a == 1) {
+    }
+    elsif ( @a == 1 ) {
 
-        my $domains = $self->get($base,'domains',$a[0]);
+        my $domains = $self->get( $base, 'domains', $a[0] );
         return $domains;
 
-    # if there are multiple, then create new realm
-    } else {
+        # if there are multiple, then create new realm
+    }
+    else {
 
     }
 
     return 1
 
 }
-
 
 =head2 check_login_ticket
 
@@ -122,7 +123,7 @@ sub check_login_ticket {
         && $self->{ticket_timestamp}
         && $self->{ticket_timestamp} < ( time() + $self->{ticket_life} ) )
     {
-        return 1
+        return 1;
     }
     else {
         $self->clear_login_ticket;
@@ -145,7 +146,7 @@ sub clear_login_ticket {
     if ( $self->{ticket} or $self->{timestamp} ) {
         $self->{ticket}           = undef;
         $self->{ticket_timestamp} = undef;
-        return 1
+        return 1;
     }
 
     return
@@ -201,9 +202,9 @@ sub login {
         my $login_ticket_data = decode_json( $response->decoded_content );
         $self->{ticket} = $login_ticket_data->{data};
 
-        # We use request time as the time to get the json ticket is undetermined,
-        # id rather have a ticket a few seconds shorter than have a ticket that incorrectly
-        # says its valid for a couple more
+# We use request time as the time to get the json ticket is undetermined,
+# id rather have a ticket a few seconds shorter than have a ticket that incorrectly
+# says its valid for a couple more
         $self->{ticket_timestamp} = $request_time;
         print "DEBUG: login successful\n"
           if $self->{params}->{debug};
@@ -260,7 +261,7 @@ String. List of users. Optional.
 
 sub update_acl {
 
-    my $self   = shift or return;
+    my $self = shift or return;
     my @p = @_;
 
     die 'No arguments for update_acl()' unless @p;
@@ -280,7 +281,6 @@ sub update_acl {
     return $self->put( $base, 'acl', \%args );
 
 }
-
 
 =head2 update_password
 
@@ -309,7 +309,7 @@ String. User ID. Required.
 
 sub update_password {
 
-    my $self   = shift or return;
+    my $self = shift or return;
     my @p = @_;
 
     die 'No arguments for update_password()' unless @p;

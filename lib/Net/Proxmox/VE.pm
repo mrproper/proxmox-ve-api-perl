@@ -120,14 +120,13 @@ sub action {
             'CSRFPreventionToken' => $self->{ticket}->{CSRFPreventionToken} );
     }
 
-    # Not sure why but the php api for proxmox ve uses PUT instead of post for
-    # most things, the api doc only lists GET|POST|DELETE and the api returns 'PUT' as
-    # an unrecognised method
-    # so we'll just force POST from PUT
+# Not sure why but the php api for proxmox ve uses PUT instead of post for
+# most things, the api doc only lists GET|POST|DELETE and the api returns 'PUT' as
+# an unrecognised method
+# so we'll just force POST from PUT
     if ( $params{method} =~ m/^(PUT|POST)$/ ) {
         $request->method('POST');
-        my $content = join '&',
-          map { $_ . '=' . $params{post_data}->{$_} }
+        my $content = join '&', map { $_ . '=' . $params{post_data}->{$_} }
           sort keys %{ $params{post_data} };
         $request->content($content);
         $response = $ua->request($request);
@@ -158,10 +157,11 @@ sub action {
         if ( ref $data eq 'HASH'
             && exists $data->{data} )
         {
-            if (ref $data->{data}) {
+            if ( ref $data->{data} ) {
 
-                return wantarray ? @{$data->{data}}
-                                 : $data->{data};
+                return wantarray
+                  ? @{ $data->{data} }
+                  : $data->{data};
 
             }
 
@@ -250,7 +250,7 @@ sub delete {
     if ( $self->get_nodes ) {
         return $self->action( path => join( '/', @path ), method => 'DELETE' );
     }
-    return
+    return;
 }
 
 =head2 get
@@ -267,7 +267,7 @@ sub get {
     if ( $self->get_nodes ) {
         return $self->action( path => join( '/', @path ), method => 'GET' );
     }
-    return
+    return;
 }
 
 =head2 get_nodes
@@ -282,7 +282,7 @@ sub get_nodes {
 
     return $self->{nodes}
       if ( $self->{nodes}
-          or $self->reload_nodes );
+        or $self->reload_nodes );
 
     return;
 }
@@ -445,10 +445,9 @@ sub url_prefix {
     my $self = shift or return;
 
     # Prepare prefix for request
-    my $url_prefix = sprintf(
-      'https://%s:%s',
-      $self->{params}->{host},
-      $self->{params}->{port} );
+    my $url_prefix = sprintf( 'https://%s:%s',
+        $self->{params}->{host},
+        $self->{params}->{port} );
 
     return $url_prefix
 
