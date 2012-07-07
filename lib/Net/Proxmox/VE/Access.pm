@@ -49,54 +49,88 @@ sub access {
 
 =head2 access_domains
 
-Without arguments, returns 'Authentication domain index':
+Gets a list of pools (aka the Authentication domain index)
 
-(Corresponds to the following functions in the PMVW Api definitions)
-
-  HTTP: GET /api2/json/access/domains
-  CLI:  pvesh get /access/domains
-
-With a single scalar argument, returns a single Domain object:
-
-(Corresponds to the following functions in the PMVW Api definitions)
-
-  HTTP: GET /api2/json/access/domains/{realm}
-  CLI:  pvesh get /access/domains/{realm}
-
-With multiple arguments, '[Adds] an authentication server':
-
-(Corresponds to the following functions in the PMVW Api definitions)
-
-  HTTP: POST /api2/json/access/domains
-  CLI:  pvesh create /access/domains
+  @pools = $obj->pools();
 
 =cut
 
 sub access_domains {
 
     my $self = shift or return;
-    my @a = @_;
 
-    # if no arguments, return a list
-    unless (@a) {
+    return $self->get($base,'domains');
 
-        my $domains = $self->get( $base, 'domains' );
-        return wantarray ? @$domains : $domains;
+}
 
-    # if there is a single argument, return a single realm instance as an object
-    }
-    elsif ( @a == 1 ) {
+=head2 create_access_domains
 
-        my $domains = $self->get( $base, 'domains', $a[0] );
-        return $domains;
+Creates a new access domain
 
-        # if there are multiple, then create new realm
-    }
-    else {
+  $ok = $obj->create_access_domains( %args );
+  $ok = $obj->create_access_domains( \%args );
 
-    }
+I<%args> may items contain from the following list
 
-    return 1
+=over 4
+
+=item realm
+
+String. The name of the domain you wish to access, in pve-realm format. This is required,
+
+=item comment
+
+String. This is a comment associated with the new pool, this is optional
+
+=back
+
+=cut
+
+sub create_access_domains {
+
+}
+
+=head2 get_access_domains
+
+Gets a single access domain
+
+  $ok = $obj->get_access_domains('realm')
+
+realm is a string in pve-realm format
+
+=cut
+
+sub get_access_domains {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No realm for get_access_domains()';
+    die 'realm must be a scalar for get_access_domains()' if ref $a;
+
+    return $self->get( $base, $a );
+
+}
+
+sub update_access_domains {
+
+}
+
+=head2 delete_access_domains
+
+Deletes a single access domain
+
+  $ok = $obj->delete_access_domains('realm')
+
+realm is a string in pve-realm format
+
+=cut
+
+sub delete_access_domains {
+
+    my $self = shift or return;
+    my $a    = shift or die 'No argument given for delete_access_domains()';
+
+    return $self->delete( $base, $a );
 
 }
 
