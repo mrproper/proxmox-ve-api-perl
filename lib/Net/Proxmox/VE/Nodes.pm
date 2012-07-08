@@ -52,7 +52,6 @@ sub get_nodes {
 
 =head2 get_nodes_aplinfo
 
-
 Gets a single nodes list of appliances
 
   $ok = $obj->get_nodes_aplinfo('node')
@@ -150,7 +149,6 @@ I<%args> may items contain from the following list
 
 String. Search domain for host-name lookup. Required.
 
-
 =back
 
 Note: required permissions are ["perm","/nodes/{node}",["Sys.Audit"]]
@@ -164,7 +162,23 @@ sub update_nodes_dns {
     my $a = shift or die 'No node for update_nodes_dns()';
     die 'node must be a scalar for update_nodes_dns()' if ref $a;
 
-    return $self->put( $base, $a, 'dns' )
+    my @p = @_;
+
+    die 'No arguments for update_nodes_dns()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for update_nodes_dns()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for update_nodes_dns()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->put( $base, $a, 'dns', \%args )
 
 }
 
@@ -299,9 +313,457 @@ sub update_nodes_status {
     my $a = shift or die 'No node for update_nodes_status()';
     die 'node must be a scalar for update_nodes_status()' if ref $a;
 
-    return $self->post( $base, $a, 'status' )
+    my @p = @_;
+
+    die 'No arguments for update_nodes_status()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for update_nodes_status()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for update_nodes_status()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->post( $base, $a, 'status', \%args )
+
 
 }
+
+=head2 get_nodes_subscription
+
+Read nodes subscription info
+
+  $ok = $obj->get_nodes_subscription('node')
+
+node is a string in pve-node format
+
+Note: Root only.
+
+=cut
+
+sub get_nodes_subscription {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for get_nodes_subscription()';
+    die 'node must be a scalar for get_nodes_subscription()' if ref $a;
+
+    return $self->get( $base, $a, 'subscription' )
+
+}
+
+=head2 create_nodes_subscription
+
+Create/update nodes subscription info
+
+  $ok = $obj->create_nodes_subscription('node', \%args)
+
+node is a string in pve-node format
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item force
+
+Boolean. Always connect to the server, even if we have up to date info inside local cache. Optional.
+
+=back
+
+Note: Root only.
+
+=cut
+
+sub create_nodes_subcription {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for create_nodes_subcription()';
+    die 'node must be a scalar for create_nodes_subcription()' if ref $a;
+
+    my @p = @_;
+
+    die 'No arguments for create_nodes_subcription()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for create_nodes_subcription()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for create_nodes_subcription()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->post( $base, $a, 'subscription', \%args )
+
+}
+
+=head2 update_nodes_subscription_key
+
+Updates/sets subscription key
+
+  $ok = $obj->update_nodes_subscription_key('node', \%args)
+
+node is a string in pve-node format
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item key
+
+Boolean. Proxmox VE subscription key. Required.
+
+=back
+
+Note: Root only.
+
+=cut
+
+sub update_nodes_subscription_key {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for update_nodes_subscription_key()';
+    die 'node must be a scalar for update_nodes_subscription_key()' if ref $a;
+
+    my @p = @_;
+
+    die 'No arguments for update_nodes_subscription_key()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for update_nodes_subscription_key()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for update_nodes_subscription_key()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->put( $base, $a, 'subscription', \%args )
+
+}
+
+=head2 get_nodes_syslog
+
+Reads system log
+
+  $ok = $obj->get_nodes_syslog('node', \%args)
+
+node is a string in pve-node format
+
+Note: required permissions are ["perm","/nodes/{node}",["Sys.Syslog"]]
+
+=cut
+
+sub get_nodes_syslog {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for get_nodes_syslog()';
+    die 'node must be a scalar for get_nodes_syslog()' if ref $a;
+
+    my @p = @_;
+
+    die 'No arguments for get_nodes_syslog()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for get_nodes_syslog()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for get_nodes_syslog()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->put( $base, $a, 'syslog', \%args )
+
+}
+
+=head2 get_nodes_time
+
+Read server time and time zone settings
+
+  $ok = $obj->get_nodes_time('node')
+
+node is a string in pve-node format
+
+Note: required permissions are ["perm","/nodes/{node}",["Sys.Audit"]]
+
+=cut
+
+sub get_nodes_time {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for get_nodes_time()';
+    die 'node must be a scalar for get_nodes_time()' if ref $a;
+
+    return $self->get( $base, $a, 'time' )
+
+}
+
+=head2 update_nodes_time
+
+Updates time zone
+
+  $ok = $obj->update_nodes_time('node', \%args)
+
+node is a string in pve-node format
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item timezone
+
+String. Time zone to be used, see '/usr/share/zoneinfo/zone.tab'. Required.
+
+=back
+
+Note: required permissions are ["perm","/nodes/{node}",["Sys.Modify"]]
+
+=cut
+
+sub update_nodes_time {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for update_nodes_time()';
+    die 'node must be a scalar for update_nodes_time()' if ref $a;
+
+    my @p = @_;
+
+    die 'No arguments for update_nodes_time()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for update_nodes_time()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for update_nodes_time()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->put( $base, $a, 'time', \%args )
+
+}
+
+=head2 get_nodes_ubcfailcnt
+
+Get user_beancounters failcnt for all active containers.
+
+  $ok = $obj->get_nodes_ubcfailcnt('node')
+
+node is a string in pve-node format
+
+Note: required permissions are ["perm","/nodes/{node}",["Sys.Audit"]]
+
+=cut
+
+sub get_nodes_ubcfailcnt {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for get_nodes_ubcfailcnt()';
+    die 'node must be a scalar for get_nodes_ubcfailcnt()' if ref $a;
+
+    return $self->get( $base, $a, 'ubcfailcnt' )
+
+}
+
+=head2 get_nodes_version
+
+Get user_beancounters failcnt for all active containers.
+
+  $ok = $obj->get_nodes_version('node')
+
+node is a string in pve-node format
+
+Note: Accessible by all authententicated users.
+
+=cut
+
+sub get_nodes_version {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for get_nodes_version()';
+    die 'node must be a scalar for get_nodes_version()' if ref $a;
+
+    return $self->get( $base, $a, 'version' )
+
+}
+
+=head2 create_nodes_vncshell
+
+Creates a VNC Shell proxy.
+
+  $ok = $obj->create_nodes_vncshell('node')
+
+node is a string in pve-node format
+
+Note: Restricted to users on realm 'pam'. Required permissions are  ["perm","/nodes/{node}",["Sys.Console"]]
+
+=cut
+
+sub create_nodes_vncshell {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for create_nodes_vncshell()';
+    die 'node must be a scalar for create_nodes_vncshell()' if ref $a;
+
+    return $self->post( $base, $a, 'vncshell' )
+
+}
+
+=head2 create_nodes_vzdump
+
+Create backup.
+
+  $ok = $obj->create_nodes_vzdump('node', \%args)
+
+node is a string in pve-node format
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item all
+
+Boolean. Backup all known VMs on this host. Optional.
+
+=item bwlimit
+
+Integer. Limit I/O bandwidth (KBytes per second). Optional.
+
+=item compress
+
+Enum. Either 0, 1, gzip or lzo. Comress dump file. Optional
+
+=item dumpdir
+
+String. Store resulting files to specified directory. Optional.
+
+=item exclude
+
+String. Exclude specified VMs (assumes --all) in pve-vmid-list. Optional.
+
+=item exclude-path
+
+String. Exclude certain files/directories (regex) in string-alist. Optional.
+
+=item ionice
+
+Integer. Set CFQ ionice priority. Optional.
+
+=item lockwait
+
+Integer. Maximal time to wait for the global lock (minutes). Optional.
+
+=item mailto
+
+String. List of email addresses in string-list format. Optional.
+
+=item maxfiles
+
+Integer. Maximal number of backup files per vm. Optional.
+
+=item mode
+
+Enum. A value from snapshot, suspend or stop. Backup mode. Optional.
+
+=item quiet
+
+Boolean. Be quiet. Optional.
+
+=item remove
+
+Boolean. Remove old backup files if there are more than 'maxfiles' backup files. Optional.
+
+=item script
+
+String. Use specified hook script. Optional.
+
+=item size
+
+Integer. LVM snapshot size in MB. Optional.
+
+=item stdexcludes
+
+Boolean. Exclude temporary files and logs. Optional.
+
+=item stdout
+
+Boolean. Write tar to stdout rather than to a file. Optional.
+
+=item stopwait
+
+Integer. Maximal time to wait until a VM is stopped (minutes). Optional.
+
+=item storage
+
+String. Store resulting file to this storage, in pve-storage-id format. Optional.
+
+=item tmpdir
+
+String. Store temporary files to specified directory. Optional.
+
+=item vmid
+
+String. The ID of the VM you want to backup in pve-vm-list format. Optional.
+
+=back
+
+Note: The user needs 'VM.Backup' permissions on any VM, and 'Datastore.AllocateSpace' on the backup storage.
+
+=cut
+
+sub create_nodes_vzdump {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for create_nodes_vzdump()';
+    die 'node must be a scalar for create_nodes_vzdump()' if ref $a;
+
+    my @p = @_;
+
+    die 'No arguments for create_nodes_vzdump()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for create_nodes_vzdump()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for create_nodes_vzdump()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->post( $base, $a, 'dns', \%args )
+
+}
+
 
 
 

@@ -258,7 +258,7 @@ sub delete {
     if ( $self->nodes ) {
         return $self->action( path => join( '/', @path ), method => 'DELETE' );
     }
-    return;
+    return
 }
 
 =head2 get
@@ -270,10 +270,13 @@ value of action with the GET method
 
 sub get {
     my $self = shift or return;
+    my $post_data;
+    $post_data = pop
+        if ref $_[-1]
     my @path = @_    or return;    # using || breaks this
 
     if ( $self->nodes ) {
-        return $self->action( path => join( '/', @path ), method => 'GET' );
+        return $self->action( path => join( '/', @path ), method => 'GET', post_data => $post_data );
     }
     return;
 }
@@ -374,19 +377,21 @@ You are returned what action() with the POST method returns
 sub post {
 
     my $self      = shift or return;
-    my $path      = shift or return;
-    my $post_data = shift or return;
+    my $post_data;
+    $post_data = pop
+        if ref $_[-1]
+    my @path = @_    or return;    # using || breaks this
 
     if ( $self->nodes ) {
 
         return $self->action(
-            path      => $path,
+            path      => join( '/', @path ),
             method    => 'POST',
             post_data => $post_data
           )
 
     }
-    return;
+    return
 }
 
 =head2 put
@@ -399,8 +404,24 @@ your returned what post returns
 =cut
 
 sub put {
-    my $self = shift;
-    return $self->post(@_);
+
+    my $self      = shift or return;
+    my $post_data;
+    $post_data = pop
+        if ref $_[-1]
+
+    my @path = @_    or return;    # using || breaks this
+
+    if ( $self->nodes ) {
+
+        return $self->action(
+            path      => join( '/', @path ),
+            method    => 'PUT',
+            post_data => $post_data
+          )
+
+    }
+    return
 }
 
 

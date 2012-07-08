@@ -22,7 +22,7 @@ sub cluster {
         my $storage = $self->get($base);
         return $storage;
 
-  # if there is a single argument, return a single storage instance as an object
+    # if there is a single argument, return a single storage instance as an object
     }
     elsif ( @a == 1 ) {
 
@@ -38,5 +38,7 @@ sub cluster {
     return 1
 
 }
+
+
 
 1;
