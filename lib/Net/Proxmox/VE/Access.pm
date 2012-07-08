@@ -19,8 +19,8 @@ our @EXPORT =
   get_access_domains get_access_groups get_access_roles get_access_users
   update_access_domains update_access_groups update_access_roles update_access_users
   login check_login_ticket clear_login_ticket
-  get_acl update_acl
-  update_password
+  get_access_acl update_access_acl
+  update_access_password
   );
 
 =encoding utf8
@@ -827,17 +827,17 @@ sub clear_login_ticket {
 
 }
 
-=head2 get_acl
+=head2 get_access_acl
 
 The returned list is restricted to objects where you have rights to modify permissions
 
-  $pool = $obj->get_acl();
+  $pool = $obj->get_access_acl();
 
 Note: The returned list is restricted to objects where you have rights to modify permissions.
 
 =cut
 
-sub get_acl {
+sub get_access_acl {
 
     my $self = shift or return;
 
@@ -896,12 +896,12 @@ sub login {
     return;
 }
 
-=head2 update_acl
+=head2 update_access_acl
 
 Updates (sets) an acl's data
 
-  $ok = $obj->update_acl( %args );
-  $ok = $obj->update_acl( \%args );
+  $ok = $obj->update_access_acl( %args );
+  $ok = $obj->update_access_acl( \%args );
 
 I<%args> may items contain from the following list
 
@@ -935,7 +935,7 @@ String. List of users. Optional.
 
 =cut
 
-sub update_acl {
+sub update_access_acl {
 
     my $self = shift or return;
     my @p = @_;
@@ -958,7 +958,7 @@ sub update_acl {
 
 }
 
-=head2 update_password
+=head2 update_access_password
 
 Updates a users password
 
@@ -985,7 +985,7 @@ Note: Each user is allowed to change his own password. A user can change the pas
 
 =cut
 
-sub update_password {
+sub update_access_password {
 
     my $self = shift or return;
     my @p = @_;
