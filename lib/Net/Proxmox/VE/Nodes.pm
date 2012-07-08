@@ -1012,7 +1012,7 @@ Boolean. Automatically start interface on boot. Optional.
 
 Enum. Either of balance-rr, active-backup, balance-xor, broadcast, 802.3ad, balance-tlb or balance-alb. Specifies the bonding mode. Optional.
 
-=delete
+=item delete
 
 String. Settings you want to delete in pve-configid-list format. Optional.
 
