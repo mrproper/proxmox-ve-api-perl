@@ -57,6 +57,12 @@ Perltidy with default settings is prefered style.
 
 Oh, our tests are all against a running server. Care to help make them better?
 
+=head1 DESIGN NOTE
+
+This API would be far nicer if it returned nice objects representing different aspects of the system.
+Such an arrangement would be far better than how this module is currently layed out. It might also be
+less repetitive code.
+
 =head1 DESCRIPTION
 
 This Class provides the framework for talking to Proxmox VE 2.0 API instances.
@@ -272,7 +278,7 @@ sub get {
     my $self = shift or return;
     my $post_data;
     $post_data = pop
-        if ref $_[-1]
+        if ref $_[-1];
     my @path = @_    or return;    # using || breaks this
 
     if ( $self->nodes ) {
@@ -379,7 +385,7 @@ sub post {
     my $self      = shift or return;
     my $post_data;
     $post_data = pop
-        if ref $_[-1]
+        if ref $_[-1];
     my @path = @_    or return;    # using || breaks this
 
     if ( $self->nodes ) {
@@ -408,8 +414,7 @@ sub put {
     my $self      = shift or return;
     my $post_data;
     $post_data = pop
-        if ref $_[-1]
-
+        if ref $_[-1];
     my @path = @_    or return;    # using || breaks this
 
     if ( $self->nodes ) {

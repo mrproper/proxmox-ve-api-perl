@@ -954,7 +954,7 @@ sub update_access_acl {
         %args = @p;
     }
 
-    return $self->put( $base, 'acl', \%args );
+    return $self->put( $base, 'acl', \%args )
 
 }
 
@@ -1004,7 +1004,7 @@ sub update_access_password {
         %args = @p;
     }
 
-    return $self->put( $base, 'password', \%args );
+    return $self->put( $base, 'password', \%args )
 
 }
 

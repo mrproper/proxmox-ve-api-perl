@@ -6,7 +6,7 @@ use strict;
 use warnings;
 use base 'Exporter';
 
-our $VERSION = 0.1;
+our $VERSION = 0.3;
 our @EXPORT  = qw( nodes );
 
 my $base = '/nodes';
@@ -23,7 +23,7 @@ sub nodes {
 
     my $self = shift or return;
 
-    return $self->get($base);
+    return $self->get($base)
 
 }
 
@@ -106,7 +106,23 @@ sub create_nodes_aplinfo {
     my $a = shift or die 'No node for create_nodes_aplinfo()';
     die 'node must be a scalar for create_nodes_aplinfo()' if ref $a;
 
-    return $self->post( $base, $a, 'aplinfo' )
+    my @p = @_;
+
+    die 'No arguments for create_nodes_aplinfo()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for create_nodes_aplinfo()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for create_nodes_aplinfo()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->post( $base, $a, 'aplinfo', \%args )
 
 }
 
@@ -219,7 +235,23 @@ sub get_nodes_rrd {
     my $a = shift or die 'No node for get_nodes_rrd()';
     die 'node must be a scalar for get_nodes_rrd()' if ref $a;
 
-    return $self->get( $base, $a, 'rrd' )
+    my @p = @_;
+
+    die 'No arguments for get_nodes_rrd()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for get_nodes_rrd()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for get_nodes_rrd()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->get( $base, $a, 'rrd', \%args )
 
 }
 
@@ -256,7 +288,23 @@ sub get_nodes_rrddata {
     my $a = shift or die 'No node for get_nodes_rrddata()';
     die 'node must be a scalar for get_nodes_rrddata()' if ref $a;
 
-    return $self->get( $base, $a, 'rrddata' )
+    my @p = @_;
+
+    die 'No arguments for get_nodes_rrddata()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for get_nodes_rrddata()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for get_nodes_rrddata()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->get( $base, $a, 'rrddata', \%args )
 
 }
 
@@ -490,7 +538,7 @@ sub get_nodes_syslog {
         %args = @p;
     }
 
-    return $self->put( $base, $a, 'syslog', \%args )
+    return $self->get( $base, $a, 'syslog', \%args )
 
 }
 
@@ -620,7 +668,7 @@ Creates a VNC Shell proxy.
 
 node is a string in pve-node format
 
-Note: Restricted to users on realm 'pam'. Required permissions are  ["perm","/nodes/{node}",["Sys.Console"]]
+Note: Restricted to users on realm 'pam'. Required permissions are ["perm","/nodes/{node}",["Sys.Console"]]
 
 =cut
 
@@ -764,7 +812,303 @@ sub create_nodes_vzdump {
 
 }
 
+=head2 nodes_network
+
+List available networks on the node
+
+  $ok = $obj->nodes_network('node', \%args)
+
+node is a string in pve-node format
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item type
+
+Enum. One of bond, bridge, alias or eth. Only list specific interface types. Optional.
+
+=back
+
+Note: Accessible by all authententicated users.
+
+=cut
+
+sub nodes_network {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for nodes_network()';
+    die 'node must be a scalar for nodes_network()' if ref $a;
+
+    my @p = @_;
+
+    die 'No arguments for nodes_network()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for nodes_network()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for nodes_network()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->get( $base, $a, 'network', \%args )
+
+}
+
+=head2 create_nodes_network
+
+Create network device configuration
+
+  $ok = $obj->create_nodes_network('node', \%args)
+
+node is a string in pve-node format
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item iface
+
+String. The network interface name in pve-iface format. Required.
+
+=item address
+
+String. The ipv4 network address. Optional.
+
+=item autostart
+
+Boolean. Automatically start interface on boot. Optional.
+
+=item bond_mode
+
+Enum. Either of balance-rr, active-backup, balance-xor, broadcast, 802.3ad, balance-tlb or balance-alb. Specifies the bonding mode. Optional.
+
+=item bridge_ports
+
+String. Specify the interfaces you want to add to your bridge in pve-iface-list format. Optional.
+
+=item gateway
+
+String. Default ipv4 gateway address. Optional.
+
+=item netmask
+
+String. Network mask for ipv4. Optional.
+
+=item slaves
+
+String. Specify the interfaces used by the bonding device in pve-iface-list format. Optional.
+
+=back
+
+Note: required permissions are ["perm","/nodes/{node}",["Sys.Modify"]]
+
+=cut
+
+sub create_nodes_network {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for create_nodes_network()';
+    die 'node must be a scalar for create_nodes_network()' if ref $a;
+
+    my @p = @_;
+
+    die 'No arguments for create_nodes_network()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for create_nodes_network()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for create_nodes_network()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->post( $base, $a, 'network', \%args )
+
+}
+
+=head2 revert_nodes_network
+
+Revert network configuration changes.
+
+  $ok = $obj->revert_nodes_network('node')
+
+node is a string in pve-node format
+
+Note: required permissions are ["perm","/nodes/{node}",["Sys.Modify"]]
+
+=cut
+
+sub revert_nodes_network {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for revert_nodes_network()';
+    die 'node must be a scalar for revert_nodes_network()' if ref $a;
+
+    return $self->delete( $base, $a )
+
+}
 
 
+=head2 get_nodes_network_iface
+
+Read network device configuration
+
+  $ok = $obj->get_nodes_network_iface('node', 'iface')
+
+node is a string in pve-node format, iface is a string in pve-iface format
+
+Note: required permissions are ["perm","/nodes/{node}",["Sys.Audit"]]
+
+=cut
+
+sub get_nodes_network_iface {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for get_nodes_network_iface()';
+    my $b = shift or die 'No iface for get_nodes_network_iface()';
+
+    die 'node must be a scalar for get_nodes_network_iface()' if ref $a;
+    die 'iface must be a scalar for get_nodes_network_iface()' if ref $b;
+
+    return $self->get( $base, $a, 'network', $b )
+
+}
+
+=head2 update_nodes_network_iface
+
+Create network device configuration
+
+  $ok = $obj->update_nodes_network_iface('node', 'iface', \%args)
+
+node is a string in pve-node format, iface is a string in pve-iface format
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item address
+
+String. The ipv4 network address. Optional.
+
+=item autostart
+
+Boolean. Automatically start interface on boot. Optional.
+
+=item bond_mode
+
+Enum. Either of balance-rr, active-backup, balance-xor, broadcast, 802.3ad, balance-tlb or balance-alb. Specifies the bonding mode. Optional.
+
+=delete
+
+String. Settings you want to delete in pve-configid-list format. Optional.
+
+=item bridge_ports
+
+String. Specify the interfaces you want to add to your bridge in pve-iface-list format. Optional.
+
+=item gateway
+
+String. Default ipv4 gateway address. Optional.
+
+=item netmask
+
+String. Network mask for ipv4. Optional.
+
+=item slaves
+
+String. Specify the interfaces used by the bonding device in pve-iface-list format. Optional.
+
+=back
+
+Note: required permissions are ["perm","/nodes/{node}",["Sys.Modify"]]
+
+=cut
+
+sub update_nodes_network_iface {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for update_nodes_network_iface()';
+    my $b = shift or die 'No iface for update_nodes_network_iface()';
+
+    die 'node must be a scalar for update_nodes_network_iface()' if ref $a;
+    die 'iface must be a scalar for update_nodes_network_iface()' if ref $b;
+
+    my @p = @_;
+
+    die 'No arguments for update_nodes_network_iface()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for update_nodes_network_iface()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for update_nodes_network_iface()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->post( $base, $a, 'network', $b, \%args )
+
+}
+
+=head2 delete_nodes_network_iface
+
+Delete network device configuration
+
+  $ok = $obj->delete_nodes_network_iface('node', 'iface')
+
+node is a string in pve-node format, iface is a string in pve-iface format
+
+Note: required permissions are ["perm","/nodes/{node}",["Sys.Modify"]]
+
+=cut
+
+sub delete_nodes_network_iface {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for delete_nodes_network_iface()';
+    my $b = shift or die 'No iface for delete_nodes_network_iface()';
+
+    die 'node must be a scalar for delete_nodes_network_iface()' if ref $a;
+    die 'iface must be a scalar for delete_nodes_network_iface()' if ref $b;
+
+    return $self->get( $base, $a, 'network', $b )
+
+}
+
+
+
+
+=head1 SEE ALSO
+
+  L<Net::Proxmox::VE>
+
+=head1 VERSION
+
+  VERSION 0.3
+
+=head1 AUTHORS
+
+  Dean Hamstead L<<dean@fragfest.com.au>>
+
+=cut
 
 1;
