@@ -13,13 +13,13 @@ use JSON qw(decode_json);
 use Net::Proxmox::VE::Pools;
 use Net::Proxmox::VE::Storage;
 use Net::Proxmox::VE::Access;
+use Net::Proxmox::VE::Cluster;
 
 # wip
-use Net::Proxmox::VE::Cluster;
 use Net::Proxmox::VE::Nodes;
 
 
-our $VERSION = 0.005;
+our $VERSION = 0.006;
 
 =encoding utf8
 
