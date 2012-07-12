@@ -1094,6 +1094,471 @@ sub delete_nodes_network_iface {
 
 }
 
+=head2 nodes_openvz
+
+OpenVZ container index (per node).
+
+  $ok = $obj->nodes_openvz('node')
+
+node is a string in pve-node format
+
+Note: Only lists VMs where you have VM.Audit permissons on /vms/<vmid>.
+
+=cut
+
+sub nodes_openvz {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for nodes_openvz()';
+    die 'node must be a scalar for nodes_openvz()' if ref $a;
+
+    return $self->get( $base, $a, 'openvz')
+
+}
+
+=head2 create_nodes_openvz
+
+Create or restore a container.
+
+  $ok = $obj->create_nodes_openvz('node', \%args)
+
+node is a string in pve-node format
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item ostemplate
+
+String. The OS template or backup file. Required.
+
+=item vmid
+
+Integer. The unique ID of the vm in pve-vmid format. Required.
+
+=item cpus
+
+Integer. The number of CPUs for this container. Optional.
+
+=item cpuunits
+
+Integer. CPU weight for a VM. Argument is used in the kernel fair scheduler. The larger the number is, the more CPU time this VM gets. Number is relative to weights of all the other running VMs.\n\nNOTE: You can disable fair-scheduler configuration by setting this to 0. Optional.
+
+=item description
+
+String. Container description. Only used in the web interface. Optional.
+
+=item disk
+
+Number. Amount of disk space for the VM in GB. A zero indicates no limit. Optional.
+
+=item force
+
+Boolean. Allow to overwrite existing container. Optional.
+
+=item hostname
+
+String. Set a host name for the container. Optional.
+
+=item ip_address
+
+String. Specifies the address the container will be assigned. Optional.
+
+=item memory
+
+Integer. Amount of RAM for the VM in MB. Optional.
+
+=item nameserver
+
+String. Sets DNS server IP address for a container. Create will automatically use the setting from the host if you neither set searchdomain or nameserver. Optional.
+
+=item netif
+
+String. Specifies network interfaces for the container in pve-openvz-netif format. Optional.
+
+=item onboot
+
+Boolean. Specifies weather a VM will be started during the system bootup. Optional.
+
+=item password
+
+String. Sets root password insider the container. Optional.
+
+=item pool
+
+String. Add the VM to a specified pool in pve-poolid format. Optional.
+
+=item quotatime
+
+Integer. Set quota grace period (seconds). Optional.
+
+=item quotaugidlimit
+
+Integer. Set maximum number of user/group IDs in a container for which disk quota inside the container will be accounted. If this value is set to 0, user and group quotas inside the container will not. Optional.
+
+=item restore
+
+Boolean. Mark this as a restore task. Optional.
+
+=item searchdomain
+
+String. Sets DNS search domains for a container. Create will automatically use the setting from the host if you neither set searchdomain or nameserver. Optional.
+
+=item storage
+
+String. Target storage in pve-storage-id. Optional.
+
+=item swap
+
+Integer. Amount of SWAP for the VM in MB. Optional
+
+=back
+
+Note: You need 'VM.Allocate' permissions on /vms/{vmid} or on the VM pool /pool/{pool}, and 'Datastore.AllocateSpace' on the storage.
+
+required permissions are ["or",["perm","/vms/{vmid}",["VM.Allocate"]],["perm","/pool/{pool}",["VM.Allocate"],"require_param","pool"]]
+
+=cut
+
+sub create_nodes_openvz {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for create_nodes_openvz()';
+    die 'node must be a scalar for create_nodes_openvz()' if ref $a;
+
+    my @p = @_;
+
+    die 'No arguments for create_nodes_openvz()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for create_nodes_openvz()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for create_nodes_openvz()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->get( $base, $a, 'openvz', \%args )
+
+}
+
+=head2 get_nodes_openvz
+
+Gets an openvz nodes details
+
+  $ok = $obj->get_nodes_openvz('node','vmid')
+
+node is a string in pve-node format
+
+mvid is an integer in pve-vmid format
+
+Note: Accessible by all authententicated users.
+
+=cut
+
+sub get_nodes_openvz {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for get_nodes_openvz()';
+    die 'node must be a scalar for get_nodes_openvz()' if ref $a;
+
+    my $b = shift or die 'No node for get_nodes_openvz()';
+    die 'node must be a scalar for get_nodes_openvz()' if ref $b;
+
+    return $self->get( $base, $a, 'openvz', $b )
+
+}
+
+=head2 delete_nodes_openvz
+
+Destroy the container (also delete all uses files).
+
+  $ok = $obj->delete_nodes_openvz('node','vmid')
+
+node is a string in pve-node format
+
+mvid is an integer in pve-vmid format
+
+Note: required permissions are ["perm","/vms/{vmid}",["VM.Allocate"]]
+
+=cut
+
+sub delete_nodes_openvz {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for delete_nodes_openvz()';
+    die 'node must be a scalar for delete_nodes_openvz()' if ref $a;
+
+    my $b = shift or die 'No node for delete_nodes_openvz()';
+    die 'node must be a scalar for delete_nodes_openvz()' if ref $b;
+
+    return $self->delete( $base, $a, 'openvz', $b )
+
+}
+
+=head2 get_nodes_openvz_status
+
+Directory index
+
+  $ok = $obj->get_nodes_openvz_status('node','vmid')
+
+node is a string in pve-node format
+
+mvid is an integer in pve-vmid format
+
+Note: Accessible by all authententicated users.
+
+=cut
+
+sub get_nodes_openvz_status {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for get_nodes_openvz_status()';
+    die 'node must be a scalar for get_nodes_openvz_status()' if ref $a;
+
+    my $b = shift or die 'No node for get_nodes_openvz_status()';
+    die 'node must be a scalar for get_nodes_openvz_status()' if ref $b;
+
+    return $self->get( $base, $a, 'openvz', $b, 'status' )
+
+}
+
+=head2 get_nodes_openvz_status_current
+
+Get virtual machine status.
+
+  $ok = $obj->get_nodes_openvz_status_current('node','vmid')
+
+node is a string in pve-node format
+
+mvid is an integer in pve-vmid format
+
+Note: required permissions are ["perm","/vms/{vmid}",["VM.Audit"]]
+
+=cut
+
+sub get_nodes_openvz_status_current {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for get_nodes_openvz_status_current()';
+    die 'node must be a scalar for get_nodes_openvz_status_current()' if ref $a;
+
+    my $b = shift or die 'No node for get_nodes_openvz_status_current()';
+    die 'node must be a scalar for get_nodes_openvz_status_current()' if ref $b;
+
+    return $self->get( $base, $a, 'openvz', $b, 'status', 'current' )
+
+}
+
+=head2 create_nodes_openvz_status_mount
+
+Mounts container private area.
+
+  $ok = $obj->create_nodes_openvz_status_mount('node','vmid')
+
+node is a string in pve-node format
+
+mvid is an integer in pve-vmid format
+
+Note: required permissions are ["perm","/vms/{vmid}",["VM.PowerMgmt"]]
+
+=cut
+
+sub create_nodes_openvz_status_mount {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for create_nodes_openvz_status_mount()';
+    die 'node must be a scalar for create_nodes_openvz_status_mount()' if ref $a;
+
+    my $b = shift or die 'No node for create_nodes_openvz_status_mount()';
+    die 'node must be a scalar for create_nodes_openvz_status_mount()' if ref $b;
+
+    return $self->post( $base, $a, 'openvz', $b, 'status', 'mount' )
+
+}
+
+=head2 create_nodes_openvz_status_shutdown
+
+Shutdown the container.
+
+  $ok = $obj->create_nodes_openvz_status_shutdown('node','vmid', \%args)
+
+node is a string in pve-node format
+
+vmid is an integer in pve-vmid format
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item forceStop
+
+Boolean. Make sure the container stops. Note the capital S. Optional.
+
+=item timeout
+
+Integer. Wait maximal timeout seconds
+
+=back
+
+Note: required permissions are ["perm","/vms/{vmid}",["VM.PowerMgmt"]]
+
+=cut
+
+sub create_nodes_openvz_status_shutdown {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for create_nodes_openvz_status_shutdown()';
+    die 'node must be a scalar for create_nodes_openvz_status_shutdown()' if ref $a;
+
+    my $b = shift or die 'No node for create_nodes_openvz_status_shutdown()';
+    die 'node must be a scalar for create_nodes_openvz_status_shutdown()' if ref $b;
+
+    my @p = @_;
+
+    die 'No arguments for create_nodes_openvz_status_shutdown()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        die 'Single argument not a hash for create_nodes_openvz_status_shutdown()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        die 'Odd number of arguments for create_nodes_openvz_status_shutdown()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->post( $base, $a, 'openvz', $b, 'status', 'shutdown', \%args )
+
+}
+
+=head2 create_nodes_openvz_status_start
+
+Start the container.
+
+  $ok = $obj->create_nodes_openvz_status_start('node','vmid')
+
+node is a string in pve-node format
+
+vmid is an integer in pve-vmid format
+
+Note: required permissions are ["perm","/vms/{vmid}",["VM.PowerMgmt"]]
+
+=cut
+
+sub create_nodes_openvz_status_start {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for create_nodes_openvz_status_start()';
+    die 'node must be a scalar for create_nodes_openvz_status_start()' if ref $a;
+
+    my $b = shift or die 'No node for create_nodes_openvz_status_start()';
+    die 'node must be a scalar for create_nodes_openvz_status_start()' if ref $b;
+
+    return $self->post( $base, $a, 'openvz', $b, 'status', 'start' )
+
+}
+
+=head2 create_nodes_openvz_status_stop
+
+Stop the container.
+
+  $ok = $obj->create_nodes_openvz_status_stop('node','vmid')
+
+node is a string in pve-node format
+
+vmid is an integer in pve-vmid format
+
+Note: required permissions are ["perm","/vms/{vmid}",["VM.PowerMgmt"]]
+
+=cut
+
+sub create_nodes_openvz_status_stop {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for create_nodes_openvz_status_stop()';
+    die 'node must be a scalar for create_nodes_openvz_status_stop()' if ref $a;
+
+    my $b = shift or die 'No node for create_nodes_openvz_status_stop()';
+    die 'node must be a scalar for create_nodes_openvz_status_stop()' if ref $b;
+
+    return $self->post( $base, $a, 'openvz', $b, 'status', 'start' )
+
+}
+
+=head2 get_nodes_openvz_status_ubc
+
+Get container user_beancounters.
+
+  $ok = $obj->get_nodes_openvz_status_ubc('node','vmid')
+
+node is a string in pve-node format
+
+vmid is an integer in pve-vmid format
+
+Note: required permissions are ["perm","/vms/{vmid}",["VM.Audit"]]
+
+=cut
+
+sub get_nodes_openvz_status_ubc {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for get_nodes_openvz_status_ubc()';
+    die 'node must be a scalar for get_nodes_openvz_status_ubc()' if ref $a;
+
+    my $b = shift or die 'No node for get_nodes_openvz_status_ubc()';
+    die 'node must be a scalar for get_nodes_openvz_status_ubc()' if ref $b;
+
+    return $self->post( $base, $a, 'openvz', $b, 'status', 'ubc' )
+
+}
+
+=head2 get_nodes_openvz_status_umount
+
+Unmounts container private area.
+
+  $ok = $obj->get_nodes_openvz_status_umount('node','vmid')
+
+node is a string in pve-node format
+
+vmid is an integer in pve-vmid format
+
+Note: required permissions are ["perm","/vms/{vmid}",["VM.PowerMgmt"]]
+
+=cut
+
+sub get_nodes_openvz_status_umount {
+
+    my $self = shift or return;
+
+    my $a = shift or die 'No node for get_nodes_openvz_status_umount()';
+    die 'node must be a scalar for get_nodes_openvz_status_umount()' if ref $a;
+
+    my $b = shift or die 'No node for get_nodes_openvz_status_umount()';
+    die 'node must be a scalar for get_nodes_openvz_status_umount()' if ref $b;
+
+    return $self->post( $base, $a, 'openvz', $b, 'status', 'umount' )
+
+}
+
+
 
 
 
