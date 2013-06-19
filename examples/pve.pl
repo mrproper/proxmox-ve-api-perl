@@ -12,7 +12,7 @@ my $host     = 'host';
 my $username = 'root';
 my $password = 'password';
 my $debug    = undef;
-my $realm    = 'pve' # 'pve' or 'pam'
+my $realm    = 'pve'; # 'pve' or 'pam'
 
 GetOptions (
     'host=s'     => \$host,
