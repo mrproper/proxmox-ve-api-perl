@@ -281,9 +281,9 @@ sub get {
         if ref $_[-1];
     my @path = @_    or return;    # using || breaks this
 
-    if ( $self->nodes ) {
+    #if ( $self->nodes ) {
         return $self->action( path => join( '/', @path ), method => 'GET', post_data => $post_data );
-    }
+    #}
     return;
 }
 
