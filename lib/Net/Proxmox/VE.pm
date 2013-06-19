@@ -360,6 +360,7 @@ sub new {
     $params{username} ||= 'root';
     $params{realm}    ||= 'pam';
     $params{debug}    ||= undef;
+    $params{timeout}  ||= 10;
 
     my $self->{params} = \%params;
     $self->{'ticket'}           = undef;
