@@ -890,6 +890,8 @@ sub login {
 
         print "DEBUG: login not successful\n"
           if $self->{params}->{debug};
+        print "DEBUG: " . $response->status_line . "\n"
+          if $self->{params}->{debug};
 
     }
 
