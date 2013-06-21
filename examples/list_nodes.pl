@@ -40,22 +40,18 @@ die "login failed\n"          unless $pve->login;
 die "invalid login ticket\n"  unless $pve->check_login_ticket;
 die "unsupport api version\n" unless $pve->api_version_check;
 
-# list nodes in cluster
 my $nodes = $pve->get('/nodes');
 
-print "Found " .  @$nodes . " nodes:\n";
-
-foreach my $item( @$nodes ) { 
-    # fields are in $item->{Year}, $item->{Quarter}, etc.
-    print "id: " . $item->{id} . "\n"; 
-    print "cpu: " . $item->{cpu} . "\n";
-    print "disk: " . $item->{disk} . "\n";
-    print "level: " . $item->{level} . "\n";
-    print "maxcpu: " . $item->{maxcpu} . "\n";
+foreach my $item( @$nodes ) {
+    print "id: " .      $item->{id} . "\n"; 
+    print "cpu: " .     $item->{cpu} . "\n";
+    print "disk: " .    $item->{disk} . "\n";
+    print "level: " .   $item->{level} . "\n";
+    print "maxcpu: " .  $item->{maxcpu} . "\n";
     print "maxdisk: " . $item->{maxdisk} . "\n";
-    print "maxmem: " . $item->{maxmem} . "\n";
-    print "mem: " . $item->{mem} . "\n";
-    print "node: " . $item->{node} . "\n";
-    print "type: " . $item->{type} . "\n";
-    print "uptime: " . $item->{uptime} . "\n";
+    print "maxmem: " .  $item->{maxmem} . "\n";
+    print "mem: " .     $item->{mem} . "\n";
+    print "node: " .    $item->{node} . "\n";
+    print "type: " .    $item->{type} . "\n";
+    print "uptime: " .  $item->{uptime} . "\n";
 }
