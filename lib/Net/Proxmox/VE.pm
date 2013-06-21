@@ -281,9 +281,11 @@ sub get {
         if ref $_[-1];
     my @path = @_    or return;    # using || breaks this
 
-    if ( $self->nodes ) {
+    # Calling nodes method here would call get method itself and so on
+    # Commented out to avoid an infinite loop
+    #if ( $self->nodes ) {
         return $self->action( path => join( '/', @path ), method => 'GET', post_data => $post_data );
-    }
+    #}
     return;
 }
 
@@ -360,6 +362,7 @@ sub new {
     $params{username} ||= 'root';
     $params{realm}    ||= 'pam';
     $params{debug}    ||= undef;
+    $params{timeout}  ||= 10;
 
     my $self->{params} = \%params;
     $self->{'ticket'}           = undef;
