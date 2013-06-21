@@ -281,6 +281,8 @@ sub get {
         if ref $_[-1];
     my @path = @_    or return;    # using || breaks this
 
+    # Calling nodes method here would call get method itself and so on
+    # Commented out to avoid an infinite loop
     #if ( $self->nodes ) {
         return $self->action( path => join( '/', @path ), method => 'GET', post_data => $post_data );
     #}
