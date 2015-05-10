@@ -316,6 +316,28 @@ TCP port number used to by the Proxmox host instance. Defaults to 8006, optional
 
 Authentication realm to request against. Defaults to 'pam' (local auth), optional.
 
+=item I<ssl_opts>
+
+If you're using a self-signed certificate, SSL verification is going to fail, and we need to tell C<IO::Socket::SSL> not to attempt certificate verification.
+
+This option is passed on as C<ssl_opts> options to C<LWP::UserAgent-E<gt>new()>, ultimately for C<IO::Socket::SSL>.
+
+Using it like this, causes C<LWP::UserAgent> and C<IO::Socket::SSL> not to attempt SSL verification:
+
+    use IO::Socket::SSL qw(SSL_VERIFY_NONE);
+    ..
+    %args = (
+        ...
+        ssl_opts => {
+            SSL_verify_mode => SSL_VERIFY_NONE,
+            verify_hostname => 0
+        },
+        ...
+    );
+    my $proxmox = Net::Proxmox::VE->new(%args);
+
+Your connection will work now, but B<beware: you are now susceptible to a man-in-the-middle attack>.
+
 =item I<debug>
 
 Enabling debugging of this API (not related to proxmox debugging in any way). Defaults to false, optional.

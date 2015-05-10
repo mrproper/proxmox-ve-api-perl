@@ -859,7 +859,12 @@ sub login {
     # Prepare login request
     my $url = $self->url_prefix . '/api2/json/access/ticket';
 
-    my $ua = LWP::UserAgent->new( ssl_opts => { verify_hostname => undef } );
+    my %lwpUserAgentOptions;
+    if ($self->{params}->{ssl_opts}) {
+        $lwpUserAgentOptions{ssl_opts} = $self->{params}->{ssl_opts};
+    }
+
+    my $ua = LWP::UserAgent->new( %lwpUserAgentOptions );
 
     $ua->timeout($self->{params}->{timeout});
 
