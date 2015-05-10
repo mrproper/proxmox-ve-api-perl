@@ -34,7 +34,7 @@ Net::Proxmox::VE - Pure perl API for Proxmox virtualisation
     %args = (
         host     => 'proxmox.local.domain',
         password => 'barpassword',
-        user     => 'root', # optional
+        username => 'root', # optional
         port     => 8006,   # optional
         realm    => 'pam',  # optional
     );
