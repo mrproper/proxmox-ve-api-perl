@@ -157,12 +157,6 @@ sub action {
         my $content = $response->decoded_content;
         my $data    = decode_json( $response->decoded_content );
 
-        # DELETE operations return no data
-        # otherwise if we have a data key but its empty, treat it as a failure
-        if ( $params{method} eq 'DELETE' ) {
-            return 1;
-        }
-
         if ( ref $data eq 'HASH'
             && exists $data->{data} )
         {
