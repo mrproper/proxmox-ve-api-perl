@@ -41,7 +41,7 @@ Net::Proxmox::VE - Pure perl API for Proxmox virtualisation
 
     $host = Net::Proxmox::VE->new(%args);
 
-    $host->login() or die ('Couldnt log in to proxmox host');
+    $host->login() or die ('Couldn\'t log in to proxmox host');
 
 =head1 WARNING
 
