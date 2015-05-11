@@ -19,7 +19,7 @@ use Net::Proxmox::VE::Cluster;
 use Net::Proxmox::VE::Nodes;
 
 
-our $VERSION = 0.006;
+our $VERSION = 0.009;
 
 =encoding utf8
 
@@ -488,7 +488,7 @@ http://pve.proxmox.com/pve2-api-doc
 
 =head1 VERSION
 
- 0.001
+ 0.009
 
 =head1 AUTHORS
 
