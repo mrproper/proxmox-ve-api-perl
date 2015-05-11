@@ -6,10 +6,20 @@ use strict;
 use warnings;
 use base 'Exporter';
 
-our $VERSION = 0.3;
+our $VERSION = 0.31;
 our @EXPORT  = qw( nodes );
 
-my $base = '/nodes';
+=encoding utf8
+
+=head1 NAME
+
+Net::Proxmox::VE::Nodes - Functions for the 'nodes' portion of the API
+
+=head1 SYNOPSIS
+
+  # assuming $obj is a Net::Proxmox::VE object
+
+=head1 METHODS
 
 =head2 nodes
 
@@ -18,6 +28,8 @@ Returns the 'Cluster node index'
 Note: Accessible by all authententicated users.
 
 =cut
+
+my $base = '/nodes';
 
 sub nodes {
 

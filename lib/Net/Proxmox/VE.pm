@@ -77,6 +77,11 @@ This class provides the building blocks for someone wanting to use PHP to talk t
 
 =head1 METHODS
 
+=head2 action
+
+This calls raw actions against your proxmox server.
+Ideally you don't use this directly.
+
 =cut
 
 sub action {

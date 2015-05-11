@@ -19,7 +19,6 @@ Net::Proxmox::VE::Cluster - Functions for the 'cluster' portion of the API
 
   # assuming $obj is a Net::Proxmox::VE object
 
-
 =head1 METHODS
 
 =head2 cluster
