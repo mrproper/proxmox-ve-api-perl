@@ -839,7 +839,7 @@ sub get_cluster_tasks {
 
 =head1 AUTHORS
 
-  Dean Hamstead L<<dean@fragfest.com.au>>
+  Dean Hamstead L<<dean@bytefoundry.com.au>>
 
 =cut
 

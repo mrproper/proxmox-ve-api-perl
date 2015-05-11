@@ -283,7 +283,7 @@ sub update_storage {
 
 =head1 AUTHOR
 
- Dean Hamstead L<<dean@fragfest.com.au>>
+ Dean Hamstead L<<dean@bytefoundry.com.au>>
 
 =cut
 

@@ -1029,7 +1029,7 @@ sub update_access_password {
 =head1 AUTHORS
 
   Brendan Beveridge L<<brendan@nodeintegration.com.au>>
-  Dean Hamstead L<<dean@fragfest.com.au>>
+  Dean Hamstead L<<dean@bytefoundry.com.au>>
 
 =cut
 

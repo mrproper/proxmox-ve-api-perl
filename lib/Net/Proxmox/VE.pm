@@ -493,7 +493,7 @@ http://pve.proxmox.com/pve2-api-doc
 =head1 AUTHORS
 
  Brendan Beveridge <brendan@nodeintegration.com.au>
- Dean Hamstead <dean@fragfest.com.au>
+ Dean Hamstead <dean@bytefoundry.com.au>
 
 =cut
 

@@ -164,5 +164,5 @@ VERSION
 
 AUTHORS
      Brendan Beveridge <brendan@nodeintegration.com.au>
-     Dean Hamstead <dean@fragfest.com.au>
+     Dean Hamstead <dean@bytefoundry.com.au>
 
