@@ -159,8 +159,12 @@ SEE ALSO
 SUPPORT
      Contribute at http://github.com/mrproper/proxmox-ve-api-perl
 
+LICENSE
+     This program is free software; you can redistribute it and/or modify it under
+     the same terms as Perl itself.
+
 VERSION
-     0.009
+     0.0091
 
 AUTHORS
      Brendan Beveridge <brendan@nodeintegration.com.au>
