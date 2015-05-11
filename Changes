@@ -1,5 +1,9 @@
 Revision history for perl Net::Proxmox::VE
 
+0.0092 2015-05-12
+- Contributions via GitHub
+- Changes to Pod and dist.ini
+
 0.004 2012-07-08
 - Finished up Access.pm (dean)
 - Added TODO, which is actually just stuff to be revisited (dean)

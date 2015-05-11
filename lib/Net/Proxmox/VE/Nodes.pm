@@ -344,7 +344,7 @@ sub get_nodes_status {
 }
 
 
-=head2 updates_nodes_status
+=head2 update_nodes_status
 
 Reboot or shutdown a node
 
@@ -439,25 +439,25 @@ Note: Root only.
 
 =cut
 
-sub create_nodes_subcription {
+sub create_nodes_subscription {
 
     my $self = shift or return;
 
-    my $a = shift or die 'No node for create_nodes_subcription()';
-    die 'node must be a scalar for create_nodes_subcription()' if ref $a;
+    my $a = shift or die 'No node for create_nodes_subscription()';
+    die 'node must be a scalar for create_nodes_subscription()' if ref $a;
 
     my @p = @_;
 
-    die 'No arguments for create_nodes_subcription()' unless @p;
+    die 'No arguments for create_nodes_subscription()' unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        die 'Single argument not a hash for create_nodes_subcription()'
+        die 'Single argument not a hash for create_nodes_subscription()'
           unless ref $a eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        die 'Odd number of arguments for create_nodes_subcription()'
+        die 'Odd number of arguments for create_nodes_subscription()'
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
@@ -1570,17 +1570,13 @@ sub get_nodes_openvz_status_umount {
 
 }
 
-
-
-
-
 =head1 SEE ALSO
 
   L<Net::Proxmox::VE>
 
 =head1 VERSION
 
-  VERSION 0.3
+  VERSION 0.31
 
 =head1 AUTHORS
 
