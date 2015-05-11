@@ -486,7 +486,7 @@ http://pve.proxmox.com/pve2-api-doc
 
  Contribute at http://github.com/mrproper/proxmox-ve-api-perl
 
-LICENSE
+=head1 LICENSE
  This program is free software; you can redistribute it and/or modify it under
  the same terms as Perl itself.
 
