@@ -139,7 +139,7 @@ sub action {
 # an unrecognised method
 # so we'll just force POST from PUT
     if ( $params{method} =~ m/^(PUT|POST)$/ ) {
-        $request->method('POST');
+        $request->method( $params{method} );    # Patch removed
         my $content = join '&', map { $_ . '=' . $params{post_data}->{$_} }
           sort keys %{ $params{post_data} };
         $request->content($content);
