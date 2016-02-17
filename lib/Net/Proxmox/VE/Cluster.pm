@@ -1,19 +1,18 @@
 #!/bin/false
-
-package Net::Proxmox::VE::Cluster;
+#
+# PODNAME: Net::Proxmox::VE::Cluster
+# ABSTRACT: Functions for the 'cluster' portion of the API
 
 use strict;
 use warnings;
-use base 'Exporter';
 
-our $VERSION = 0.2;
+package Net::Proxmox::VE::Cluster;
+
+use parent 'Exporter';
+
 our @EXPORT  = qw( cluster );
 
 =encoding utf8
-
-=head1 NAME
-
-Net::Proxmox::VE::Cluster - Functions for the 'cluster' portion of the API
 
 =head1 SYNOPSIS
 
@@ -832,16 +831,10 @@ sub get_cluster_tasks {
 
   L<Net::Proxmox::VE>
 
-=head1 VERSION
-
-  VERSION 0.2
-
-=head1 AUTHORS
-
-  Dean Hamstead L<<dean@bytefoundry.com.au>>
-
 =cut
 
+1;
 
+__END__
 
-1
+# vim: softtabstop=2 tabstop=2 shiftwidth=2 ft=perl expandtab smarttab

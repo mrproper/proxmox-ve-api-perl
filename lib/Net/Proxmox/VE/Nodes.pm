@@ -1,19 +1,17 @@
 #!/bin/false
-
-package Net::Proxmox::VE::Nodes;
+# PODNAME: Net::Proxmox::VE::Nodes
+# ABSTRACT: Functions for the 'nodes' portion of the API
 
 use strict;
 use warnings;
-use base 'Exporter';
 
-our $VERSION = 0.31;
+package Net::Proxmox::VE::Nodes;
+
+use parent 'Exporter';
+
 our @EXPORT  = qw( nodes );
 
 =encoding utf8
-
-=head1 NAME
-
-Net::Proxmox::VE::Nodes - Functions for the 'nodes' portion of the API
 
 =head1 SYNOPSIS
 
@@ -1574,14 +1572,10 @@ sub get_nodes_openvz_status_umount {
 
   L<Net::Proxmox::VE>
 
-=head1 VERSION
-
-  VERSION 0.31
-
-=head1 AUTHORS
-
-  Dean Hamstead L<<dean@bytefoundry.com.au>>
-
 =cut
 
 1;
+
+__END__
+
+# vim: softtabstop=2 tabstop=2 shiftwidth=2 ft=perl expandtab smarttab

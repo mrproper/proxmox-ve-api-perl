@@ -1,10 +1,14 @@
 #!/bin/false
+# PODNAME: Net::Proxmox::VE
+# ABSTRACT: Pure perl API for Proxmox virtualisation
+
+use strict;
+use warnings;
 
 package Net::Proxmox::VE;
 
+
 use Carp qw( croak );
-use strict;
-use warnings;
 use HTTP::Headers;
 use HTTP::Request::Common qw(GET POST DELETE);
 use JSON qw(decode_json);
@@ -18,14 +22,7 @@ use Net::Proxmox::VE::Cluster;
 # wip
 use Net::Proxmox::VE::Nodes;
 
-
-our $VERSION = 0.009;
-
 =encoding utf8
-
-=head1 NAME
-
-Net::Proxmox::VE - Pure perl API for Proxmox virtualisation
 
 =head1 SYNOPSIS
 
@@ -159,7 +156,7 @@ sub action {
         print "DEBUG: successful request: " . $request->as_string . "\n"
           if $self->{params}->{debug};
 
-        my $content = $response->decoded_content;
+        # my $content = $response->decoded_content;
         my $data    = decode_json( $response->decoded_content );
 
         if ( ref $data eq 'HASH'
@@ -487,23 +484,10 @@ http://pve.proxmox.com/pve2-api-doc
 
 =back
 
-=head1 SUPPORT
-
- Contribute at http://github.com/mrproper/proxmox-ve-api-perl
-
-=head1 LICENSE
- This program is free software; you can redistribute it and/or modify it under
- the same terms as Perl itself.
-
-=head1 VERSION
-
- 0.009
-
-=head1 AUTHORS
-
- Brendan Beveridge <brendan@nodeintegration.com.au>
- Dean Hamstead <dean@bytefoundry.com.au>
-
 =cut
 
-1
+1;
+
+__END__
+
+# vim: softtabstop=2 tabstop=2 shiftwidth=2 ft=perl expandtab smarttab

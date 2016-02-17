@@ -1,16 +1,15 @@
 #!/bin/false
-
-package Net::Proxmox::VE::Pools;
+# PODNAME: Net::Proxmox::VE::Pools
+# ABSTRACT: Presents a pool object
 
 use strict;
 use warnings;
-use base 'Exporter';
+
+package Net::Proxmox::VE::Pools;
+
+use parent 'Exporter';
 
 =encoding utf8
-
-=head1 NAME
-
-Net::Proxmox::VE::Pools
 
 =head1 SYNOPSIS
 
@@ -44,7 +43,6 @@ straight to the server API. So garbage-in, garbage-out!
 
 =cut
 
-our $VERSION = 0.2;
 our @EXPORT  = qw( pools );
 
 my $base = '/pools';
@@ -213,14 +211,10 @@ sub update_pool {
 
   L<Net::Proxmox::VE>
 
-=head1 VERSION
-
-  VERSION 0.2
-
-=head1 AUTHOR
-
- Dean Hamstead L<<dean@bytefoundry.com.au>>
-
 =cut
 
 1;
+
+__END__
+
+# vim: softtabstop=2 tabstop=2 shiftwidth=2 ft=perl expandtab smarttab

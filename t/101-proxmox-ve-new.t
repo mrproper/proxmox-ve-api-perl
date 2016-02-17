@@ -1,3 +1,4 @@
+#!/usr/bin/env perl
 use strict;
 use warnings;
 
@@ -13,7 +14,7 @@ if ( not $ENV{PROXMOX_TEST_URI} ) {
 }
 
 require_ok('Net::Proxmox::VE')
-	or die "# Net::Proxmox::VE not available\n";
+    or die "# Net::Proxmox::VE not available\n";
 
 my $obj;
 

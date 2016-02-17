@@ -1,15 +1,17 @@
 #!/bin/false
-
-package Net::Proxmox::VE::Access;
+# PODNAME: Net::Proxmox::VE::Access
+# ABSTRACT: Functions for the 'access' portion of the API
 
 use strict;
 use warnings;
-use base 'Exporter';
+
+package Net::Proxmox::VE::Access;
+
+use parent 'Exporter';
 
 use LWP::UserAgent;
 use JSON qw(decode_json);
 
-our $VERSION = 0.3;
 our @EXPORT =
   qw(
   access
@@ -24,10 +26,6 @@ our @EXPORT =
   );
 
 =encoding utf8
-
-=head1 NAME
-
-Net::Proxmox::VE::Access - Functions for the 'access' portion of the API
 
 =head1 SYNOPSIS
 
@@ -882,7 +880,7 @@ sub login {
     );
 
     if ( $response->is_success ) {
-        my $content           = $response->decoded_content;
+        # my $content           = $response->decoded_content;
         my $login_ticket_data = decode_json( $response->decoded_content );
         $self->{ticket} = $login_ticket_data->{data};
 
@@ -1022,15 +1020,10 @@ sub update_access_password {
 
   L<Net::Proxmox::VE>
 
-=head1 VERSION
-
-  VERSION 0.3
-
-=head1 AUTHORS
-
-  Brendan Beveridge L<<brendan@nodeintegration.com.au>>
-  Dean Hamstead L<<dean@bytefoundry.com.au>>
-
 =cut
 
-1
+1;
+
+__END__
+
+# vim: softtabstop=2 tabstop=2 shiftwidth=2 ft=perl expandtab smarttab
