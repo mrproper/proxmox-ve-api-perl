@@ -1,5 +1,8 @@
 Revision history for perl Net::Proxmox::VE
 
+0.0095 2016-02-18
+- Update things for Dist::Zilla
+
 0.0094 2016-02-17
 - Update things for Dist::Zilla
 
