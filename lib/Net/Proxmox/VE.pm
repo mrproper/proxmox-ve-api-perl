@@ -162,7 +162,7 @@ sub action {
         if ( ref $data eq 'HASH'
             && exists $data->{data} )
         {
-            if ( ref $data->{data} ) {
+            if ( ref $data->{data} eq 'ARRAY' ) {
 
                 return wantarray
                   ? @{ $data->{data} }
