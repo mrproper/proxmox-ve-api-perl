@@ -793,7 +793,7 @@ sub check_login_ticket {
         && $self->{ticket}->{username} eq $self->{params}->{username} . '@'
         . $self->{params}->{realm}
         && $self->{ticket_timestamp}
-        && $self->{ticket_timestamp} < ( time() + $self->{ticket_life} ) )
+        && ( $self->{ticket_timestamp} + $self->{ticket_life} ) > time() )
     {
         return 1;
     }
