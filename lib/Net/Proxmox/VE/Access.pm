@@ -9,7 +9,6 @@ package Net::Proxmox::VE::Access;
 
 use parent 'Exporter';
 
-use LWP::UserAgent;
 use JSON qw(decode_json);
 
 our @EXPORT =
@@ -857,20 +856,9 @@ sub login {
     # Prepare login request
     my $url = $self->url_prefix . '/api2/json/access/ticket';
 
-    my %lwpUserAgentOptions;
-    if ($self->{params}->{ssl_opts}) {
-        $lwpUserAgentOptions{ssl_opts} = $self->{params}->{ssl_opts};
-    }
-
-    my $ua = LWP::UserAgent->new( %lwpUserAgentOptions );
-
-    $ua->timeout($self->{params}->{timeout});
-
-    $self->{ua} = $ua;
-
     # Perform login request
     my $request_time = time();
-    my $response     = $ua->post(
+    my $response     = $self->{ua}->post(
         $url,
         {
             'username' => $self->{params}->{username} . '@'
