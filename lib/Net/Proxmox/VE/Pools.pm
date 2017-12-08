@@ -43,7 +43,7 @@ straight to the server API. So garbage-in, garbage-out!
 
 =cut
 
-our @EXPORT  = qw( pools );
+our @EXPORT  = qw( pools get_pool create_pool delete_pool update_pool );
 
 my $base = '/pools';
 
