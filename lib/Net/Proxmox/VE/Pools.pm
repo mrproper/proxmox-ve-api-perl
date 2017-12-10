@@ -194,7 +194,7 @@ sub update_pool {
 
     if ( @p == 1 ) {
         die 'Single argument not a hash for update_pool()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
