@@ -10,7 +10,31 @@ package Net::Proxmox::VE::Cluster;
 
 use parent 'Exporter';
 
-our @EXPORT  = qw( cluster );
+our @EXPORT  =
+  qw(
+    cluster
+    cluster_backup
+    create_cluster_backup
+    get_cluster_backup
+    update_cluster_backup
+    delete_cluster_backup
+    cluster_ha
+    get_cluster_ha_config
+    get_cluster_ha_changes
+    commit_cluster_ha_changes
+    revert_cluster_ha_changes
+    cluster_ha_groups
+    create_cluster_ha_groups
+    get_cluster_ha_groups
+    update_cluster_ha_groups
+    delete_cluster_ha_group
+    get_cluster_log
+    get_cluster_options
+    update_cluster_options
+    get_cluster_resources
+    get_cluster_status
+    get_cluster_tasks
+  );
 
 =encoding utf8
 
