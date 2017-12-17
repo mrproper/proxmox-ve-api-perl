@@ -147,6 +147,11 @@ sub action {
     }
     elsif ( $params{method} =~ m/^(GET|DELETE)$/ ) {
         $request->method( $params{method} );
+        if ( %{$params{post_data}} ) {
+            my $qstring = join '&', map { $_ . '=' . $params{post_data}->{$_} }
+                sort keys %{ $params{post_data} };
+            $request->uri( "$url?$qstring" );
+        }
         $response = $ua->request($request);
     }
     else {
