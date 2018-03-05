@@ -43,7 +43,7 @@ straight to the server API. So garbage-in, garbage-out!
 
 =cut
 
-our @EXPORT  = qw( pools );
+our @EXPORT  = qw( pools get_pool create_pool delete_pool update_pool );
 
 my $base = '/pools';
 
@@ -194,7 +194,7 @@ sub update_pool {
 
     if ( @p == 1 ) {
         die 'Single argument not a hash for update_pool()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
