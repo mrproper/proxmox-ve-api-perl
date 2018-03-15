@@ -394,7 +394,7 @@ sub new {
     $self->{'ticket'}           = undef;
     $self->{'ticket_timestamp'} = undef;
     $self->{'ticket_life'}      = 7200;    # 2 Hours
-    
+
     my %lwpUserAgentOptions;
     if ($self->{params}->{ssl_opts}) {
         $lwpUserAgentOptions{ssl_opts} = $self->{params}->{ssl_opts};
