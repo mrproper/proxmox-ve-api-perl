@@ -187,8 +187,8 @@ sub action {
 
     }
     else {
-        print "WARNING: request failed: " . $request->as_string . "\n";
-        print "WARNING: response status: " . $response->status_line . "\n";
+        die "WARNING: request failed: "  . $request->as_string . "\n" .
+            "WARNING: response status: " . $response->status_line . "\n";
     }
     return
 
