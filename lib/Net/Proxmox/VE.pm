@@ -187,8 +187,8 @@ sub action {
 
     }
     else {
-        die "WARNING: request failed: "  . $request->as_string . "\n" .
-            "WARNING: response status: " . $response->status_line . "\n";
+        croak "WARNING: request failed: "  . $request->as_string . "\n" .
+              "WARNING: response status: " . $response->status_line . "\n";
     }
     return
 
@@ -218,11 +218,9 @@ sub api_version_check {
 
     my $data = $self->api_version;
 
-    if (   ref $data eq 'HASH'
-        && $data->{version}
-        && $data->{version} >= 2.0 )
-    {
-        return 1;
+    if ( ref $data eq 'HASH' && $data->{version} ) {
+        my ($version) = $data->{version} =~ m/^(\d+)/;
+        return 1 if $version > 2.0;
     }
 
     return;
