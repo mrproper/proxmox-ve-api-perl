@@ -273,7 +273,7 @@ sub update_storage {
 
 =head1 SEE ALSO
 
-  L<Net::Proxmox::VE>
+L<Net::Proxmox::VE>
 
 =cut
 

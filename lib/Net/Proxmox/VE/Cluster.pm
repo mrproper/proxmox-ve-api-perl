@@ -853,7 +853,7 @@ sub get_cluster_tasks {
 
 =head1 SEE ALSO
 
-  L<Net::Proxmox::VE>
+L<Net::Proxmox::VE>
 
 =cut
 

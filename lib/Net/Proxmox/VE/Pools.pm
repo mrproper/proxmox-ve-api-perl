@@ -209,7 +209,7 @@ sub update_pool {
 
 =head1 SEE ALSO
 
-  L<Net::Proxmox::VE>
+L<Net::Proxmox::VE>
 
 =cut
 

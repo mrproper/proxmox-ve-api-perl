@@ -1006,7 +1006,7 @@ sub update_access_password {
 
 =head1 SEE ALSO
 
-  L<Net::Proxmox::VE>
+L<Net::Proxmox::VE>
 
 =cut
 
