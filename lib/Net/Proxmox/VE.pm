@@ -67,9 +67,8 @@ This Class provides the framework for talking to Proxmox VE 2.0 API instances.
 This just provides a get/delete/put/post abstraction layer as methods on Proxmox VE REST API
 This also handles the ticket headers required for authentication
 
-More details on the API can be found here:
-http://pve.proxmox.com/wiki/Proxmox_VE_API
-http://pve.proxmox.com/pve2-api-doc/
+More details on the API can be found at L<http://pve.proxmox.com/wiki/Proxmox_VE_API> and
+L<http://pve.proxmox.com/pve2-api-doc/>
 
 This class provides the building blocks for someone wanting to use PHP to talk to Proxmox 2.0. Relatively simple piece of code, just provides a get/put/post/delete abstraction layer as methods on top of Proxmox's REST API, while also handling the Login Ticket headers required for authentication.
 
