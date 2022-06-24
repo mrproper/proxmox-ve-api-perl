@@ -133,12 +133,8 @@ sub action {
             'CSRFPreventionToken' => $self->{ticket}->{CSRFPreventionToken} );
     }
 
-# Not sure why but the php api for proxmox ve uses PUT instead of post for
-# most things, the api doc only lists GET|POST|DELETE and the api returns 'PUT' as
-# an unrecognised method
-# so we'll just force POST from PUT
     if ( $params{method} =~ m/^(PUT|POST)$/ ) {
-        $request->method( $params{method} );    # Patch removed
+        $request->method( $params{method} );
         my $content = join '&', map { $_ . '=' . $params{post_data}->{$_} }
           sort keys %{ $params{post_data} };
         $request->content($content);
