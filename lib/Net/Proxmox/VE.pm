@@ -490,7 +490,7 @@ http://www.proxmox.com
 
 =item API reference
 
-http://pve.proxmox.com/pve2-api-doc
+https://pve.proxmox.com/pve-docs/api-viewer/
 
 =back
 
