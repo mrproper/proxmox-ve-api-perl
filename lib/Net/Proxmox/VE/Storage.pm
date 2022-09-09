@@ -9,6 +9,8 @@ package Net::Proxmox::VE::Storage;
 
 use parent 'Exporter';
 
+use Carp qw( croak );
+
 =encoding utf8
 
 =head1 SYNOPSIS
@@ -77,8 +79,8 @@ sub get_storage {
 
     my $self = shift or return;
 
-    my $a = shift or die 'No storageid for get_storage()';
-    die 'storageid must be a scalar for get_storage()' if ref $a;
+    my $a = shift or croak 'No storageid for get_storage()';
+    croak 'storageid must be a scalar for get_storage()' if ref $a;
 
     return $self->get( $base, $a );
 
@@ -160,16 +162,16 @@ sub create_storage {
     my $self = shift or return;
     my @p = @_;
 
-    die 'No arguments for create_storage()' unless @p;
+    croak 'No arguments for create_storage()' unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        die 'Single argument not a hash for create_storage()'
+        croak 'Single argument not a hash for create_storage()'
           unless ref $a eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        die 'Odd number of arguments for create_storage()'
+        croak 'Odd number of arguments for create_storage()'
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
@@ -191,7 +193,7 @@ storage is a string in pve-storage-id format
 sub delete_storage {
 
     my $self = shift or return;
-    my $a    = shift or die 'No argument given for delete_storage()';
+    my $a    = shift or croak 'No argument given for delete_storage()';
 
     return $self->delete( $base, $a );
 
@@ -249,20 +251,20 @@ Boolean. See PVE documentation. Optional.
 sub update_storage {
 
     my $self   = shift or return;
-    my $storageid = shift or die 'No storageid provided for update_storage()';
-    die 'storageid must be a scalar for update_storage()' if ref $storageid;
+    my $storageid = shift or croak 'No storageid provided for update_storage()';
+    croak 'storageid must be a scalar for update_storage()' if ref $storageid;
     my @p = @_;
 
-    die 'No arguments for update_storage()' unless @p;
+    croak 'No arguments for update_storage()' unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        die 'Single argument not a hash for update_storage()'
+        croak 'Single argument not a hash for update_storage()'
           unless ref $a eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        die 'Odd number of arguments for update_storage()'
+        croak 'Odd number of arguments for update_storage()'
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }

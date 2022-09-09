@@ -9,6 +9,8 @@ package Net::Proxmox::VE::Access;
 
 use parent 'Exporter';
 
+use Carp qw( croak );
+
 use JSON qw(decode_json);
 
 our @EXPORT =
@@ -131,16 +133,16 @@ sub create_access_domains {
     my $self = shift or return;
     my @p = @_;
 
-    die 'No arguments for create_access_domains()' unless @p;
+    croak 'No arguments for create_access_domains()' unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        die 'Single argument not a hash for create_access_domains()'
+        croak 'Single argument not a hash for create_access_domains()'
           unless ref $a eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        die 'Odd number of arguments for create_access_domains()'
+        croak 'Odd number of arguments for create_access_domains()'
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
@@ -163,8 +165,8 @@ sub get_access_domains {
 
     my $self = shift or return;
 
-    my $a = shift or die 'No realm for get_access_domains()';
-    die 'realm must be a scalar for get_access_domains()' if ref $a;
+    my $a = shift or croak 'No realm for get_access_domains()';
+    croak 'realm must be a scalar for get_access_domains()' if ref $a;
 
     return $self->get( $base, 'domains', $a )
 
@@ -218,20 +220,20 @@ String. LDAP user attribute name. Optional.
 sub update_access_domains {
 
     my $self   = shift or return;
-    my $realm = shift or die 'No realm provided for update_access_domains()';
-    die 'realm must be a scalar for update_access_domains()' if ref $realm;
+    my $realm = shift or croak 'No realm provided for update_access_domains()';
+    croak 'realm must be a scalar for update_access_domains()' if ref $realm;
     my @p = @_;
 
-    die 'No arguments for update_access_domains()' unless @p;
+    croak 'No arguments for update_access_domains()' unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        die 'Single argument not a hash for update_access_domains()'
+        croak 'Single argument not a hash for update_access_domains()'
           unless ref $a eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        die 'Odd number of arguments for update_access_domains()'
+        croak 'Odd number of arguments for update_access_domains()'
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
@@ -253,7 +255,7 @@ realm is a string in pve-realm format
 sub delete_access_domains {
 
     my $self = shift or return;
-    my $a    = shift or die 'No argument given for delete_access_domains()';
+    my $a    = shift or croak 'No argument given for delete_access_domains()';
 
     return $self->delete( $base, 'domains', $a )
 
@@ -305,16 +307,16 @@ sub create_access_groups {
     my $self = shift or return;
     my @p = @_;
 
-    die 'No arguments for create_access_groups()' unless @p;
+    croak 'No arguments for create_access_groups()' unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        die 'Single argument not a hash for create_access_groups()'
+        croak 'Single argument not a hash for create_access_groups()'
           unless ref $a eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        die 'Odd number of arguments for create_access_groups()'
+        croak 'Odd number of arguments for create_access_groups()'
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
@@ -337,8 +339,8 @@ sub get_access_groups {
 
     my $self = shift or return;
 
-    my $a = shift or die 'No groupid for get_access_groups()';
-    die 'groupid must be a scalar for get_access_groups()' if ref $a;
+    my $a = shift or croak 'No groupid for get_access_groups()';
+    croak 'groupid must be a scalar for get_access_groups()' if ref $a;
 
     return $self->get( $base, 'groups', $a )
 
@@ -368,20 +370,20 @@ String. This is a comment associated with the group, this is optional.
 sub update_access_groups {
 
     my $self   = shift or return;
-    my $realm = shift or die 'No realm provided for update_access_groups()';
-    die 'realm must be a scalar for update_access_groups()' if ref $realm;
+    my $realm = shift or croak 'No realm provided for update_access_groups()';
+    croak 'realm must be a scalar for update_access_groups()' if ref $realm;
     my @p = @_;
 
-    die 'No arguments for update_access_groups()' unless @p;
+    croak 'No arguments for update_access_groups()' unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        die 'Single argument not a hash for update_access_groups()'
+        croak 'Single argument not a hash for update_access_groups()'
           unless ref $a eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        die 'Odd number of arguments for update_access_groups()'
+        croak 'Odd number of arguments for update_access_groups()'
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
@@ -403,7 +405,7 @@ groupid is a string in pve-groupid format
 sub delete_access_groups {
 
     my $self = shift or return;
-    my $a    = shift or die 'No argument given for delete_access_groups()';
+    my $a    = shift or croak 'No argument given for delete_access_groups()';
 
     return $self->delete( $base, 'groups', $a )
 
@@ -456,16 +458,16 @@ sub create_access_roles {
     my $self = shift or return;
     my @p = @_;
 
-    die 'No arguments for create_access_roles()' unless @p;
+    croak 'No arguments for create_access_roles()' unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        die 'Single argument not a hash for create_access_roles()'
+        croak 'Single argument not a hash for create_access_roles()'
           unless ref $a eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        die 'Odd number of arguments for create_access_roles()'
+        croak 'Odd number of arguments for create_access_roles()'
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
@@ -488,8 +490,8 @@ sub get_access_roles {
 
     my $self = shift or return;
 
-    my $a = shift or die 'No roleid for get_access_roles()';
-    die 'roleid must be a scalar for get_access_roles()' if ref $a;
+    my $a = shift or croak 'No roleid for get_access_roles()';
+    croak 'roleid must be a scalar for get_access_roles()' if ref $a;
 
     return $self->get( $base, 'roles', $a )
 
@@ -523,20 +525,20 @@ Booelean. Append privileges to existing. Optional.
 sub update_access_roles {
 
     my $self   = shift or return;
-    my $realm = shift or die 'No realm provided for update_access_roles()';
-    die 'realm must be a scalar for update_access_roles()' if ref $realm;
+    my $realm = shift or croak 'No realm provided for update_access_roles()';
+    croak 'realm must be a scalar for update_access_roles()' if ref $realm;
     my @p = @_;
 
-    die 'No arguments for update_access_roles()' unless @p;
+    croak 'No arguments for update_access_roles()' unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        die 'Single argument not a hash for update_access_roles()'
+        croak 'Single argument not a hash for update_access_roles()'
           unless ref $a eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        die 'Odd number of arguments for update_access_roles()'
+        croak 'Odd number of arguments for update_access_roles()'
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
@@ -558,7 +560,7 @@ roleid is a string in pve-roleid format
 sub delete_access_roles {
 
     my $self = shift or return;
-    my $a    = shift or die 'No argument given for delete_access_roles()';
+    my $a    = shift or croak 'No argument given for delete_access_roles()';
 
     return $self->delete( $base, 'roles', $a )
 
@@ -639,16 +641,16 @@ sub create_access_users {
     my $self = shift or return;
     my @p = @_;
 
-    die 'No arguments for create_access_users()' unless @p;
+    croak 'No arguments for create_access_users()' unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        die 'Single argument not a hash for create_access_users()'
+        croak 'Single argument not a hash for create_access_users()'
           unless ref $a eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        die 'Odd number of arguments for create_access_users()'
+        croak 'Odd number of arguments for create_access_users()'
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
@@ -671,8 +673,8 @@ sub get_access_users {
 
     my $self = shift or return;
 
-    my $a = shift or die 'No userid for get_access_users()';
-    die 'userid must be a scalar for get_access_users()' if ref $a;
+    my $a = shift or croak 'No userid for get_access_users()';
+    croak 'userid must be a scalar for get_access_users()' if ref $a;
 
     return $self->get( $base, 'users', $a )
 
@@ -730,20 +732,20 @@ String. Optional.
 sub update_access_users {
 
     my $self   = shift or return;
-    my $realm = shift or die 'No realm provided for update_access_users()';
-    die 'realm must be a scalar for update_access_users()' if ref $realm;
+    my $realm = shift or croak 'No realm provided for update_access_users()';
+    croak 'realm must be a scalar for update_access_users()' if ref $realm;
     my @p = @_;
 
-    die 'No arguments for update_access_users()' unless @p;
+    croak 'No arguments for update_access_users()' unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        die 'Single argument not a hash for update_access_users()'
+        croak 'Single argument not a hash for update_access_users()'
           unless ref $a eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        die 'Odd number of arguments for update_access_users()'
+        croak 'Odd number of arguments for update_access_users()'
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
@@ -765,7 +767,7 @@ userid is a string in pve-userid format
 sub delete_access_users {
 
     my $self = shift or return;
-    my $a    = shift or die 'No argument given for delete_access_users()';
+    my $a    = shift or croak 'No argument given for delete_access_users()';
 
     return $self->delete( $base, 'users', $a )
 
@@ -936,16 +938,16 @@ sub update_access_acl {
     my $self = shift or return;
     my @p = @_;
 
-    die 'No arguments for update_acl()' unless @p;
+    croak 'No arguments for update_acl()' unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        die 'Single argument not a hash for update_acl()'
+        croak 'Single argument not a hash for update_acl()'
           unless ref $a eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        die 'Odd number of arguments for update_acl()'
+        croak 'Odd number of arguments for update_acl()'
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
@@ -986,16 +988,16 @@ sub update_access_password {
     my $self = shift or return;
     my @p = @_;
 
-    die 'No arguments for update_password()' unless @p;
+    croak 'No arguments for update_password()' unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        die 'Single argument not a hash for update_password()'
+        croak 'Single argument not a hash for update_password()'
           unless ref $a eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        die 'Odd number of arguments for update_password()'
+        croak 'Odd number of arguments for update_password()'
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }

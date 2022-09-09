@@ -9,6 +9,8 @@ package Net::Proxmox::VE::Pools;
 
 use parent 'Exporter';
 
+use Carp qw( croak );
+
 =encoding utf8
 
 =head1 SYNOPSIS
@@ -77,8 +79,8 @@ sub get_pool {
 
     my $self = shift or return;
 
-    my $a = shift or die 'No poolid for get_pool()';
-    die 'poolid must be a scalar for get_pool()' if ref $a;
+    my $a = shift or croak 'No poolid for get_pool()';
+    croak 'poolid must be a scalar for get_pool()' if ref $a;
 
     return $self->get( $base, $a );
 
@@ -112,16 +114,16 @@ sub create_pool {
     my $self = shift or return;
     my @p = @_;
 
-    die 'No arguments for create_pool()' unless @p;
+    croak 'No arguments for create_pool()' unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        die 'Single argument not a hash for create_pool()'
+        croak 'Single argument not a hash for create_pool()'
           unless ref $a eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        die 'Odd number of arguments for create_pool()'
+        croak 'Odd number of arguments for create_pool()'
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
@@ -143,7 +145,7 @@ poolid is a string in pve-poolid format
 sub delete_pool {
 
     my $self = shift or return;
-    my $a    = shift or die 'No argument given for delete_pool()';
+    my $a    = shift or croak 'No argument given for delete_pool()';
 
     return $self->delete( $base, $a );
 
@@ -185,20 +187,20 @@ String. List of virtual machines in pve-vmid-list format.
 sub update_pool {
 
     my $self   = shift or return;
-    my $poolid = shift or die 'No poolid provided for update_pool()';
-    die 'poolid must be a scalar for update_pool()' if ref $poolid;
+    my $poolid = shift or croak 'No poolid provided for update_pool()';
+    croak 'poolid must be a scalar for update_pool()' if ref $poolid;
     my @p = @_;
 
-    die 'No arguments for update_pool()' unless @p;
+    croak 'No arguments for update_pool()' unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        die 'Single argument not a hash for update_pool()'
+        croak 'Single argument not a hash for update_pool()'
           unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        die 'Odd number of arguments for update_pool()'
+        croak 'Odd number of arguments for update_pool()'
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
