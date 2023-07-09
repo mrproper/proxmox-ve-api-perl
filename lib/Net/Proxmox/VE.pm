@@ -236,13 +236,13 @@ sub debug {
     my $d = shift;
 
     if ($d) {
-        $self->{debug} = 1;
+        $self->{params}->{debug} = 1;
     }
     elsif ( defined $d ) {
-        $self->{debug} = 0;
+        $self->{params}->{debug} = 0;
     }
 
-    return 1 if $self->{debug};
+    return 1 if $self->{params}->{debug};
     return
 
 }
