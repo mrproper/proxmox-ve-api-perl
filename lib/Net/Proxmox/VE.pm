@@ -1,4 +1,5 @@
 #!/bin/false
+# vim: softtabstop=2 tabstop=2 shiftwidth=2 ft=perl expandtab smarttab
 # PODNAME: Net::Proxmox::VE
 # ABSTRACT: Pure perl API for Proxmox virtualisation
 
@@ -11,7 +12,7 @@ package Net::Proxmox::VE;
 use Carp qw( croak );
 use HTTP::Headers;
 use HTTP::Request::Common qw(GET POST DELETE);
-use JSON qw(decode_json);
+use JSON::MaybeXS qw(decode_json);
 use LWP::UserAgent;
 
 # done
@@ -405,7 +406,7 @@ sub new {
 =head2 post
 
 An action helper method that takes two parameters: $path, \%post_data
-$path to post to,  hash ref to %post_data
+$path to post to, hash ref to %post_data
 
 You are returned what action() with the POST method returns
 
@@ -434,16 +435,16 @@ sub post {
 =head2 put
 
 An action helper method that takes two parameters:
-path
-hash ref to post data
-your returned what post returns
+$path, hash ref to \%put_data
+
+You are returned what action() with the PUT method returns
 
 =cut
 
 sub put {
 
-    my $self      = shift or return;
-    my $post_data;
+    my $self = shift or return;
+    my $put_data;
     $post_data = pop
         if ref $_[-1];
     my @path = @_    or return;    # using || breaks this
@@ -463,7 +464,7 @@ sub put {
 
 =head2 url_prefix
 
-returns the url prefix used in the rest api calls
+Returns the url prefix used in the rest api calls
 
 =cut
 
@@ -499,5 +500,3 @@ https://pve.proxmox.com/pve-docs/api-viewer/
 1;
 
 __END__
-
-# vim: softtabstop=2 tabstop=2 shiftwidth=2 ft=perl expandtab smarttab

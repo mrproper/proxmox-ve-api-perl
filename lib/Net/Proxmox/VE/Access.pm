@@ -1,4 +1,5 @@
 #!/bin/false
+# vim: softtabstop=2 tabstop=2 shiftwidth=2 ft=perl expandtab smarttab
 # PODNAME: Net::Proxmox::VE::Access
 # ABSTRACT: Functions for the 'access' portion of the API
 
@@ -11,7 +12,7 @@ use parent 'Exporter';
 
 use Carp qw( croak );
 
-use JSON qw(decode_json);
+use JSON::MaybeXS qw(decode_json);
 
 our @EXPORT =
   qw(
@@ -64,8 +65,6 @@ Gets a list of access domains (aka the Authentication domain index)
   @pools = $obj->access_domains();
 
 Note: Anyone can access that, because we need that list for the login box (before the user is authenticated).
-
-FIXME: currently this isn't implemented in this library.
 
 =cut
 
@@ -1015,5 +1014,3 @@ L<Net::Proxmox::VE>
 1;
 
 __END__
-
-# vim: softtabstop=2 tabstop=2 shiftwidth=2 ft=perl expandtab smarttab

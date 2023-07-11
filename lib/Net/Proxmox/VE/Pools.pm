@@ -1,4 +1,5 @@
 #!/bin/false
+# vim: softtabstop=2 tabstop=2 shiftwidth=2 ft=perl expandtab smarttab
 # PODNAME: Net::Proxmox::VE::Pools
 # ABSTRACT: Presents a pool object
 
@@ -218,5 +219,3 @@ L<Net::Proxmox::VE>
 1;
 
 __END__
-
-# vim: softtabstop=2 tabstop=2 shiftwidth=2 ft=perl expandtab smarttab
