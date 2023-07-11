@@ -444,7 +444,7 @@ You are returned what action() with the PUT method returns
 sub put {
 
     my $self = shift or return;
-    my $put_data;
+    my $post_data;
     $post_data = pop
         if ref $_[-1];
     my @path = @_    or return;    # using || breaks this
