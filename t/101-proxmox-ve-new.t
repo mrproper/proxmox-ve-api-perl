@@ -6,7 +6,7 @@ use warnings;
 use Test::More;
 use IO::Socket::SSL qw(SSL_VERIFY_NONE);
 
-my $tests = 20;    # used later
+my $tests = 21;    # used later
 use Test::Trap;
 if ( not $ENV{PROXMOX_TEST_URI} ) {
     my $msg =
@@ -56,15 +56,13 @@ Try something like...
 
 =cut
 
-{
+my ( $user, $pass, $host, $port, $realm ) =
+    $ENV{PROXMOX_TEST_URI} =~ m{^(\w+):(\w+)\@([\w\.]+):(\d+)/(\w+)$}
+or BAIL_OUT
+    q|PROXMOX_TEST_URI didnt match form 'user:pass@hostname:port/realm'|
+    . "\n";
 
-    my ( $user, $pass, $host, $port, $realm ) =
-      $ENV{PROXMOX_TEST_URI} =~ m{^(\w+):(\w+)\@([\w\.]+):(\d+)/(\w+)$}
-      or BAIL_OUT
-      q|PROXMOX_TEST_URI didnt match form 'user:pass@hostname:port/realm'|
-      . "\n";
-
-    trap {
+trap {
         $obj = Net::Proxmox::VE->new(
             host     => $host,
             password => $pass,
@@ -77,10 +75,9 @@ Try something like...
             },
 
         )
-    };
-    ok( !$trap->die, 'doesnt die with good arguments' );
+};
+ok( !$trap->die, 'doesnt die with good arguments' );
 
-}
 
 =head2 login() connects to the server
 
@@ -116,6 +113,20 @@ ok( $obj->debug(1),  'debug toggled on and returns true' );
 ok( $obj->debug(),   'debug now turned on' );
 ok( !$obj->debug(0), 'debug toggled off and returns false' );
 ok( !$obj->debug(),  'debug now turned off' );
+$obj = Net::Proxmox::VE->new(
+        host     => $host,
+        password => $pass,
+        username => $user,
+        port     => $port,
+        realm    => $realm,
+        ssl_opts => {
+                SSL_verify_mode => SSL_VERIFY_NONE,
+                verify_hostname => 0
+        },
+        debug    => 1,
+    );
+ok( $obj->debug(),   'debug parameter to new propagates correctly' );
+$obj->debug(0);
 
 =head2 cluster nodes
 
