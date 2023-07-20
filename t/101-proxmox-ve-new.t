@@ -6,7 +6,7 @@ use warnings;
 use Test::More;
 use IO::Socket::SSL qw(SSL_VERIFY_NONE);
 
-my $tests = 17;    # used later
+my $tests = 20;    # used later
 use Test::Trap;
 if ( not $ENV{PROXMOX_TEST_URI} ) {
     my $msg =
@@ -30,6 +30,21 @@ Test that new() dies when bad values are provided
 
 trap { $obj = Net::Proxmox::VE->new() };
 ok( $trap->die, 'no arguments dies' );
+
+trap { $obj = Net::Proxmox::VE->new(
+               host     => 'x',
+               password => 'x',
+               user     => 'x',
+           ) };
+ok( $trap->die, 'unknown argument dies' );
+trap { $obj = Net::Proxmox::VE->new(
+               password => 'x',
+           ) };
+ok( $trap->die, 'Missing host argument dies' );
+trap { $obj = Net::Proxmox::VE->new(
+               host     => 'x',
+           ) };
+ok( $trap->die, 'Missing password argument dies' );
 
 =head2 new() works with good values
 
