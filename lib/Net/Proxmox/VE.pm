@@ -375,27 +375,38 @@ sub new {
           or croak 'new() requires a hash for params';
     }
 
-    croak 'host param is required'     unless $params{'host'};
-    croak 'password param is required' unless $params{'password'};
+    my $host     = delete $params{host}     || croak 'host param is required';
+    my $password = delete $params{password} || croak 'password param is required';
+    my $port     = delete $params{port}     || 8006;
+    my $username = delete $params{username} || 'root';
+    my $realm    = delete $params{realm}    || 'pam';
+    my $debug    = delete $params{debug};
+    my $timeout  = delete $params{timeout}  || 10;
+    my $ssl_opts = delete $params{ssl_opts};
+    croak 'unknown parameters to new: ' . join(', ', keys %params) if keys %params;
 
-    $params{port}     ||= 8006;
-    $params{username} ||= 'root';
-    $params{realm}    ||= 'pam';
-    $params{debug}    ||= undef;
-    $params{timeout}  ||= 10;
+    my $self->{params} = {
+            host => $host,
+            password => $password,
+            port => $port,
+            username => $username,
+            realm => $realm,
+            debug => $debug,
+            timeout => $timeout,
+            ssl_opts => $ssl_opts,
+    };
 
-    my $self->{params} = \%params;
     $self->{'ticket'}           = undef;
     $self->{'ticket_timestamp'} = undef;
     $self->{'ticket_life'}      = 7200;    # 2 Hours
 
     my %lwpUserAgentOptions;
-    if ($self->{params}->{ssl_opts}) {
-        $lwpUserAgentOptions{ssl_opts} = $self->{params}->{ssl_opts};
+    if ($ssl_opts) {
+        $lwpUserAgentOptions{ssl_opts} = $ssl_opts;
     }
 
     my $ua = LWP::UserAgent->new( %lwpUserAgentOptions );
-    $ua->timeout($self->{params}->{timeout});
+    $ua->timeout($timeout);
     $self->{ua} = $ua;
 
     bless $self, $class;
