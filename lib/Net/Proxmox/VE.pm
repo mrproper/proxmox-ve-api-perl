@@ -71,7 +71,7 @@ This also handles the ticket headers required for authentication
 More details on the API can be found at L<http://pve.proxmox.com/wiki/Proxmox_VE_API> and
 L<http://pve.proxmox.com/pve2-api-doc/>
 
-This class provides the building blocks for someone wanting to use PHP to talk to Proxmox 2.0. Relatively simple piece of code, just provides a get/put/post/delete abstraction layer as methods on top of Proxmox's REST API, while also handling the Login Ticket headers required for authentication.
+This class provides the building blocks for someone wanting to use Perl to talk to Proxmox 2.0. Relatively simple piece of code, just provides a get/put/post/delete abstraction layer as methods on top of Proxmox's REST API, while also handling the Login Ticket headers required for authentication.
 
 =head1 METHODS
 
