@@ -42,6 +42,16 @@ use Net::Proxmox::VE::Nodes;
 
     $host->login() or die ('Couldn\'t log in to proxmox host');
 
+=head1 DESCRIPTION
+
+This Class provides the framework for talking to Proxmox VE 2.0 API instances.
+This just provides a get/delete/put/post abstraction layer as methods on Proxmox VE REST API
+This also handles the ticket headers required for authentication
+
+This class provides the building blocks for someone wanting to use Perl to talk to Proxmox PVE. It provides a get/put/post/delete abstraction layer as methods on top of Proxmox's REST API, while also handling the Login Ticket headers required for authentication.
+
+Object representations of the Proxmox VE REST API are included in seperate modules.
+
 =head1 WARNING
 
 We are still moving things around and trying to come up with something
@@ -55,23 +65,6 @@ Please dont be offended if we refactor and rework submissions.
 Perltidy with default settings is prefered style.
 
 Oh, our tests are all against a running server. Care to help make them better?
-
-=head1 DESIGN NOTE
-
-This API would be far nicer if it returned nice objects representing different aspects of the system.
-Such an arrangement would be far better than how this module is currently layed out. It might also be
-less repetitive code.
-
-=head1 DESCRIPTION
-
-This Class provides the framework for talking to Proxmox VE 2.0 API instances.
-This just provides a get/delete/put/post abstraction layer as methods on Proxmox VE REST API
-This also handles the ticket headers required for authentication
-
-More details on the API can be found at L<http://pve.proxmox.com/wiki/Proxmox_VE_API> and
-L<http://pve.proxmox.com/pve2-api-doc/>
-
-This class provides the building blocks for someone wanting to use Perl to talk to Proxmox 2.0. Relatively simple piece of code, just provides a get/put/post/delete abstraction layer as methods on top of Proxmox's REST API, while also handling the Login Ticket headers required for authentication.
 
 =head1 METHODS
 
@@ -492,6 +485,36 @@ sub url_prefix {
 
 }
 
+=head1 PVE VERSIONS SUPPORT
+
+Firstly, there isn't currently any handling of different versions of the API.
+
+Secondly, Proxmox API reference documentation is also, frustratingly, published only alongside the current release. This makes it difficult to support older versions of the API or different versions of the API concurrently.
+
+Fortunately the API is relatively stable.
+
+Based on the above the bug reporting policy is as follows:
+
+=over 2
+
+=item A function in this module doesn't work against the current published API? This a bug and hope to fix it. Pull requests welcome.
+
+=item A function in this module doesn't exist in the current published API? Pull requests welcomes and promptly merged.
+
+=item A function in this module doesn't work against a previous version of the API? A note will be made in the pod only.
+
+=item A function in this module doesn't exist against a previous version of the API? Pull requests will be merged on a case per case basis.
+
+=back
+
+As such breaking changes may be made to this module to support the current API when necessary.
+
+=head1 DESIGN NOTE
+
+This API would be far nicer if it returned nice objects representing different aspects of the system.
+Such an arrangement would be far better than how this module is currently layed out. It might also be
+less repetitive code.
+
 =head1 SEE ALSO
 
 =over 4
@@ -500,9 +523,11 @@ sub url_prefix {
 
 http://www.proxmox.com
 
-=item API reference
+=item API Reference
 
-https://pve.proxmox.com/pve-docs/api-viewer/
+More details on the API can be found at L<http://pve.proxmox.com/wiki/Proxmox_VE_API> and
+L<https://pve.proxmox.com/pve-docs/api-viewer/>
+
 
 =back
 
