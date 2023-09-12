@@ -31,6 +31,7 @@ our @EXPORT  =
     update_cluster_ha_groups
     delete_cluster_ha_group
     get_cluster_log
+    get_cluster_nextid
     get_cluster_options
     update_cluster_options
     get_cluster_resources
@@ -92,7 +93,7 @@ Create new vzdump backup job.
 
 node is a string in pve-node format
 
-I<%args> may items contain from the following list
+I<%args> may contain items from the following list
 
 =over 4
 
@@ -249,7 +250,7 @@ Update vzdump backup job definition.
 
 id is the job ID
 
-I<%args> may items contain from the following list
+I<%args> may contain items from the following list
 
 =over 4
 
@@ -515,7 +516,7 @@ Create a new resource groups.
 
   $ok = $obj->create_cluster_ha_groups(\%args)
 
-I<%args> may items contain from the following list
+I<%args> may contain items from the following list
 
 =over 4
 
@@ -589,7 +590,7 @@ Update resource groups settings
 
 id is the group ID for example pvevm:200
 
-I<%args> may items contain from the following list
+I<%args> may contain items from the following list
 
 =over 4
 
@@ -661,7 +662,7 @@ Read cluster log
 
 Note: Accessible by all authenticated users
 
-I<%args> may items contain from the following list
+I<%args> may contain items from the following list
 
 =over 4
 
@@ -697,6 +698,50 @@ sub get_cluster_log {
 
 }
 
+=head2 get_cluster_nextid
+
+Get next free VMID. Pass a VMID to assert that its free (at time of check).
+
+  $integer = $obj->get_cluster_nextid(\%args)
+
+Note: Accessible by all authenticated users
+
+I<%args> may contain items from the following list
+
+=over 4
+
+=item vmid
+
+Integer. The (unique) ID of the VM.
+
+=back
+
+=cut
+
+sub get_cluster_nextid {
+
+    my $self = shift or return;
+
+    my @p = @_;
+
+    croak 'No arguments for get_cluster_nextid()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        croak 'Single argument not a hash for get_cluster_nextid()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        croak 'Odd number of arguments for get_cluster_nextid()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->get( $base, 'nextid', \%args )
+
+}
+
 =head2 get_cluster_options
 
 Get datacenter options (this is what the API says)
@@ -723,7 +768,7 @@ Update datacenter options (this is what the spec says)
 
 Note: permissions required are ["perm","/",["Sys.Modify"]]
 
-I<%args> may items contain from the following list
+I<%args> may contain items from the following list
 
 =over 4
 
@@ -780,7 +825,7 @@ Resources index (cluster wide)
 
 Note: Accessible by all authententicated users.
 
-I<%args> may items contain from the following list
+I<%args> may contain items from the following list
 
 =over 4
 
