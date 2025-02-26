@@ -1,7 +1,7 @@
 #!/bin/false
 # vim: softtabstop=2 tabstop=2 shiftwidth=2 ft=perl expandtab smarttab
 # PODNAME: Net::Proxmox::VE
-# ABSTRACT: Pure perl API for Proxmox virtualisation
+# ABSTRACT: Pure perl API for Proxmox Virtual Environment
 
 use strict;
 use warnings;
