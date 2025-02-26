@@ -59,7 +59,7 @@ that makes sense. We havent yet implemented all the API functions,
 so far we only have a basic internal abstraction of the REST interface
 and a few modules for each function tree within the API.
 
-Any enchancements are greatly appreciated ! (use github, link below)
+Any enhancements are greatly appreciated ! (use github, link below)
 
 Please dont be offended if we refactor and rework submissions.
 Perltidy with default settings is prefered style.
@@ -526,7 +526,7 @@ http://www.proxmox.com
 =item API Reference
 
 More details on the API can be found at L<http://pve.proxmox.com/wiki/Proxmox_VE_API> and
-L<https://pve.proxmox.com/pve-docs/api-viewer/>
+L<http://pve.proxmox.com/pve-docs/api-viewer/index.html>
 
 
 =back
