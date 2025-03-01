@@ -42,9 +42,9 @@ our @EXPORT =
 
 =head2 access
 
-Without arguments, returns the 'Directory index':
+Without arguments, returns the 'Directory index'.
 
-Note: Accessible by all authententicated users.
+Note: Accessible by all authenticated users.
 
 =cut
 
