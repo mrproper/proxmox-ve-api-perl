@@ -22,6 +22,7 @@ our @EXPORT =
   delete_access_domains delete_access_groups delete_access_roles delete_access_users
   get_access_domains get_access_groups get_access_roles get_access_users
   update_access_domains update_access_groups update_access_roles update_access_users
+  sync_access_domains
   login check_login_ticket clear_login_ticket
   get_access_acl update_access_acl
   update_access_password
@@ -66,6 +67,34 @@ Gets a list of access domains (aka the Authentication domain index)
 
 Note: Anyone can access that, because we need that list for the login box (before the user is authenticated).
 
+No arguments are available.
+
+A hash will be returned which will include the following:
+
+=over 4
+
+=item realm
+
+String.
+
+=item string
+
+String.
+
+=item comment
+
+A comment. The GUI use this text when you select a domain (Realm) on the login window.
+
+Optional.
+
+=item tfa
+
+Enum. Available options: yubico, oath
+
+Optional.
+
+=back
+
 =cut
 
 sub access_domains {
@@ -78,7 +107,7 @@ sub access_domains {
 
 =head2 create_access_domains
 
-Creates a new access domain
+Adds an authentication server. i.e. creates a new access domain
 
   $ok = $obj->create_access_domains( %args );
   $ok = $obj->create_access_domains( \%args );
@@ -93,7 +122,9 @@ String. The id of the authentication domain you wish to add, in pve-realm format
 
 =item type
 
-Enum. This is the server type and is either 'ad' or 'ldap'. This is required.
+Enum. This is the server type and is one of: ad, ldap, openid, pam, or pve
+
+This is required.
 
 =item base_dn
 
@@ -154,9 +185,9 @@ sub create_access_domains {
 
 Gets a single access domain
 
-  $ok = $obj->get_access_domains('realm')
+  $ok = $obj->get_access_domains( $realm )
 
-realm is a string in pve-realm format
+Where $realm is a string in pve-realm format
 
 =cut
 
@@ -164,10 +195,10 @@ sub get_access_domains {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No realm for get_access_domains()';
-    croak 'realm must be a scalar for get_access_domains()' if ref $a;
+    my $realm = shift or croak 'No realm for get_access_domains()';
+    croak 'realm must be a scalar for get_access_domains()' if ref $realm;
 
-    return $self->get( $base, 'domains', $a )
+    return $self->get( $base, 'domains', $realm )
 
 }
 
@@ -175,10 +206,10 @@ sub get_access_domains {
 
 Updates (sets) a access domain's data
 
-  $ok = $obj->update_access_domains( 'realm', %args );
-  $ok = $obj->update_access_domains( 'realm', \%args );
+  $ok = $obj->update_access_domains( $realm, %args );
+  $ok = $obj->update_access_domains( $realm, \%args );
 
-realm is a string in pve-realm format
+Where $realm is a string in pve-realm format
 
 I<%args> may items contain from the following list
 
@@ -219,6 +250,7 @@ String. LDAP user attribute name. Optional.
 sub update_access_domains {
 
     my $self   = shift or return;
+
     my $realm = shift or croak 'No realm provided for update_access_domains()';
     croak 'realm must be a scalar for update_access_domains()' if ref $realm;
     my @p = @_;
@@ -245,18 +277,90 @@ sub update_access_domains {
 
 Deletes a single access domain
 
-  $ok = $obj->delete_access_domains('realm')
+  $ok = $obj->delete_access_domains( $realm )
 
-realm is a string in pve-realm format
+Where $realm is a string in pve-realm format
 
 =cut
 
 sub delete_access_domains {
 
     my $self = shift or return;
-    my $a    = shift or croak 'No argument given for delete_access_domains()';
 
-    return $self->delete( $base, 'domains', $a )
+    my $realm = shift or croak 'No realm provided for delete_access_domains()';
+    croak 'realm must be a scalar for delete_access_domains()' if ref $realm;
+
+    return $self->delete( $base, 'domains', $realm )
+
+}
+
+###
+#
+=head2 sync_access_domains
+
+Syncs users and/or groups from the configured LDAP to user.cfg.
+
+  $ok = $obj->sync_access_domains( $realm, %args );
+  $ok = $obj->sync_access_domains( $realm, \%args );
+
+NOTE: Synced groups will have the name 'name-$realm', so make sure those groups do not exist to prevent overwriting.
+
+I<%args> may items contain from the following list
+
+=over 4
+
+=item realm
+
+String. The id of the authentication domain you wish to add, in pve-realm format. This is required.
+
+=item dry-run
+
+Boolean. If set, does not write anything. Default 0
+
+=item enable-new
+
+Boolean. Enable newly synced users immediately. Default 1
+
+=item remove-vanished
+
+String. A semicolon-seperated list of things to remove when they or the user vanishes during a sync. The following values are possible: 'entry' removes the user/group when not returned from the sync. 'properties' removes the set properties on existing user/group that do not appear in the source (even custom ones). 'acl' removes acls when the user/group is not returned from the sync. Instead of a list it also can be 'none' (the default).
+
+Format: ([acl];[properties];[entry]) | none
+
+=item scope
+
+Enum. Select what to sync.
+
+Possible values: users, groups, both
+
+=back
+
+=cut
+
+sub sync_access_domains {
+
+    my $self = shift or return;
+
+    my $realm = shift or croak 'No realm provided for sync_access_groups()';
+    croak 'realm must be a scalar for sync_access_groups()' if ref $realm;
+
+    my @p = @_;
+
+    croak 'No arguments for sync_access_domains()' unless @p;
+    my %args;
+
+    if ( @p == 1 ) {
+        croak 'Single argument not a hash for sync_access_domains()'
+          unless ref $a eq 'HASH';
+        %args = %{ $p[0] };
+    }
+    else {
+        croak 'Odd number of arguments for sync_access_domains()'
+          if ( scalar @p % 2 != 0 );
+        %args = @p;
+    }
+
+    return $self->post( $base, 'domains', \%args )
 
 }
 
@@ -369,8 +473,10 @@ String. This is a comment associated with the group, this is optional.
 sub update_access_groups {
 
     my $self   = shift or return;
+
     my $realm = shift or croak 'No realm provided for update_access_groups()';
     croak 'realm must be a scalar for update_access_groups()' if ref $realm;
+
     my @p = @_;
 
     croak 'No arguments for update_access_groups()' unless @p;
@@ -855,7 +961,7 @@ sub login {
     my $self = shift or return;
 
     # Prepare login request
-    my $url = $self->url_prefix . '/api2/json/access/ticket';
+    my $url = $self->url_prefix . 'access/ticket';
 
     # Perform login request
     my $request_time = time();
