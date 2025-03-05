@@ -48,26 +48,13 @@ die "unsupport api version\n" unless $pve->api_version_check;
 # list lxc virtual machines by requesting
 my $resources = $pve->get("/cluster/resources");
 
-for my $item( @$resources ) {
+for my $item ( @$resources ) {
     next unless $item->{type} eq 'lxc';
 
-    print "id: " .        $item->{id} . "\n";
-    print "cpu: " .       $item->{cpu} . "\n";
-    print "disk: " .      $item->{disk} . "\n";
-    print "maxcpu: " .    $item->{maxcpu} . "\n";
-    print "maxdisk: " .   $item->{maxdisk} . "\n";
-    print "maxmem: " .    $item->{maxmem} . "\n";
-    print "mem: " .       $item->{mem} . "\n";
-    print "node: " .      $item->{node} . "\n";
-    print "type: " .      $item->{type} . "\n";
-    print "uptime: " .    $item->{uptime} . "\n";
-    print "diskread: " .  $item->{diskread} . "\n";
-    print "diskwrite: " . $item->{diskwrite} . "\n";
-    print "name: " .      $item->{name} . "\n";
-    print "netin: " .     $item->{netin} . "\n";
-    print "netout: " .    $item->{netout} . "\n";
-    print "status: " .    $item->{status} . "\n";
-    print "template: " .  $item->{template} . "\n";
-    print "vmid: " .      $item->{vmid} . "\n";
-    print "\n";
+    for my $k (sort keys %$item) {
+        print $k . ": " . $item->{$k} . "\n";
+    }
+
+    print "\n"
+
 }

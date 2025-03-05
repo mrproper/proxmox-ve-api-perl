@@ -47,7 +47,7 @@ die "unsupport api version\n" unless $pve->api_version_check;
 
 my $nodes = $pve->get('/nodes');
 
-for my $item( @$nodes ) {
+for my $item ( @$nodes ) {
     print "id: " .      $item->{id} . "\n";
     print "cpu: " .     $item->{cpu} . "\n";
     print "disk: " .    $item->{disk} . "\n";
