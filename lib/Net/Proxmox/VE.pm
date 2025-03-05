@@ -185,7 +185,34 @@ sub action {
 
 =head2 api_version
 
-Returns the API version of the proxmox server we are talking to
+Returns the API version of the proxmox server we are talking to,
+including some parts of the global datacenter config.
+
+No arguments are available for this action.
+
+A hash will be returned which will include the following:
+
+=over 4
+
+=item release
+
+String. The current Proxmox VE point release in `x.y` format.
+
+=item repoid
+
+String. The short git revision from which this version was build.
+
+=item version
+
+String. The full pve-manager package version of this node.
+
+=item console
+
+Enum. The default console viewer to use. Optional.
+
+Available values: applet, vv, html5, xtermjs
+
+=back
 
 =cut
 
