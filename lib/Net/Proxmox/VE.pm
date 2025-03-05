@@ -187,7 +187,7 @@ sub action {
 Returns the API version of the proxmox server we are talking to,
 including some parts of the global datacenter config.
 
-No arguments are available for this action.
+No arguments are available.
 
 A hash will be returned which will include the following:
 
