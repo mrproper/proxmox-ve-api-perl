@@ -46,7 +46,7 @@ my $resources = $pve->get("/cluster/resources");
 foreach my $item( @$resources ) {
     next unless $item->{type} eq 'openvz';
 
-    print "id: " .        $item->{id} . "\n"; 
+    print "id: " .        $item->{id} . "\n";
     print "cpu: " .       $item->{cpu} . "\n";
     print "disk: " .      $item->{disk} . "\n";
     print "maxcpu: " .    $item->{maxcpu} . "\n";

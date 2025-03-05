@@ -25,7 +25,7 @@ GetOptions (
     'username=s' => \$username,
     'password=s' => \$password,
     'debug'      => \$debug,
-    'realm'      => \$realm,
+    'realm=s'    => \$realm,
 );
 
 my $pve = Net::Proxmox::VE->new(
@@ -42,8 +42,8 @@ die "unsupport api version\n" unless $pve->api_version_check;
 
 my $nodes = $pve->get('/nodes');
 
-foreach my $item( @$nodes ) {
-    print "id: " .      $item->{id} . "\n"; 
+for my $item( @$nodes ) {
+    print "id: " .      $item->{id} . "\n";
     print "cpu: " .     $item->{cpu} . "\n";
     print "disk: " .    $item->{disk} . "\n";
     print "level: " .   $item->{level} . "\n";

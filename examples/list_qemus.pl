@@ -25,7 +25,7 @@ GetOptions (
     'username=s' => \$username,
     'password=s' => \$password,
     'debug'      => \$debug,
-    'realm'      => \$realm,
+    'realm=s'    => \$realm,
 );
 
 my $pve = Net::Proxmox::VE->new(
@@ -45,10 +45,10 @@ my $resources = $pve->get("/cluster/resources");
 
 # openvz and qemu objects are exactly the same.
 # only the item->{type} value differs (openvz or qemu)
-foreach my $item( @$resources ) {
+for my $item( @$resources ) {
     next unless $item->{type} eq 'qemu';
 
-    print "id: " .        $item->{id} . "\n"; 
+    print "id: " .        $item->{id} . "\n";
     print "cpu: " .       $item->{cpu} . "\n";
     print "disk: " .      $item->{disk} . "\n";
     print "maxcpu: " .    $item->{maxcpu} . "\n";
