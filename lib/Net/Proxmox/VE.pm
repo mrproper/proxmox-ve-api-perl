@@ -28,19 +28,19 @@ use Net::Proxmox::VE::Nodes;
 
 =head1 SYNOPSIS
 
-    use Net::Proxmox::VE;
+  use Net::Proxmox::VE;
 
-    %args = (
-        host     => 'proxmox.local.domain',
-        password => 'barpassword',
-        username => 'root', # optional
-        port     => 8006,   # optional
-        realm    => 'pam',  # optional
-    );
+  %args = (
+      host     => 'proxmox.local.domain',
+      password => 'barpassword',
+      username => 'root', # optional
+      port     => 8006,   # optional
+      realm    => 'pam',  # optional
+  );
 
-    $host = Net::Proxmox::VE->new(%args);
+  $host = Net::Proxmox::VE->new(%args);
 
-    $host->login() or die ('Couldn\'t log in to proxmox host');
+  $host->login() or die ('Couldn\'t log in to proxmox host');
 
 =head1 DESCRIPTION
 
@@ -106,7 +106,7 @@ sub action {
         return unless $self->login();
     }
 
-    my $url = $self->url_prefix . '/api2/json/' . $params{path};
+    my $url = $self->url_prefix . $params{path};
 
     # Grab the useragent
     my $ua = $self->{ua};
@@ -405,14 +405,14 @@ sub new {
     croak 'unknown parameters to new: ' . join(', ', keys %params) if keys %params;
 
     my $self->{params} = {
-            host => $host,
-            password => $password,
-            port => $port,
-            username => $username,
-            realm => $realm,
-            debug => $debug,
-            timeout => $timeout,
-            ssl_opts => $ssl_opts,
+        host     => $host,
+        password => $password,
+        port     => $port,
+        username => $username,
+        realm    => $realm,
+        debug    => $debug,
+        timeout  => $timeout,
+        ssl_opts => $ssl_opts,
     };
 
     $self->{'ticket'}           = undef;
@@ -503,7 +503,7 @@ sub url_prefix {
     my $self = shift or return;
 
     # Prepare prefix for request
-    my $url_prefix = sprintf( 'https://%s:%s',
+    my $url_prefix = sprintf( 'https://%s:%s/api2/json/',
         $self->{params}->{host},
         $self->{params}->{port} );
 
