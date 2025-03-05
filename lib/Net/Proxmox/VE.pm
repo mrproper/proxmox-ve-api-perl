@@ -16,10 +16,10 @@ use JSON::MaybeXS qw(decode_json);
 use LWP::UserAgent;
 
 # done
-use Net::Proxmox::VE::Pools;
-use Net::Proxmox::VE::Storage;
 use Net::Proxmox::VE::Access;
 use Net::Proxmox::VE::Cluster;
+use Net::Proxmox::VE::Pools;
+use Net::Proxmox::VE::Storage;
 
 # wip
 use Net::Proxmox::VE::Nodes;
@@ -88,8 +88,7 @@ sub action {
     $params{method} ||= 'GET';
     $params{post_data} ||= {};
 
-    # Check its a valid method
-
+    # Check for a valid method
     croak "invalid http method specified: $params{method}"
       unless $params{method} =~ m/^(GET|PUT|POST|DELETE)$/;
 
