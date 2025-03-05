@@ -11,13 +11,14 @@ use warnings;
 
 use lib './lib';
 use Net::Proxmox::VE;
+use IO::Socket::SSL qw(SSL_VERIFY_NONE);
 use Data::Dumper;
 use Getopt::Long;
 
 my $host     = 'host';
 my $username = 'user';
 my $password = 'pass';
-my $debug    =  undef;
+my $debug    = undef;
 my $realm    = 'pve'; # 'pve' or 'pam'
 
 GetOptions (
@@ -34,6 +35,10 @@ my $pve = Net::Proxmox::VE->new(
     password => $password,
     debug    => $debug,
     realm    => $realm,
+    ssl_opts => {
+        SSL_verify_mode => SSL_VERIFY_NONE,
+        verify_hostname => 0
+    },
 );
 
 die "login failed\n"          unless $pve->login;
