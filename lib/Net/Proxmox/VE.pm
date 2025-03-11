@@ -1,7 +1,7 @@
 #!/bin/false
-# vim: softtabstop=2 tabstop=2 shiftwidth=2 ft=perl expandtab smarttab
+# vim: softtabstop=4 tabstop=4 shiftwidth=4 ft=perl expandtab smarttab
 # PODNAME: Net::Proxmox::VE
-# ABSTRACT: Pure perl API for Proxmox Virtual Environment
+# ABSTRACT: Pure Perl API for Proxmox Virtual Environment
 
 use strict;
 use warnings;
@@ -238,7 +238,7 @@ sub api_version_check {
         return 1 if $version > 2.0;
     }
 
-    return;
+    return
 }
 
 =head2 debug
@@ -291,6 +291,17 @@ value of action with the GET method
 
 =cut
 
+sub _get {
+    my $self = shift;
+    my $post_data = pop @_;
+    my @path = @_;
+    return $self->action( 
+        path      => join( '/', @path ), 
+        method    => 'GET', 
+        post_data => $post_data  
+    )
+}
+
 sub get {
     my $self = shift or return;
     my $post_data;
@@ -300,9 +311,9 @@ sub get {
 
     # Calling nodes method here would call get method itself and so on
     # Commented out to avoid an infinite loop
-    #if ( $self->nodes ) {
-        return $self->action( path => join( '/', @path ), method => 'GET', post_data => $post_data );
-    #}
+    if ( $self->nodes ) {
+        return $self->_get( @path, $post_data )
+    }
     return;
 }
 
@@ -456,7 +467,7 @@ sub post {
             path      => join( '/', @path ),
             method    => 'POST',
             post_data => $post_data
-          )
+        )
 
     }
     return

@@ -1,5 +1,5 @@
 #!/bin/false
-# vim: softtabstop=2 tabstop=2 shiftwidth=2 ft=perl expandtab smarttab
+# vim: softtabstop=4 tabstop=4 shiftwidth=4 ft=perl expandtab smarttab
 # PODNAME: Net::Proxmox::VE::Nodes
 # ABSTRACT: Functions for the 'nodes' portion of the API
 
@@ -38,7 +38,7 @@ sub nodes {
 
     my $self = shift or return;
 
-    return $self->get($BASEPATH)
+    return $self->_get($BASEPATH, undef)
 
 }
 
