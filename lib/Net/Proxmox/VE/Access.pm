@@ -23,7 +23,6 @@ our @EXPORT =
   get_access_domains get_access_groups get_access_roles get_access_users
   update_access_domains update_access_groups update_access_roles update_access_users
   sync_access_domains
-  login check_login_ticket clear_login_ticket
   get_access_acl update_access_acl
   update_access_password
   );
@@ -49,13 +48,13 @@ Note: Accessible by all authenticated users.
 
 =cut
 
-my $base = '/access';
+my $BASEPATH = '/access';
 
 sub access {
 
     my $self = shift or return;
 
-    return $self->get($base);
+    return $self->get($BASEPATH);
 
 }
 
@@ -101,7 +100,7 @@ sub access_domains {
 
     my $self = shift or return;
 
-    return $self->get( $base, 'domains' )
+    return $self->get( $BASEPATH, 'domains' )
 
 }
 
@@ -177,7 +176,7 @@ sub create_access_domains {
         %args = @p;
     }
 
-    return $self->post( $base, 'domains', \%args )
+    return $self->post( $BASEPATH, 'domains', \%args )
 
 }
 
@@ -198,7 +197,7 @@ sub get_access_domains {
     my $realm = shift or croak 'No realm for get_access_domains()';
     croak 'realm must be a scalar for get_access_domains()' if ref $realm;
 
-    return $self->get( $base, 'domains', $realm )
+    return $self->get( $BASEPATH, 'domains', $realm )
 
 }
 
@@ -269,7 +268,7 @@ sub update_access_domains {
         %args = @p;
     }
 
-    return $self->put( $base, 'domains', $realm, \%args )
+    return $self->put( $BASEPATH, 'domains', $realm, \%args )
 
 }
 
@@ -290,7 +289,7 @@ sub delete_access_domains {
     my $realm = shift or croak 'No realm provided for delete_access_domains()';
     croak 'realm must be a scalar for delete_access_domains()' if ref $realm;
 
-    return $self->delete( $base, 'domains', $realm )
+    return $self->delete( $BASEPATH, 'domains', $realm )
 
 }
 
@@ -360,7 +359,7 @@ sub sync_access_domains {
         %args = @p;
     }
 
-    return $self->post( $base, 'domains', \%args )
+    return $self->post( $BASEPATH, 'domains', \%args )
 
 }
 
@@ -378,7 +377,7 @@ sub access_groups {
 
     my $self = shift or return;
 
-    return $self->get( $base, 'groups' )
+    return $self->get( $BASEPATH, 'groups' )
 
 }
 
@@ -424,7 +423,7 @@ sub create_access_groups {
         %args = @p;
     }
 
-    return $self->post( $base, 'groups', \%args )
+    return $self->post( $BASEPATH, 'groups', \%args )
 
 }
 
@@ -445,7 +444,7 @@ sub get_access_groups {
     my $a = shift or croak 'No groupid for get_access_groups()';
     croak 'groupid must be a scalar for get_access_groups()' if ref $a;
 
-    return $self->get( $base, 'groups', $a )
+    return $self->get( $BASEPATH, 'groups', $a )
 
 }
 
@@ -493,7 +492,7 @@ sub update_access_groups {
         %args = @p;
     }
 
-    return $self->put( $base, 'groups', $realm, \%args )
+    return $self->put( $BASEPATH, 'groups', $realm, \%args )
 
 }
 
@@ -512,7 +511,7 @@ sub delete_access_groups {
     my $self = shift or return;
     my $a    = shift or croak 'No argument given for delete_access_groups()';
 
-    return $self->delete( $base, 'groups', $a )
+    return $self->delete( $BASEPATH, 'groups', $a )
 
 }
 
@@ -531,7 +530,7 @@ sub access_roles {
 
     my $self = shift or return;
 
-    return $self->get( $base, 'roles' )
+    return $self->get( $BASEPATH, 'roles' )
 
 }
 
@@ -577,7 +576,7 @@ sub create_access_roles {
         %args = @p;
     }
 
-    return $self->post( $base, 'roles', \%args )
+    return $self->post( $BASEPATH, 'roles', \%args )
 
 }
 
@@ -598,7 +597,7 @@ sub get_access_roles {
     my $a = shift or croak 'No roleid for get_access_roles()';
     croak 'roleid must be a scalar for get_access_roles()' if ref $a;
 
-    return $self->get( $base, 'roles', $a )
+    return $self->get( $BASEPATH, 'roles', $a )
 
 }
 
@@ -648,7 +647,7 @@ sub update_access_roles {
         %args = @p;
     }
 
-    return $self->put( $base, 'roles', $realm, \%args )
+    return $self->put( $BASEPATH, 'roles', $realm, \%args )
 
 }
 
@@ -667,7 +666,7 @@ sub delete_access_roles {
     my $self = shift or return;
     my $a    = shift or croak 'No argument given for delete_access_roles()';
 
-    return $self->delete( $base, 'roles', $a )
+    return $self->delete( $BASEPATH, 'roles', $a )
 
 }
 
@@ -686,7 +685,7 @@ sub access_users {
 
     my $self = shift or return;
 
-    return $self->get( $base, 'users' )
+    return $self->get( $BASEPATH, 'users' )
 
 }
 
@@ -760,7 +759,7 @@ sub create_access_users {
         %args = @p;
     }
 
-    return $self->post( $base, 'users', \%args )
+    return $self->post( $BASEPATH, 'users', \%args )
 
 }
 
@@ -781,7 +780,7 @@ sub get_access_users {
     my $a = shift or croak 'No userid for get_access_users()';
     croak 'userid must be a scalar for get_access_users()' if ref $a;
 
-    return $self->get( $base, 'users', $a )
+    return $self->get( $BASEPATH, 'users', $a )
 
 }
 
@@ -855,7 +854,7 @@ sub update_access_users {
         %args = @p;
     }
 
-    return $self->put( $base, 'users', $realm, \%args )
+    return $self->put( $BASEPATH, 'users', $realm, \%args )
 
 }
 
@@ -874,60 +873,7 @@ sub delete_access_users {
     my $self = shift or return;
     my $a    = shift or croak 'No argument given for delete_access_users()';
 
-    return $self->delete( $base, 'users', $a )
-
-}
-
-=head2 check_login_ticket
-
-Verifies if the objects login ticket is valid and not expired
-
-Returns true if valid
-Returns false and clears the the login ticket details inside the object if invalid
-
-=cut
-
-sub check_login_ticket {
-
-    my $self = shift or return;
-
-    if (   $self->{ticket}
-        && ref $self->{ticket} eq 'HASH'
-        && $self->{ticket}
-        && $self->{ticket}->{ticket}
-        && $self->{ticket}->{CSRFPreventionToken}
-        && $self->{ticket}->{username} eq $self->{params}->{username} . '@'
-        . $self->{params}->{realm}
-        && $self->{ticket_timestamp}
-        && ( $self->{ticket_timestamp} + $self->{ticket_life} ) > time() )
-    {
-        return 1;
-    }
-    else {
-        $self->clear_login_ticket;
-    }
-
-    return
-
-}
-
-=head2 clear_login_ticket
-
-Clears the login ticket inside the object
-
-=cut
-
-sub clear_login_ticket {
-
-    my $self = shift or return;
-
-    if ( $self->{ticket} or $self->{timestamp} ) {
-        $self->{ticket}           = undef;
-        $self->{ticket_timestamp} = undef;
-        return 1;
-    }
-
-    return
+    return $self->delete( $BASEPATH, 'users', $a )
 
 }
 
@@ -945,58 +891,8 @@ sub get_access_acl {
 
     my $self = shift or return;
 
-    return $self->get( $base, 'acl' );
+    return $self->get( $BASEPATH, 'acl' );
 
-}
-
-=head2 login
-
-Initiates the log in to the PVE Server using JSON API, and potentially obtains an Access Ticket.
-
-Returns true if success
-
-=cut
-
-sub login {
-    my $self = shift or return;
-
-    # Prepare login request
-    my $url = $self->url_prefix . 'access/ticket';
-
-    # Perform login request
-    my $request_time = time();
-    my $response     = $self->{ua}->post(
-        $url,
-        {
-            'username' => $self->{params}->{username} . '@'
-              . $self->{params}->{realm},
-            'password' => $self->{params}->{password},
-        },
-    );
-
-    if ( $response->is_success ) {
-        # my $content           = $response->decoded_content;
-        my $login_ticket_data = decode_json( $response->decoded_content );
-        $self->{ticket} = $login_ticket_data->{data};
-
-        # We use request time as the time to get the json ticket is undetermined,
-        # id rather have a ticket a few seconds shorter than have a ticket that incorrectly
-        # says its valid for a couple more
-        $self->{ticket_timestamp} = $request_time;
-        print "DEBUG: login successful\n"
-          if $self->{params}->{debug};
-        return 1;
-    }
-    else {
-
-        print "DEBUG: login not successful\n"
-          if $self->{params}->{debug};
-        print "DEBUG: " . $response->status_line . "\n"
-          if $self->{params}->{debug};
-
-    }
-
-    return;
 }
 
 =head2 update_access_acl
@@ -1057,7 +953,7 @@ sub update_access_acl {
         %args = @p;
     }
 
-    return $self->put( $base, 'acl', \%args )
+    return $self->put( $BASEPATH, 'acl', \%args )
 
 }
 
@@ -1107,7 +1003,7 @@ sub update_access_password {
         %args = @p;
     }
 
-    return $self->put( $base, 'password', \%args )
+    return $self->put( $BASEPATH, 'password', \%args )
 
 }
 

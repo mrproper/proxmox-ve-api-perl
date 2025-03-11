@@ -24,6 +24,8 @@ use Net::Proxmox::VE::Storage;
 # wip
 use Net::Proxmox::VE::Nodes;
 
+my $API2_BASE_URL = 'https://%s:%s/api2/json/';
+
 =encoding utf8
 
 =head1 SYNOPSIS
@@ -153,7 +155,7 @@ sub action {
           if $self->{params}->{debug};
 
         # my $content = $response->decoded_content;
-        my $data    = decode_json( $response->decoded_content );
+        my $data = decode_json( $response->decoded_content );
 
         if ( ref $data eq 'HASH'
             && exists $data->{data} )
@@ -241,6 +243,56 @@ sub api_version_check {
     return
 }
 
+=head2 check_login_ticket
+
+Verifies if the objects login ticket is valid and not expired
+
+Returns true if valid
+Returns false and clears the the login ticket details inside the object if invalid
+
+=cut
+
+sub check_login_ticket {
+
+    my $self = shift or return;
+
+    if (   $self->{ticket}
+        && ref $self->{ticket} eq 'HASH'
+        && $self->{ticket}->{ticket}
+        && $self->{ticket}->{CSRFPreventionToken}
+        && $self->{ticket}->{username} eq $self->{params}->{username} . '@'
+        . $self->{params}->{realm}
+        && $self->{ticket_timestamp}
+        && ( $self->{ticket_timestamp} + $self->{ticket_life} ) > time() )
+    {
+        return 1
+    }
+
+    $self->clear_login_ticket;
+    return
+
+}
+
+=head2 clear_login_ticket
+
+Clears the login ticket inside the object
+
+=cut
+
+sub clear_login_ticket {
+
+    my $self = shift or return;
+
+    if ( $self->{ticket} or $self->{timestamp} ) {
+        $self->{ticket}           = undef;
+        $self->{ticket_timestamp} = undef;
+        return 1
+    }
+
+    return
+
+}
+
 =head2 debug
 
 Has a single optional argument of 1 or 0 representing enable or disable debugging.
@@ -314,6 +366,54 @@ sub get {
     if ( $self->nodes ) {
         return $self->_get( @path, $post_data )
     }
+    return;
+}
+
+=head2 login
+
+Initiates the log in to the PVE Server using JSON API, and potentially obtains an Access Ticket.
+
+Returns true if success
+
+=cut
+
+sub login {
+    my $self = shift or return;
+
+    # Prepare login request
+    my $url = $self->url_prefix . 'access/ticket';
+
+    # Perform login request
+    my $request_time = time();
+    my $response     = $self->{ua}->post(
+        $url,
+        {
+            'username' => $self->{params}->{username} . '@'
+              . $self->{params}->{realm},
+            'password' => $self->{params}->{password},
+        },
+    );
+
+    if ( $response->is_success ) {
+        # my $content           = $response->decoded_content;
+        my $login_ticket_data = decode_json( $response->decoded_content );
+        $self->{ticket} = $login_ticket_data->{data};
+
+        # We use request time as the time to get the json ticket is undetermined,
+        # id rather have a ticket a few seconds shorter than have a ticket that incorrectly
+        # says its valid for a couple more
+        $self->{ticket_timestamp} = $request_time;
+        print "DEBUG: login successful\n"
+          if $self->{params}->{debug};
+        return 1
+    }
+    else {
+        if ($self->{params}->{debug}) {
+            print "DEBUG: login not successful\n";
+            print "DEBUG: " . $response->status_line . "\n";
+        }
+    }
+
     return;
 }
 
@@ -514,7 +614,7 @@ sub url_prefix {
     my $self = shift or return;
 
     # Prepare prefix for request
-    my $url_prefix = sprintf( 'https://%s:%s/api2/json/',
+    my $url_prefix = sprintf( $API2_BASE_URL,
         $self->{params}->{host},
         $self->{params}->{port} );
 
