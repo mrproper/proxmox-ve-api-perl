@@ -30,13 +30,13 @@ Note: Accessible by all authententicated users.
 
 =cut
 
-my $base = '/nodes';
+my $BASEPATH = '/nodes';
 
 sub nodes {
 
     my $self = shift or return;
 
-    return $self->get($base)
+    return $self->get($BASEPATH)
 
 }
 
@@ -44,9 +44,9 @@ sub nodes {
 
 Gets a single nodes details
 
-  $ok = $obj->get_nodes('node')
+  $ok = $obj->get_nodes( $node )
 
-node is a string in pve-node format
+Where $Where I<$node> is a string in pve-node format
 
 Note: Accessible by all authententicated users.
 
@@ -56,10 +56,10 @@ sub get_nodes {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes()';
-    croak 'node must be a scalar for get_nodes()' if ref $a;
+    my $node = shift or croak 'No node for get_nodes()';
+    croak 'node must be a scalar for get_nodes()' if ref $node;
 
-    return $self->get( $base, $a )
+    return $self->get( $BASEPATH, $node )
 
 }
 
@@ -67,9 +67,9 @@ sub get_nodes {
 
 Gets a single nodes list of appliances
 
-  $ok = $obj->get_nodes_aplinfo('node')
+  $ok = $obj->get_nodes_aplinfo( $node )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 Note: Accessible by all authententicated users.
 
@@ -79,10 +79,10 @@ sub get_nodes_aplinfo {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes_aplinfo()';
-    croak 'node must be a scalar for get_nodes_aplinfo()' if ref $a;
+    my $node = shift or croak 'No node for get_nodes_aplinfo()';
+    croak 'node must be a scalar for get_nodes_aplinfo()' if ref $node;
 
-    return $self->get( $base, $a, 'aplinfo' )
+    return $self->get( $BASEPATH, $node, 'aplinfo' )
 
 }
 
@@ -90,9 +90,9 @@ sub get_nodes_aplinfo {
 
 Create (upload) appliance templates.
 
-  $ok = $obj->download_nodes_aplinfo('node',\%args)
+  $ok = $obj->download_nodes_aplinfo( $node, \%args )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 I<%args> may items contain from the following list
 
@@ -116,8 +116,8 @@ sub create_nodes_aplinfo {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for create_nodes_aplinfo()';
-    croak 'node must be a scalar for create_nodes_aplinfo()' if ref $a;
+    my $node = shift or croak 'No node for create_nodes_aplinfo()';
+    croak 'node must be a scalar for create_nodes_aplinfo()' if ref $node;
 
     my @p = @_;
 
@@ -126,7 +126,7 @@ sub create_nodes_aplinfo {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for create_nodes_aplinfo()'
-          unless ref $a eq 'HASH';
+          unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -135,7 +135,7 @@ sub create_nodes_aplinfo {
         %args = @p;
     }
 
-    return $self->post( $base, $a, 'aplinfo', \%args )
+    return $self->post( $BASEPATH, $node, 'aplinfo', \%args )
 
 }
 
@@ -143,9 +143,9 @@ sub create_nodes_aplinfo {
 
 Get DNS settings.
 
-  $ok = $obj->get_nodes_dns('node')
+  $ok = $obj->get_nodes_dns( $node )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 Note: required permissions are ["perm","/nodes/{node}",["Sys.Audit"]]
 
@@ -155,10 +155,10 @@ sub get_nodes_dns {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes_dns()';
-    croak 'node must be a scalar for get_nodes_dns()' if ref $a;
+    my $node = shift or croak 'No node for get_nodes_dns()';
+    croak 'node must be a scalar for get_nodes_dns()' if ref $node;
 
-    return $self->get( $base, $a, 'dns' )
+    return $self->get( $BASEPATH, $node, 'dns' )
 
 }
 
@@ -166,9 +166,9 @@ sub get_nodes_dns {
 
 Updates (writes) DNS settings.
 
-  $ok = $obj->update_nodes_dns('node', \%args)
+  $ok = $obj->update_nodes_dns( $node, \%args )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 I<%args> may items contain from the following list
 
@@ -188,8 +188,8 @@ sub update_nodes_dns {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for update_nodes_dns()';
-    croak 'node must be a scalar for update_nodes_dns()' if ref $a;
+    my $node = shift or croak 'No node for update_nodes_dns()';
+    croak 'node must be a scalar for update_nodes_dns()' if ref $node;
 
     my @p = @_;
 
@@ -198,7 +198,7 @@ sub update_nodes_dns {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for update_nodes_dns()'
-          unless ref $a eq 'HASH';
+          unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -207,7 +207,7 @@ sub update_nodes_dns {
         %args = @p;
     }
 
-    return $self->put( $base, $a, 'dns', \%args )
+    return $self->put( $BASEPATH, $node, 'dns', \%args )
 
 }
 
@@ -215,9 +215,9 @@ sub update_nodes_dns {
 
 Get nodes RRD statistics (returns PNG).
 
-  $ok = $obj->get_nodes_rrd('node', \%args)
+  $ok = $obj->get_nodes_rrd( $node, \%args )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 I<%args> may items contain from the following list
 
@@ -245,8 +245,8 @@ sub get_nodes_rrd {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes_rrd()';
-    croak 'node must be a scalar for get_nodes_rrd()' if ref $a;
+    my $node = shift or croak 'No node for get_nodes_rrd()';
+    croak 'node must be a scalar for get_nodes_rrd()' if ref $node;
 
     my @p = @_;
 
@@ -255,7 +255,7 @@ sub get_nodes_rrd {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for get_nodes_rrd()'
-          unless ref $a eq 'HASH';
+          unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -264,7 +264,7 @@ sub get_nodes_rrd {
         %args = @p;
     }
 
-    return $self->get( $base, $a, 'rrd', \%args )
+    return $self->get( $BASEPATH, $node, 'rrd', \%args )
 
 }
 
@@ -272,9 +272,9 @@ sub get_nodes_rrd {
 
 Get nodes RRD statistics.
 
-  $ok = $obj->get_nodes_rrddata('node', \%args)
+  $ok = $obj->get_nodes_rrddata( $node, \%args )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 I<%args> may items contain from the following list
 
@@ -298,8 +298,8 @@ sub get_nodes_rrddata {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes_rrddata()';
-    croak 'node must be a scalar for get_nodes_rrddata()' if ref $a;
+    my $node = shift or croak 'No node for get_nodes_rrddata()';
+    croak 'node must be a scalar for get_nodes_rrddata()' if ref $node;
 
     my @p = @_;
 
@@ -308,7 +308,7 @@ sub get_nodes_rrddata {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for get_nodes_rrddata()'
-          unless ref $a eq 'HASH';
+          unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -317,7 +317,7 @@ sub get_nodes_rrddata {
         %args = @p;
     }
 
-    return $self->get( $base, $a, 'rrddata', \%args )
+    return $self->get( $BASEPATH, $node, 'rrddata', \%args )
 
 }
 
@@ -325,9 +325,9 @@ sub get_nodes_rrddata {
 
 Gets node status
 
-  $ok = $obj->get_nodes_status('node')
+  $ok = $obj->get_nodes_status( $node )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 Note: required permissions are ["perm","/nodes/{node}",["Sys.Audit"]]
 
@@ -337,10 +337,10 @@ sub get_nodes_status {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes_status()';
-    croak 'node must be a scalar for get_nodes_status()' if ref $a;
+    my $node = shift or croak 'No node for get_nodes_status()';
+    croak 'node must be a scalar for get_nodes_status()' if ref $node;
 
-    return $self->get( $base, $a, 'status' )
+    return $self->get( $BASEPATH, $node, 'status' )
 
 }
 
@@ -349,9 +349,9 @@ sub get_nodes_status {
 
 Reboot or shutdown a node
 
-  $ok = $obj->updates_nodes_status('node', \%args)
+  $ok = $obj->updates_nodes_status( $node, \%args )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 I<%args> may items contain from the following list
 
@@ -371,8 +371,8 @@ sub update_nodes_status {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for update_nodes_status()';
-    croak 'node must be a scalar for update_nodes_status()' if ref $a;
+    my $node = shift or croak 'No node for update_nodes_status()';
+    croak 'node must be a scalar for update_nodes_status()' if ref $node;
 
     my @p = @_;
 
@@ -381,7 +381,7 @@ sub update_nodes_status {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for update_nodes_status()'
-          unless ref $a eq 'HASH';
+          unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -390,7 +390,7 @@ sub update_nodes_status {
         %args = @p;
     }
 
-    return $self->post( $base, $a, 'status', \%args )
+    return $self->post( $BASEPATH, $node, 'status', \%args )
 
 
 }
@@ -399,9 +399,9 @@ sub update_nodes_status {
 
 Read nodes subscription info
 
-  $ok = $obj->get_nodes_subscription('node')
+  $ok = $obj->get_nodes_subscription( $node )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 Note: Root only.
 
@@ -411,10 +411,10 @@ sub get_nodes_subscription {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes_subscription()';
-    croak 'node must be a scalar for get_nodes_subscription()' if ref $a;
+    my $node = shift or croak 'No node for get_nodes_subscription()';
+    croak 'node must be a scalar for get_nodes_subscription()' if ref $node;
 
-    return $self->get( $base, $a, 'subscription' )
+    return $self->get( $BASEPATH, $node, 'subscription' )
 
 }
 
@@ -422,9 +422,9 @@ sub get_nodes_subscription {
 
 Create/update nodes subscription info
 
-  $ok = $obj->create_nodes_subscription('node', \%args)
+  $ok = $obj->create_nodes_subscription( $node, \%args )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 I<%args> may items contain from the following list
 
@@ -444,8 +444,8 @@ sub create_nodes_subscription {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for create_nodes_subscription()';
-    croak 'node must be a scalar for create_nodes_subscription()' if ref $a;
+    my $node = shift or croak 'No node for create_nodes_subscription()';
+    croak 'node must be a scalar for create_nodes_subscription()' if ref $node;
 
     my @p = @_;
 
@@ -454,7 +454,7 @@ sub create_nodes_subscription {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for create_nodes_subscription()'
-          unless ref $a eq 'HASH';
+          unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -463,7 +463,7 @@ sub create_nodes_subscription {
         %args = @p;
     }
 
-    return $self->post( $base, $a, 'subscription', \%args )
+    return $self->post( $BASEPATH, $node, 'subscription', \%args )
 
 }
 
@@ -471,9 +471,9 @@ sub create_nodes_subscription {
 
 Updates/sets subscription key
 
-  $ok = $obj->update_nodes_subscription_key('node', \%args)
+  $ok = $obj->update_nodes_subscription_key( $node, \%args )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 I<%args> may items contain from the following list
 
@@ -493,8 +493,8 @@ sub update_nodes_subscription_key {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for update_nodes_subscription_key()';
-    croak 'node must be a scalar for update_nodes_subscription_key()' if ref $a;
+    my $node = shift or croak 'No node for update_nodes_subscription_key()';
+    croak 'node must be a scalar for update_nodes_subscription_key()' if ref $node;
 
     my @p = @_;
 
@@ -503,7 +503,7 @@ sub update_nodes_subscription_key {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for update_nodes_subscription_key()'
-          unless ref $a eq 'HASH';
+          unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -512,7 +512,7 @@ sub update_nodes_subscription_key {
         %args = @p;
     }
 
-    return $self->put( $base, $a, 'subscription', \%args )
+    return $self->put( $BASEPATH, $node, 'subscription', \%args )
 
 }
 
@@ -520,9 +520,9 @@ sub update_nodes_subscription_key {
 
 Reads system log
 
-  $ok = $obj->get_nodes_syslog('node', \%args)
+  $ok = $obj->get_nodes_syslog( $node, \%args )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 Note: required permissions are ["perm","/nodes/{node}",["Sys.Syslog"]]
 
@@ -532,8 +532,8 @@ sub get_nodes_syslog {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes_syslog()';
-    croak 'node must be a scalar for get_nodes_syslog()' if ref $a;
+    my $node = shift or croak 'No node for get_nodes_syslog()';
+    croak 'node must be a scalar for get_nodes_syslog()' if ref $node;
 
     my @p = @_;
 
@@ -542,7 +542,7 @@ sub get_nodes_syslog {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for get_nodes_syslog()'
-          unless ref $a eq 'HASH';
+          unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -551,7 +551,7 @@ sub get_nodes_syslog {
         %args = @p;
     }
 
-    return $self->get( $base, $a, 'syslog', \%args )
+    return $self->get( $BASEPATH, $node, 'syslog', \%args )
 
 }
 
@@ -559,9 +559,9 @@ sub get_nodes_syslog {
 
 Read server time and time zone settings
 
-  $ok = $obj->get_nodes_time('node')
+  $ok = $obj->get_nodes_time( $node )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 Note: required permissions are ["perm","/nodes/{node}",["Sys.Audit"]]
 
@@ -571,10 +571,10 @@ sub get_nodes_time {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes_time()';
-    croak 'node must be a scalar for get_nodes_time()' if ref $a;
+    my $node = shift or croak 'No node for get_nodes_time()';
+    croak 'node must be a scalar for get_nodes_time()' if ref $node;
 
-    return $self->get( $base, $a, 'time' )
+    return $self->get( $BASEPATH, $node, 'time' )
 
 }
 
@@ -582,9 +582,9 @@ sub get_nodes_time {
 
 Updates time zone
 
-  $ok = $obj->update_nodes_time('node', \%args)
+  $ok = $obj->update_nodes_time( $node, \%args )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 I<%args> may items contain from the following list
 
@@ -604,8 +604,8 @@ sub update_nodes_time {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for update_nodes_time()';
-    croak 'node must be a scalar for update_nodes_time()' if ref $a;
+    my $node = shift or croak 'No node for update_nodes_time()';
+    croak 'node must be a scalar for update_nodes_time()' if ref $node;
 
     my @p = @_;
 
@@ -614,7 +614,7 @@ sub update_nodes_time {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for update_nodes_time()'
-          unless ref $a eq 'HASH';
+          unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -623,7 +623,7 @@ sub update_nodes_time {
         %args = @p;
     }
 
-    return $self->put( $base, $a, 'time', \%args )
+    return $self->put( $BASEPATH, $node, 'time', \%args )
 
 }
 
@@ -631,9 +631,9 @@ sub update_nodes_time {
 
 Get user_beancounters failcnt for all active containers.
 
-  $ok = $obj->get_nodes_ubcfailcnt('node')
+  $ok = $obj->get_nodes_ubcfailcnt( $node )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 Note: required permissions are ["perm","/nodes/{node}",["Sys.Audit"]]
 
@@ -643,10 +643,10 @@ sub get_nodes_ubcfailcnt {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes_ubcfailcnt()';
-    croak 'node must be a scalar for get_nodes_ubcfailcnt()' if ref $a;
+    my $node = shift or croak 'No node for get_nodes_ubcfailcnt()';
+    croak 'node must be a scalar for get_nodes_ubcfailcnt()' if ref $node;
 
-    return $self->get( $base, $a, 'ubcfailcnt' )
+    return $self->get( $BASEPATH, $node, 'ubcfailcnt' )
 
 }
 
@@ -654,9 +654,9 @@ sub get_nodes_ubcfailcnt {
 
 Get user_beancounters failcnt for all active containers.
 
-  $ok = $obj->get_nodes_version('node')
+  $ok = $obj->get_nodes_version( $node )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 Note: Accessible by all authententicated users.
 
@@ -666,10 +666,10 @@ sub get_nodes_version {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes_version()';
-    croak 'node must be a scalar for get_nodes_version()' if ref $a;
+    my $node = shift or croak 'No node for get_nodes_version()';
+    croak 'node must be a scalar for get_nodes_version()' if ref $node;
 
-    return $self->get( $base, $a, 'version' )
+    return $self->get( $BASEPATH, $node, 'version' )
 
 }
 
@@ -677,9 +677,9 @@ sub get_nodes_version {
 
 Creates a VNC Shell proxy.
 
-  $ok = $obj->create_nodes_vncshell('node')
+  $ok = $obj->create_nodes_vncshell( $node )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 Note: Restricted to users on realm 'pam'. Required permissions are ["perm","/nodes/{node}",["Sys.Console"]]
 
@@ -689,10 +689,10 @@ sub create_nodes_vncshell {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for create_nodes_vncshell()';
-    croak 'node must be a scalar for create_nodes_vncshell()' if ref $a;
+    my $node = shift or croak 'No node for create_nodes_vncshell()';
+    croak 'node must be a scalar for create_nodes_vncshell()' if ref $node;
 
-    return $self->post( $base, $a, 'vncshell' )
+    return $self->post( $BASEPATH, $node, 'vncshell' )
 
 }
 
@@ -700,9 +700,9 @@ sub create_nodes_vncshell {
 
 Create backup.
 
-  $ok = $obj->create_nodes_vzdump('node', \%args)
+  $ok = $obj->create_nodes_vzdump( $node, \%args )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 I<%args> may items contain from the following list
 
@@ -802,8 +802,8 @@ sub create_nodes_vzdump {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for create_nodes_vzdump()';
-    croak 'node must be a scalar for create_nodes_vzdump()' if ref $a;
+    my $node = shift or croak 'No node for create_nodes_vzdump()';
+    croak 'node must be a scalar for create_nodes_vzdump()' if ref $node;
 
     my @p = @_;
 
@@ -812,7 +812,7 @@ sub create_nodes_vzdump {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for create_nodes_vzdump()'
-          unless ref $a eq 'HASH';
+          unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -821,7 +821,7 @@ sub create_nodes_vzdump {
         %args = @p;
     }
 
-    return $self->post( $base, $a, 'dns', \%args )
+    return $self->post( $BASEPATH, $node, 'dns', \%args )
 
 }
 
@@ -829,9 +829,9 @@ sub create_nodes_vzdump {
 
 List available networks on the node
 
-  $ok = $obj->nodes_network('node', \%args)
+  $ok = $obj->nodes_network( $node, \%args )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 I<%args> may items contain from the following list
 
@@ -851,8 +851,8 @@ sub nodes_network {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for nodes_network()';
-    croak 'node must be a scalar for nodes_network()' if ref $a;
+    my $node = shift or croak 'No node for nodes_network()';
+    croak 'node must be a scalar for nodes_network()' if ref $node;
 
     my @p = @_;
 
@@ -861,7 +861,7 @@ sub nodes_network {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for nodes_network()'
-          unless ref $a eq 'HASH';
+          unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -870,7 +870,7 @@ sub nodes_network {
         %args = @p;
     }
 
-    return $self->get( $base, $a, 'network', \%args )
+    return $self->get( $BASEPATH, $node, 'network', \%args )
 
 }
 
@@ -878,9 +878,9 @@ sub nodes_network {
 
 Create network device configuration
 
-  $ok = $obj->create_nodes_network('node', \%args)
+  $ok = $obj->create_nodes_network( $node, \%args )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 I<%args> may items contain from the following list
 
@@ -928,8 +928,8 @@ sub create_nodes_network {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for create_nodes_network()';
-    croak 'node must be a scalar for create_nodes_network()' if ref $a;
+    my $node = shift or croak 'No node for create_nodes_network()';
+    croak 'node must be a scalar for create_nodes_network()' if ref $node;
 
     my @p = @_;
 
@@ -938,7 +938,7 @@ sub create_nodes_network {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for create_nodes_network()'
-          unless ref $a eq 'HASH';
+          unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -947,7 +947,7 @@ sub create_nodes_network {
         %args = @p;
     }
 
-    return $self->post( $base, $a, 'network', \%args )
+    return $self->post( $BASEPATH, $node, 'network', \%args )
 
 }
 
@@ -955,9 +955,9 @@ sub create_nodes_network {
 
 Revert network configuration changes.
 
-  $ok = $obj->revert_nodes_network('node')
+  $ok = $obj->revert_nodes_network( $node )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 Note: required permissions are ["perm","/nodes/{node}",["Sys.Modify"]]
 
@@ -967,10 +967,10 @@ sub revert_nodes_network {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for revert_nodes_network()';
-    croak 'node must be a scalar for revert_nodes_network()' if ref $a;
+    my $node = shift or croak 'No node for revert_nodes_network()';
+    croak 'node must be a scalar for revert_nodes_network()' if ref $node;
 
-    return $self->delete( $base, $a )
+    return $self->delete( $BASEPATH, $node )
 
 }
 
@@ -979,9 +979,9 @@ sub revert_nodes_network {
 
 Read network device configuration
 
-  $ok = $obj->get_nodes_network_iface('node', 'iface')
+  $ok = $obj->get_nodes_network_iface( $node, 'iface')
 
-node is a string in pve-node format, iface is a string in pve-iface format
+Where I<$node> is a string in pve-node format, iface is a string in pve-iface format
 
 Note: required permissions are ["perm","/nodes/{node}",["Sys.Audit"]]
 
@@ -991,13 +991,13 @@ sub get_nodes_network_iface {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes_network_iface()';
+    my $node = shift or croak 'No node for get_nodes_network_iface()';
     my $b = shift or croak 'No iface for get_nodes_network_iface()';
 
-    croak 'node must be a scalar for get_nodes_network_iface()' if ref $a;
+    croak 'node must be a scalar for get_nodes_network_iface()' if ref $node;
     croak 'iface must be a scalar for get_nodes_network_iface()' if ref $b;
 
-    return $self->get( $base, $a, 'network', $b )
+    return $self->get( $BASEPATH, $node, 'network', $b )
 
 }
 
@@ -1005,9 +1005,9 @@ sub get_nodes_network_iface {
 
 Create network device configuration
 
-  $ok = $obj->update_nodes_network_iface('node', 'iface', \%args)
+  $ok = $obj->update_nodes_network_iface( $node, 'iface',
 
-node is a string in pve-node format, iface is a string in pve-iface format
+Where I<$node> is a string in pve-node format, iface is a string in pve-iface format
 
 I<%args> may items contain from the following list
 
@@ -1055,10 +1055,10 @@ sub update_nodes_network_iface {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for update_nodes_network_iface()';
+    my $node = shift or croak 'No node for update_nodes_network_iface()';
     my $b = shift or croak 'No iface for update_nodes_network_iface()';
 
-    croak 'node must be a scalar for update_nodes_network_iface()' if ref $a;
+    croak 'node must be a scalar for update_nodes_network_iface()' if ref $node;
     croak 'iface must be a scalar for update_nodes_network_iface()' if ref $b;
 
     my @p = @_;
@@ -1068,7 +1068,7 @@ sub update_nodes_network_iface {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for update_nodes_network_iface()'
-          unless ref $a eq 'HASH';
+          unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -1077,7 +1077,7 @@ sub update_nodes_network_iface {
         %args = @p;
     }
 
-    return $self->post( $base, $a, 'network', $b, \%args )
+    return $self->post( $BASEPATH, $node, 'network', $b, \%args )
 
 }
 
@@ -1085,9 +1085,11 @@ sub update_nodes_network_iface {
 
 Delete network device configuration
 
-  $ok = $obj->delete_nodes_network_iface('node', 'iface')
+  $ok = $obj->delete_nodes_network_iface( $node, $iface )
 
-node is a string in pve-node format, iface is a string in pve-iface format
+Where I<$node> is a string in pve-node format
+
+Where I<$iface> is a string in pve-iface format
 
 Note: required permissions are ["perm","/nodes/{node}",["Sys.Modify"]]
 
@@ -1097,13 +1099,13 @@ sub delete_nodes_network_iface {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for delete_nodes_network_iface()';
-    my $b = shift or croak 'No iface for delete_nodes_network_iface()';
+    my $node = shift or croak 'No node for delete_nodes_network_iface()';
+    my $iface = shift or croak 'No iface for delete_nodes_network_iface()';
 
-    croak 'node must be a scalar for delete_nodes_network_iface()' if ref $a;
-    croak 'iface must be a scalar for delete_nodes_network_iface()' if ref $b;
+    croak 'node must be a scalar for delete_nodes_network_iface()' if ref $node;
+    croak 'iface must be a scalar for delete_nodes_network_iface()' if ref $iface;
 
-    return $self->get( $base, $a, 'network', $b )
+    return $self->get( $BASEPATH, $node, 'network', $iface )
 
 }
 
@@ -1111,9 +1113,9 @@ sub delete_nodes_network_iface {
 
 OpenVZ container index (per node).
 
-  $ok = $obj->nodes_openvz('node')
+  $ok = $obj->nodes_openvz( $node )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 Note: Only lists VMs where you have VM.Audit permissons on /vms/<vmid>.
 
@@ -1123,10 +1125,10 @@ sub nodes_openvz {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for nodes_openvz()';
-    croak 'node must be a scalar for nodes_openvz()' if ref $a;
+    my $node = shift or croak 'No node for nodes_openvz()';
+    croak 'node must be a scalar for nodes_openvz()' if ref $node;
 
-    return $self->get( $base, $a, 'openvz')
+    return $self->get( $BASEPATH, $node, 'openvz' )
 
 }
 
@@ -1134,9 +1136,9 @@ sub nodes_openvz {
 
 Create or restore a container.
 
-  $ok = $obj->create_nodes_openvz('node', \%args)
+  $ok = $obj->create_nodes_openvz( $node, \%args )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
 I<%args> may items contain from the following list
 
@@ -1238,8 +1240,8 @@ sub create_nodes_openvz {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for create_nodes_openvz()';
-    croak 'node must be a scalar for create_nodes_openvz()' if ref $a;
+    my $node = shift or croak 'No node for create_nodes_openvz()';
+    croak 'node must be a scalar for create_nodes_openvz()' if ref $node;
 
     my @p = @_;
 
@@ -1248,7 +1250,7 @@ sub create_nodes_openvz {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for create_nodes_openvz()'
-          unless ref $a eq 'HASH';
+          unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -1257,7 +1259,7 @@ sub create_nodes_openvz {
         %args = @p;
     }
 
-    return $self->get( $base, $a, 'openvz', \%args )
+    return $self->get( $BASEPATH, $node, 'openvz', \%args )
 
 }
 
@@ -1265,11 +1267,11 @@ sub create_nodes_openvz {
 
 Gets an openvz nodes details
 
-  $ok = $obj->get_nodes_openvz('node','vmid')
+  $ok = $obj->get_nodes_openvz( $node, $vmid )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
-mvid is an integer in pve-vmid format
+Where I<$vmid> is an integer in pve-vmid format
 
 Note: Accessible by all authententicated users.
 
@@ -1279,13 +1281,13 @@ sub get_nodes_openvz {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes_openvz()';
-    croak 'node must be a scalar for get_nodes_openvz()' if ref $a;
+    my $node = shift or croak 'No node for get_nodes_openvz()';
+    croak 'node must be a scalar for get_nodes_openvz()' if ref $node;
 
-    my $b = shift or croak 'No node for get_nodes_openvz()';
-    croak 'node must be a scalar for get_nodes_openvz()' if ref $b;
+    my $vmid = shift or croak 'No vmid for get_nodes_openvz()';
+    croak 'vmid must be a scalar for get_nodes_openvz()' if ref $vmid;
 
-    return $self->get( $base, $a, 'openvz', $b )
+    return $self->get( $BASEPATH, $node, 'openvz', $vmid )
 
 }
 
@@ -1293,11 +1295,11 @@ sub get_nodes_openvz {
 
 Destroy the container (also delete all uses files).
 
-  $ok = $obj->delete_nodes_openvz('node','vmid')
+  $ok = $obj->delete_nodes_openvz( $node, $vmid )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
-mvid is an integer in pve-vmid format
+Where I<$vmid> is an integer in pve-vmid format
 
 Note: required permissions are ["perm","/vms/{vmid}",["VM.Allocate"]]
 
@@ -1307,13 +1309,13 @@ sub delete_nodes_openvz {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for delete_nodes_openvz()';
-    croak 'node must be a scalar for delete_nodes_openvz()' if ref $a;
+    my $node = shift or croak 'No node for delete_nodes_openvz()';
+    croak 'node must be a scalar for delete_nodes_openvz()' if ref $node;
 
-    my $b = shift or croak 'No node for delete_nodes_openvz()';
-    croak 'node must be a scalar for delete_nodes_openvz()' if ref $b;
+    my $vmid = shift or croak 'No node for delete_nodes_openvz()';
+    croak 'vmid must be a scalar for delete_nodes_openvz()' if ref $vmid;
 
-    return $self->delete( $base, $a, 'openvz', $b )
+    return $self->delete( $BASEPATH, $node, 'openvz', $vmid )
 
 }
 
@@ -1321,11 +1323,11 @@ sub delete_nodes_openvz {
 
 Directory index
 
-  $ok = $obj->get_nodes_openvz_status('node','vmid')
+  $ok = $obj->get_nodes_openvz_status( $node, $vmid )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
-mvid is an integer in pve-vmid format
+Where I<$vmid> is an integer in pve-vmid format
 
 Note: Accessible by all authententicated users.
 
@@ -1335,13 +1337,13 @@ sub get_nodes_openvz_status {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes_openvz_status()';
-    croak 'node must be a scalar for get_nodes_openvz_status()' if ref $a;
+    my $node = shift or croak 'No node for get_nodes_openvz_status()';
+    croak 'node must be a scalar for get_nodes_openvz_status()' if ref $node;
 
-    my $b = shift or croak 'No node for get_nodes_openvz_status()';
-    croak 'node must be a scalar for get_nodes_openvz_status()' if ref $b;
+    my $vmid = shift or croak 'No node for get_nodes_openvz_status()';
+    croak 'node must be a scalar for get_nodes_openvz_status()' if ref $vmid;
 
-    return $self->get( $base, $a, 'openvz', $b, 'status' )
+    return $self->get( $BASEPATH, $node, 'openvz', $vmid, 'status' )
 
 }
 
@@ -1349,11 +1351,11 @@ sub get_nodes_openvz_status {
 
 Get virtual machine status.
 
-  $ok = $obj->get_nodes_openvz_status_current('node','vmid')
+  $ok = $obj->get_nodes_openvz_status_current( $node, $vmid )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
-mvid is an integer in pve-vmid format
+Where I<$vmid> is an integer in pve-vmid format
 
 Note: required permissions are ["perm","/vms/{vmid}",["VM.Audit"]]
 
@@ -1363,13 +1365,13 @@ sub get_nodes_openvz_status_current {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes_openvz_status_current()';
-    croak 'node must be a scalar for get_nodes_openvz_status_current()' if ref $a;
+    my $node = shift or croak 'No node for get_nodes_openvz_status_current()';
+    croak 'node must be a scalar for get_nodes_openvz_status_current()' if ref $node;
 
-    my $b = shift or croak 'No node for get_nodes_openvz_status_current()';
-    croak 'node must be a scalar for get_nodes_openvz_status_current()' if ref $b;
+    my $vmid = shift or croak 'No node for get_nodes_openvz_status_current()';
+    croak 'node must be a scalar for get_nodes_openvz_status_current()' if ref $vmid;
 
-    return $self->get( $base, $a, 'openvz', $b, 'status', 'current' )
+    return $self->get( $BASEPATH, $node, 'openvz', $vmid, 'status', 'current' )
 
 }
 
@@ -1377,11 +1379,11 @@ sub get_nodes_openvz_status_current {
 
 Mounts container private area.
 
-  $ok = $obj->create_nodes_openvz_status_mount('node','vmid')
+  $ok = $obj->create_nodes_openvz_status_mount( $node, $vmid )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
-mvid is an integer in pve-vmid format
+Where I<$vmid> is an integer in pve-vmid format
 
 Note: required permissions are ["perm","/vms/{vmid}",["VM.PowerMgmt"]]
 
@@ -1391,13 +1393,13 @@ sub create_nodes_openvz_status_mount {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for create_nodes_openvz_status_mount()';
-    croak 'node must be a scalar for create_nodes_openvz_status_mount()' if ref $a;
+    my $node = shift or croak 'No node for create_nodes_openvz_status_mount()';
+    croak 'node must be a scalar for create_nodes_openvz_status_mount()' if ref $node;
 
-    my $b = shift or croak 'No node for create_nodes_openvz_status_mount()';
-    croak 'node must be a scalar for create_nodes_openvz_status_mount()' if ref $b;
+    my $vmid = shift or croak 'No node for create_nodes_openvz_status_mount()';
+    croak 'node must be a scalar for create_nodes_openvz_status_mount()' if ref $vmid;
 
-    return $self->post( $base, $a, 'openvz', $b, 'status', 'mount' )
+    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'mount' )
 
 }
 
@@ -1405,11 +1407,11 @@ sub create_nodes_openvz_status_mount {
 
 Shutdown the container.
 
-  $ok = $obj->create_nodes_openvz_status_shutdown('node','vmid', \%args)
+  $ok = $obj->create_nodes_openvz_status_shutdown( $node, $vmid, \%args )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
-vmid is an integer in pve-vmid format
+Where I<$vmid> is an integer in pve-vmid format
 
 I<%args> may items contain from the following list
 
@@ -1433,20 +1435,19 @@ sub create_nodes_openvz_status_shutdown {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for create_nodes_openvz_status_shutdown()';
-    croak 'node must be a scalar for create_nodes_openvz_status_shutdown()' if ref $a;
+    my $node = shift or croak 'No node for create_nodes_openvz_status_shutdown()';
+    croak 'node must be a scalar for create_nodes_openvz_status_shutdown()' if ref $node;
 
-    my $b = shift or croak 'No node for create_nodes_openvz_status_shutdown()';
-    croak 'node must be a scalar for create_nodes_openvz_status_shutdown()' if ref $b;
+    my $vmid = shift or croak 'No vmid for create_nodes_openvz_status_shutdown()';
+    croak 'vmid must be a scalar for create_nodes_openvz_status_shutdown()' if ref $vmid;
 
     my @p = @_;
-
     croak 'No arguments for create_nodes_openvz_status_shutdown()' unless @p;
     my %args;
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for create_nodes_openvz_status_shutdown()'
-          unless ref $a eq 'HASH';
+          unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -1455,7 +1456,7 @@ sub create_nodes_openvz_status_shutdown {
         %args = @p;
     }
 
-    return $self->post( $base, $a, 'openvz', $b, 'status', 'shutdown', \%args )
+    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'shutdown', \%args )
 
 }
 
@@ -1463,11 +1464,11 @@ sub create_nodes_openvz_status_shutdown {
 
 Start the container.
 
-  $ok = $obj->create_nodes_openvz_status_start('node','vmid')
+  $ok = $obj->create_nodes_openvz_status_start( $node, $vmid )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
-vmid is an integer in pve-vmid format
+Where I<$vmid> is an integer in pve-vmid format
 
 Note: required permissions are ["perm","/vms/{vmid}",["VM.PowerMgmt"]]
 
@@ -1477,13 +1478,13 @@ sub create_nodes_openvz_status_start {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for create_nodes_openvz_status_start()';
-    croak 'node must be a scalar for create_nodes_openvz_status_start()' if ref $a;
+    my $node = shift or croak 'No node for create_nodes_openvz_status_start()';
+    croak 'node must be a scalar for create_nodes_openvz_status_start()' if ref $node;
 
-    my $b = shift or croak 'No node for create_nodes_openvz_status_start()';
-    croak 'node must be a scalar for create_nodes_openvz_status_start()' if ref $b;
+    my $vmid = shift or croak 'No vmid for create_nodes_openvz_status_start()';
+    croak 'vmid must be a scalar for create_nodes_openvz_status_start()' if ref $vmid;
 
-    return $self->post( $base, $a, 'openvz', $b, 'status', 'start' )
+    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'start' )
 
 }
 
@@ -1491,11 +1492,11 @@ sub create_nodes_openvz_status_start {
 
 Stop the container.
 
-  $ok = $obj->create_nodes_openvz_status_stop('node','vmid')
+  $ok = $obj->create_nodes_openvz_status_stop( $node, $vmid )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
-vmid is an integer in pve-vmid format
+Where I<$vmid> is an integer in pve-vmid format
 
 Note: required permissions are ["perm","/vms/{vmid}",["VM.PowerMgmt"]]
 
@@ -1505,13 +1506,13 @@ sub create_nodes_openvz_status_stop {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for create_nodes_openvz_status_stop()';
-    croak 'node must be a scalar for create_nodes_openvz_status_stop()' if ref $a;
+    my $node = shift or croak 'No node for create_nodes_openvz_status_stop()';
+    croak 'node must be a scalar for create_nodes_openvz_status_stop()' if ref $node;
 
-    my $b = shift or croak 'No node for create_nodes_openvz_status_stop()';
-    croak 'node must be a scalar for create_nodes_openvz_status_stop()' if ref $b;
+    my $vmid = shift or croak 'No vmid for create_nodes_openvz_status_stop()';
+    croak 'vmid must be a scalar for create_nodes_openvz_status_stop()' if ref $vmid;
 
-    return $self->post( $base, $a, 'openvz', $b, 'status', 'start' )
+    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'start' )
 
 }
 
@@ -1519,11 +1520,11 @@ sub create_nodes_openvz_status_stop {
 
 Get container user_beancounters.
 
-  $ok = $obj->get_nodes_openvz_status_ubc('node','vmid')
+  $ok = $obj->get_nodes_openvz_status_ubc( $node, $vmid )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
-vmid is an integer in pve-vmid format
+Where I<$vmid> is an integer in pve-vmid format
 
 Note: required permissions are ["perm","/vms/{vmid}",["VM.Audit"]]
 
@@ -1533,13 +1534,13 @@ sub get_nodes_openvz_status_ubc {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes_openvz_status_ubc()';
-    croak 'node must be a scalar for get_nodes_openvz_status_ubc()' if ref $a;
+    my $node = shift or croak 'No node for get_nodes_openvz_status_ubc()';
+    croak 'node must be a scalar for get_nodes_openvz_status_ubc()' if ref $node;
 
-    my $b = shift or croak 'No node for get_nodes_openvz_status_ubc()';
-    croak 'node must be a scalar for get_nodes_openvz_status_ubc()' if ref $b;
+    my $vmid = shift or croak 'No vmid for get_nodes_openvz_status_ubc()';
+    croak 'vmid must be a scalar for get_nodes_openvz_status_ubc()' if ref $vmid;
 
-    return $self->post( $base, $a, 'openvz', $b, 'status', 'ubc' )
+    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'ubc' )
 
 }
 
@@ -1547,11 +1548,11 @@ sub get_nodes_openvz_status_ubc {
 
 Unmounts container private area.
 
-  $ok = $obj->get_nodes_openvz_status_umount('node','vmid')
+  $ok = $obj->get_nodes_openvz_status_umount( $node, $vmid )
 
-node is a string in pve-node format
+Where I<$node> is a string in pve-node format
 
-vmid is an integer in pve-vmid format
+Where I<$vmid> is an integer in pve-vmid format
 
 Note: required permissions are ["perm","/vms/{vmid}",["VM.PowerMgmt"]]
 
@@ -1561,13 +1562,13 @@ sub get_nodes_openvz_status_umount {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No node for get_nodes_openvz_status_umount()';
-    croak 'node must be a scalar for get_nodes_openvz_status_umount()' if ref $a;
+    my $node = shift or croak 'No node for get_nodes_openvz_status_umount()';
+    croak 'node must be a scalar for get_nodes_openvz_status_umount()' if ref $node;
 
-    my $b = shift or croak 'No node for get_nodes_openvz_status_umount()';
-    croak 'node must be a scalar for get_nodes_openvz_status_umount()' if ref $b;
+    my $vmid = shift or croak 'No vmid for get_nodes_openvz_status_umount()';
+    croak 'vmid must be a scalar for get_nodes_openvz_status_umount()' if ref $vmid;
 
-    return $self->post( $base, $a, 'openvz', $b, 'status', 'umount' )
+    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'umount' )
 
 }
 
