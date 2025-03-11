@@ -167,7 +167,7 @@ sub create_access_domains {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for create_access_domains()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -259,7 +259,7 @@ sub update_access_domains {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for update_access_domains()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -350,7 +350,7 @@ sub sync_access_domains {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for sync_access_domains()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -414,7 +414,7 @@ sub create_access_groups {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for create_access_groups()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -431,9 +431,9 @@ sub create_access_groups {
 
 Gets a single access group
 
-  $ok = $obj->get_access_groups('groupid')
+  $ok = $obj->get_access_groups( $groupid )
 
-groupid is a string in pve-groupid format
+Where I<$groupid> is a string in pve-groupid format
 
 =cut
 
@@ -441,10 +441,10 @@ sub get_access_groups {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No groupid for get_access_groups()';
-    croak 'groupid must be a scalar for get_access_groups()' if ref $a;
+    my $groupid = shift or croak 'No groupid for get_access_groups()';
+    croak 'groupid must be a scalar for get_access_groups()' if ref $groupid;
 
-    return $self->get( $BASEPATH, 'groups', $a )
+    return $self->get( $BASEPATH, 'groups', $groupid )
 
 }
 
@@ -452,10 +452,10 @@ sub get_access_groups {
 
 Updates (sets) a access group's data
 
-  $ok = $obj->update_access_groups( 'groupid', %args );
-  $ok = $obj->update_access_groups( 'groupid', \%args );
+  $ok = $obj->update_access_groups( $groupid, %args );
+  $ok = $obj->update_access_groups( $groupid, \%args );
 
-groupid is a string in pve-groupid format
+Where I<$groupid> is a string in pve-groupid format
 
 I<%args> may items contain from the following list
 
@@ -483,7 +483,7 @@ sub update_access_groups {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for update_access_groups()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -500,18 +500,18 @@ sub update_access_groups {
 
 Deletes a single access group
 
-  $ok = $obj->delete_access_groups('groupid')
+  $ok = $obj->delete_access_groups( $groupid )
 
-groupid is a string in pve-groupid format
+Where I<$groupid> is a string in pve-groupid format
 
 =cut
 
 sub delete_access_groups {
 
     my $self = shift or return;
-    my $a    = shift or croak 'No argument given for delete_access_groups()';
+    my $groupid = shift or croak 'No argument given for delete_access_groups()';
 
-    return $self->delete( $BASEPATH, 'groups', $a )
+    return $self->delete( $BASEPATH, 'groups', $groupid )
 
 }
 
@@ -567,7 +567,7 @@ sub create_access_roles {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for create_access_roles()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -584,9 +584,9 @@ sub create_access_roles {
 
 Gets a single access role
 
-  $ok = $obj->get_access_roles('roleid')
+  $ok = $obj->get_access_roles( $roleid )
 
-roleid is a string in pve-roleid format
+Where I<$roleid> is a string in pve-roleid format
 
 =cut
 
@@ -594,10 +594,10 @@ sub get_access_roles {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No roleid for get_access_roles()';
-    croak 'roleid must be a scalar for get_access_roles()' if ref $a;
+    my $roleid = shift or croak 'No roleid for get_access_roles()';
+    croak 'roleid must be a scalar for get_access_roles()' if ref $roleid;
 
-    return $self->get( $BASEPATH, 'roles', $a )
+    return $self->get( $BASEPATH, 'roles', $roleid )
 
 }
 
@@ -605,10 +605,10 @@ sub get_access_roles {
 
 Updates (sets) a access role's data
 
-  $ok = $obj->update_access_roles( 'roleid', %args );
-  $ok = $obj->update_access_roles( 'roleid', \%args );
+  $ok = $obj->update_access_roles( $roleid, %args );
+  $ok = $obj->update_access_roles( $roleid, \%args );
 
-roleid is a string in pve-roleid format
+Where I<$roleid> is a string in pve-roleid format
 
 I<%args> may items contain from the following list
 
@@ -628,7 +628,7 @@ Booelean. Append privileges to existing. Optional.
 
 sub update_access_roles {
 
-    my $self   = shift or return;
+    my $self  = shift or return;
     my $realm = shift or croak 'No realm provided for update_access_roles()';
     croak 'realm must be a scalar for update_access_roles()' if ref $realm;
     my @p = @_;
@@ -638,7 +638,7 @@ sub update_access_roles {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for update_access_roles()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -655,18 +655,18 @@ sub update_access_roles {
 
 Deletes a single access role
 
-  $ok = $obj->delete_access_roles('roleid')
+  $ok = $obj->delete_access_roles( $roleid )
 
-roleid is a string in pve-roleid format
+Where I<$roleid> is a string in pve-roleid format
 
 =cut
 
 sub delete_access_roles {
 
-    my $self = shift or return;
-    my $a    = shift or croak 'No argument given for delete_access_roles()';
+    my $self   = shift or return;
+    my $roleid = shift or croak 'No argument given for delete_access_roles()';
 
-    return $self->delete( $BASEPATH, 'roles', $a )
+    return $self->delete( $BASEPATH, 'roles', $roleid )
 
 }
 
@@ -750,7 +750,7 @@ sub create_access_users {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for create_access_users()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -767,9 +767,9 @@ sub create_access_users {
 
 Gets a single user
 
-  $ok = $obj->get_access_users('userid')
+  $ok = $obj->get_access_users( $userid )
 
-userid is a string in pve-userid format
+Where I<$userid> is a string in pve-userid format
 
 =cut
 
@@ -777,10 +777,10 @@ sub get_access_users {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No userid for get_access_users()';
-    croak 'userid must be a scalar for get_access_users()' if ref $a;
+    my $userid = shift or croak 'No userid for get_access_users()';
+    croak 'userid must be a scalar for get_access_users()' if ref $userid;
 
-    return $self->get( $BASEPATH, 'users', $a )
+    return $self->get( $BASEPATH, 'users', $userid )
 
 }
 
@@ -788,10 +788,10 @@ sub get_access_users {
 
 Updates (sets) a user's configuration
 
-  $ok = $obj->update_access_users( 'userid', %args );
-  $ok = $obj->update_access_users( 'userid', \%args );
+  $ok = $obj->update_access_users( $userid, %args );
+  $ok = $obj->update_access_users( $userid, \%args );
 
-userid is a string in pve-userid format
+Where I<$userid> is a string in pve-userid format
 
 I<%args> may items contain from the following list
 
@@ -835,7 +835,7 @@ String. Optional.
 
 sub update_access_users {
 
-    my $self   = shift or return;
+    my $self  = shift or return;
     my $realm = shift or croak 'No realm provided for update_access_users()';
     croak 'realm must be a scalar for update_access_users()' if ref $realm;
     my @p = @_;
@@ -845,7 +845,7 @@ sub update_access_users {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for update_access_users()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -862,18 +862,18 @@ sub update_access_users {
 
 Deletes a single user
 
-  $ok = $obj->delete_access_users('userid')
+  $ok = $obj->delete_access_users( $userid )
 
-userid is a string in pve-userid format
+Where I<$userid> is a string in pve-userid format
 
 =cut
 
 sub delete_access_users {
 
-    my $self = shift or return;
-    my $a    = shift or croak 'No argument given for delete_access_users()';
+    my $self   = shift or return;
+    my $userid = shift or croak 'No argument given for delete_access_users()';
 
-    return $self->delete( $BASEPATH, 'users', $a )
+    return $self->delete( $BASEPATH, 'users', $userid )
 
 }
 
@@ -944,7 +944,7 @@ sub update_access_acl {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for update_acl()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -994,7 +994,7 @@ sub update_access_password {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for update_password()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
