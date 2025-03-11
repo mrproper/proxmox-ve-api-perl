@@ -51,7 +51,7 @@ my $resources = $pve->get("/cluster/resources");
 for my $item ( @$resources ) {
     next unless $item->{type} eq 'openvz';
 
-       for my $k (sort keys %$item) {
+    for my $k (sort keys %$item) {
         print $k . ": " . $item->{$k} . "\n";
     }
 
