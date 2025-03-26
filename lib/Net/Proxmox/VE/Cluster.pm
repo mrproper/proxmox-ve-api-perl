@@ -206,7 +206,7 @@ sub create_cluster_backup {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for create_cluster_backup()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -366,7 +366,7 @@ sub update_cluster_backup {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for update_cluster_backup()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -545,7 +545,7 @@ sub create_cluster_ha_groups {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for create_cluster_ha_groups()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -618,7 +618,7 @@ sub update_cluster_ha_groups {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for update_cluster_ha_groups()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -685,7 +685,7 @@ sub get_cluster_log {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for get_cluster_log()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -729,7 +729,7 @@ sub get_cluster_nextid {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for get_cluster_nextid()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -803,7 +803,7 @@ sub update_cluster_options {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for update_cluster_options()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -848,7 +848,7 @@ sub get_cluster_resources {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for get_cluster_resources()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
