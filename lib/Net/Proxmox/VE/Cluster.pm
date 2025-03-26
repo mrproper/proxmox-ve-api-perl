@@ -89,7 +89,7 @@ sub cluster_backup {
 
 Create new vzdump backup job.
 
-  $ok = $obj->create_cluster_backup(\%args)
+  $ok = $obj->create_cluster_backup( \%args )
 
 node is a string in pve-node format
 
@@ -223,9 +223,9 @@ sub create_cluster_backup {
 
 Read vzdump backup job definition.
 
-  $job = $obj->get_cluster_backup('id')
+  $job = $obj->get_cluster_backup( $id )
 
-id is the job ID
+Where $id is the job ID
 
 Note: required permissions are ["perm","/",["Sys.Audit"]]
 
@@ -235,10 +235,10 @@ sub get_cluster_backup {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No id for get_cluster_backup()';
-    croak 'id must be a scalar for get_cluster_backup()' if ref $a;
+    my $id = shift or croak 'No id for get_cluster_backup()';
+    croak 'id must be a scalar for get_cluster_backup()' if ref $id;
 
-    return $self->get( $base, $a )
+    return $self->get( $base, $id )
 
 }
 
@@ -246,9 +246,9 @@ sub get_cluster_backup {
 
 Update vzdump backup job definition.
 
-  $ok = $obj->update_cluster_backup(\%args)
+  $ok = $obj->update_cluster_backup( \%args )
 
-id is the job ID
+Where $id is the job ID
 
 I<%args> may contain items from the following list
 
@@ -356,8 +356,8 @@ sub update_cluster_backup {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No id for update_cluster_backup()';
-    croak 'id must be a scalar for update_cluster_backup()' if ref $a;
+    my $id = shift or croak 'No id for update_cluster_backup()';
+    croak 'id must be a scalar for update_cluster_backup()' if ref $id;
 
     my @p = @_;
 
@@ -375,7 +375,7 @@ sub update_cluster_backup {
         %args = @p;
     }
 
-    return $self->put( $base, 'backup', $a, \%args )
+    return $self->put( $base, 'backup', $id, \%args )
 
 }
 
@@ -383,9 +383,9 @@ sub update_cluster_backup {
 
 Delete vzdump backup job definition.
 
-  $job = $obj->delete_cluster_backup('id')
+  $job = $obj->delete_cluster_backup( $id )
 
-id is the job ID
+Where $id is the job ID
 
 Note: required permissions are ["perm","/",["Sys.Modify"]]
 
@@ -395,10 +395,10 @@ sub delete_cluster_backup {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No id for delete_cluster_backup()';
-    croak 'id must be a scalar for delete_cluster_backup()' if ref $a;
+    my $id = shift or croak 'No id for delete_cluster_backup()';
+    croak 'id must be a scalar for delete_cluster_backup()' if ref $id;
 
-    return $self->delete( $base, $a )
+    return $self->delete( $base, $id )
 
 }
 
@@ -514,7 +514,7 @@ sub cluster_ha_groups {
 
 Create a new resource groups.
 
-  $ok = $obj->create_cluster_ha_groups(\%args)
+  $ok = $obj->create_cluster_ha_groups( \%args )
 
 I<%args> may contain items from the following list
 
@@ -562,9 +562,9 @@ sub create_cluster_ha_groups {
 
 List resource groups
 
-  $job = $obj->get_cluster_ha_groups('id')
+  $job = $obj->get_cluster_ha_groups( $id )
 
-id is the resource group id (for example pvevm:200)
+Where $id is the resource group id (for example pvevm:200)
 
 Note: required permissions are ["perm","/",["Sys.Audit"]]
 
@@ -574,10 +574,10 @@ sub get_cluster_ha_groups {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No id for get_cluster_ha_groups()';
-    croak 'id must be a scalar for get_cluster_ha_groups()' if ref $a;
+    my $id = shift or croak 'No id for get_cluster_ha_groups()';
+    croak 'id must be a scalar for get_cluster_ha_groups()' if ref $id;
 
-    return $self->get( $base, 'ha', 'groups', $a )
+    return $self->get( $base, 'ha', 'groups', $id )
 
 }
 
@@ -586,7 +586,7 @@ sub get_cluster_ha_groups {
 
 Update resource groups settings
 
-  $ok = $obj->update_cluster_ha_groups('id', \%args)
+  $ok = $obj->update_cluster_ha_groups( $id, \%args )
 
 id is the group ID for example pvevm:200
 
@@ -608,8 +608,8 @@ sub update_cluster_ha_groups {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No id for update_cluster_ha_groups()';
-    croak 'id must be a scalar for update_cluster_ha_groups()' if ref $a;
+    my $id = shift or croak 'No id for update_cluster_ha_groups()';
+    croak 'id must be a scalar for update_cluster_ha_groups()' if ref $id;
 
     my @p = @_;
 
@@ -627,7 +627,7 @@ sub update_cluster_ha_groups {
         %args = @p;
     }
 
-    return $self->put( $base, 'ha', 'groups', $a, \%args )
+    return $self->put( $base, 'ha', 'groups', $id, \%args )
 
 }
 
@@ -635,9 +635,9 @@ sub update_cluster_ha_groups {
 
 Delete resource group
 
-  $ok = $obj->delete_cluster_ha_group('id')
+  $ok = $obj->delete_cluster_ha_group( $id )
 
-id is the group ID for example pvevm:200
+Where $id is the group ID for example pvevm:200
 
 Note: required permissions are ["perm","/",["Sys.Modify"]]
 
@@ -647,10 +647,10 @@ sub delete_cluster_ha_group {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No id for delete_cluster_ha_group()';
-    croak 'id must be a scalar for delete_cluster_ha_group()' if ref $a;
+    my $id = shift or croak 'No id for delete_cluster_ha_group()';
+    croak 'id must be a scalar for delete_cluster_ha_group()' if ref $id;
 
-    return $self->delete( $base, 'ha', 'groups', $a )
+    return $self->delete( $base, 'ha', 'groups', $id )
 
 }
 
@@ -658,7 +658,7 @@ sub delete_cluster_ha_group {
 
 Read cluster log
 
-  $job = $obj->get_cluster_log(\%args)
+  $job = $obj->get_cluster_log( \%args )
 
 Note: Accessible by all authenticated users
 
@@ -702,7 +702,7 @@ sub get_cluster_log {
 
 Get next free VMID. Pass a VMID to assert that its free (at time of check).
 
-  $integer = $obj->get_cluster_nextid(\%args)
+  $integer = $obj->get_cluster_nextid( \%args )
 
 Note: Accessible by all authenticated users
 
@@ -764,7 +764,7 @@ sub get_cluster_options {
 
 Update datacenter options (this is what the spec says)
 
-  $job = $obj->update_cluster_options(\%args)
+  $job = $obj->update_cluster_options( \%args )
 
 Note: permissions required are ["perm","/",["Sys.Modify"]]
 
