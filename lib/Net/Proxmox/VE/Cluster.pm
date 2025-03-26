@@ -10,34 +10,33 @@ package Net::Proxmox::VE::Cluster;
 
 use parent 'Exporter';
 
-use Carp qw( croak );
+use Net::Proxmox::VE::Exception;
 
-our @EXPORT  =
-  qw(
-    cluster
-    cluster_backup
-    create_cluster_backup
-    get_cluster_backup
-    update_cluster_backup
-    delete_cluster_backup
-    cluster_ha
-    get_cluster_ha_config
-    get_cluster_ha_changes
-    commit_cluster_ha_changes
-    revert_cluster_ha_changes
-    cluster_ha_groups
-    create_cluster_ha_groups
-    get_cluster_ha_groups
-    update_cluster_ha_groups
-    delete_cluster_ha_group
-    get_cluster_log
-    get_cluster_nextid
-    get_cluster_options
-    update_cluster_options
-    get_cluster_resources
-    get_cluster_status
-    get_cluster_tasks
-  );
+our @EXPORT = qw(
+  cluster
+  cluster_backup
+  create_cluster_backup
+  get_cluster_backup
+  update_cluster_backup
+  delete_cluster_backup
+  cluster_ha
+  get_cluster_ha_config
+  get_cluster_ha_changes
+  commit_cluster_ha_changes
+  revert_cluster_ha_changes
+  cluster_ha_groups
+  create_cluster_ha_groups
+  get_cluster_ha_groups
+  update_cluster_ha_groups
+  delete_cluster_ha_group
+  get_cluster_log
+  get_cluster_nextid
+  get_cluster_options
+  update_cluster_options
+  get_cluster_resources
+  get_cluster_status
+  get_cluster_tasks
+);
 
 =encoding utf8
 
@@ -63,7 +62,7 @@ sub cluster {
 
     my $self = shift or return;
 
-    return $self->get($base)
+    return $self->get($base);
 
 }
 
@@ -81,7 +80,7 @@ sub cluster_backup {
 
     my $self = shift or return;
 
-    return $self->get($base, 'backup')
+    return $self->get( $base, 'backup' );
 
 }
 
@@ -201,21 +200,25 @@ sub create_cluster_backup {
 
     my @p = @_;
 
-    croak 'No arguments for create_cluster_backup()' unless @p;
+    Net::Proxmox::VE::Exception->throw(
+        'No arguments for create_cluster_backup()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for create_cluster_backup()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for create_cluster_backup()')
           unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for create_cluster_backup()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for create_cluster_backup()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->post( $base, 'backup', \%args )
+    return $self->post( $base, 'backup', \%args );
 
 }
 
@@ -235,10 +238,13 @@ sub get_cluster_backup {
 
     my $self = shift or return;
 
-    my $id = shift or croak 'No id for get_cluster_backup()';
-    croak 'id must be a scalar for get_cluster_backup()' if ref $id;
+    my $id = shift
+      or Net::Proxmox::VE::Exception->throw('No id for get_cluster_backup()');
+    Net::Proxmox::VE::Exception->throw(
+        'id must be a scalar for get_cluster_backup()')
+      if ref $id;
 
-    return $self->get( $base, $id )
+    return $self->get( $base, $id );
 
 }
 
@@ -356,26 +362,34 @@ sub update_cluster_backup {
 
     my $self = shift or return;
 
-    my $id = shift or croak 'No id for update_cluster_backup()';
-    croak 'id must be a scalar for update_cluster_backup()' if ref $id;
+    my $id = shift
+      or
+      Net::Proxmox::VE::Exception->throw('No id for update_cluster_backup()');
+    Net::Proxmox::VE::Exception->throw(
+        'id must be a scalar for update_cluster_backup()')
+      if ref $id;
 
     my @p = @_;
 
-    croak 'No arguments for update_cluster_backup()' unless @p;
+    Net::Proxmox::VE::Exception->throw(
+        'No arguments for update_cluster_backup()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for update_cluster_backup()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for update_cluster_backup()')
           unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for update_cluster_backup()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for update_cluster_backup()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->put( $base, 'backup', $id, \%args )
+    return $self->put( $base, 'backup', $id, \%args );
 
 }
 
@@ -395,10 +409,14 @@ sub delete_cluster_backup {
 
     my $self = shift or return;
 
-    my $id = shift or croak 'No id for delete_cluster_backup()';
-    croak 'id must be a scalar for delete_cluster_backup()' if ref $id;
+    my $id = shift
+      or
+      Net::Proxmox::VE::Exception->throw('No id for delete_cluster_backup()');
+    Net::Proxmox::VE::Exception->throw(
+        'id must be a scalar for delete_cluster_backup()')
+      if ref $id;
 
-    return $self->delete( $base, $id )
+    return $self->delete( $base, $id );
 
 }
 
@@ -416,7 +434,7 @@ sub cluster_ha {
 
     my $self = shift or return;
 
-    return $self->get($base, 'ha')
+    return $self->get( $base, 'ha' );
 
 }
 
@@ -434,7 +452,7 @@ sub get_cluster_ha_config {
 
     my $self = shift or return;
 
-    return $self->get($base, 'ha', 'config')
+    return $self->get( $base, 'ha', 'config' );
 
 }
 
@@ -452,7 +470,7 @@ sub get_cluster_ha_changes {
 
     my $self = shift or return;
 
-    return $self->get($base, 'ha', 'changes')
+    return $self->get( $base, 'ha', 'changes' );
 
 }
 
@@ -470,7 +488,7 @@ sub commit_cluster_ha_changes {
 
     my $self = shift or return;
 
-    return $self->post($base, 'ha', 'changes')
+    return $self->post( $base, 'ha', 'changes' );
 
 }
 
@@ -488,7 +506,7 @@ sub revert_cluster_ha_changes {
 
     my $self = shift or return;
 
-    return $self->delete($base, 'ha', 'changes')
+    return $self->delete( $base, 'ha', 'changes' );
 
 }
 
@@ -506,7 +524,7 @@ sub cluster_ha_groups {
 
     my $self = shift or return;
 
-    return $self->get($base, 'ha','groups')
+    return $self->get( $base, 'ha', 'groups' );
 
 }
 
@@ -540,21 +558,25 @@ sub create_cluster_ha_groups {
 
     my @p = @_;
 
-    croak 'No arguments for create_cluster_ha_groups()' unless @p;
+    Net::Proxmox::VE::Exception->throw(
+        'No arguments for create_cluster_ha_groups()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for create_cluster_ha_groups()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for create_cluster_ha_groups()')
           unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for create_cluster_ha_groups()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for create_cluster_ha_groups()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->put( $base, 'ha', 'groups', \%args )
+    return $self->put( $base, 'ha', 'groups', \%args );
 
 }
 
@@ -574,13 +596,16 @@ sub get_cluster_ha_groups {
 
     my $self = shift or return;
 
-    my $id = shift or croak 'No id for get_cluster_ha_groups()';
-    croak 'id must be a scalar for get_cluster_ha_groups()' if ref $id;
+    my $id = shift
+      or
+      Net::Proxmox::VE::Exception->throw('No id for get_cluster_ha_groups()');
+    Net::Proxmox::VE::Exception->throw(
+        'id must be a scalar for get_cluster_ha_groups()')
+      if ref $id;
 
-    return $self->get( $base, 'ha', 'groups', $id )
+    return $self->get( $base, 'ha', 'groups', $id );
 
 }
-
 
 =head2 update_cluster_ha_groups
 
@@ -608,26 +633,34 @@ sub update_cluster_ha_groups {
 
     my $self = shift or return;
 
-    my $id = shift or croak 'No id for update_cluster_ha_groups()';
-    croak 'id must be a scalar for update_cluster_ha_groups()' if ref $id;
+    my $id = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No id for update_cluster_ha_groups()');
+    Net::Proxmox::VE::Exception->throw(
+        'id must be a scalar for update_cluster_ha_groups()')
+      if ref $id;
 
     my @p = @_;
 
-    croak 'No arguments for update_cluster_ha_groups()' unless @p;
+    Net::Proxmox::VE::Exception->throw(
+        'No arguments for update_cluster_ha_groups()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for update_cluster_ha_groups()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for update_cluster_ha_groups()')
           unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for update_cluster_ha_groups()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for update_cluster_ha_groups()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->put( $base, 'ha', 'groups', $id, \%args )
+    return $self->put( $base, 'ha', 'groups', $id, \%args );
 
 }
 
@@ -647,10 +680,14 @@ sub delete_cluster_ha_group {
 
     my $self = shift or return;
 
-    my $id = shift or croak 'No id for delete_cluster_ha_group()';
-    croak 'id must be a scalar for delete_cluster_ha_group()' if ref $id;
+    my $id = shift
+      or
+      Net::Proxmox::VE::Exception->throw('No id for delete_cluster_ha_group()');
+    Net::Proxmox::VE::Exception->throw(
+        'id must be a scalar for delete_cluster_ha_group()')
+      if ref $id;
 
-    return $self->delete( $base, 'ha', 'groups', $id )
+    return $self->delete( $base, 'ha', 'groups', $id );
 
 }
 
@@ -680,21 +717,24 @@ sub get_cluster_log {
 
     my @p = @_;
 
-    croak 'No arguments for get_cluster_log()' unless @p;
+    Net::Proxmox::VE::Exception->throw('No arguments for get_cluster_log()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for get_cluster_log()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for get_cluster_log()')
           unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for get_cluster_log()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for get_cluster_log()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->get( $base, 'log', \%args )
+    return $self->get( $base, 'log', \%args );
 
 }
 
@@ -724,21 +764,24 @@ sub get_cluster_nextid {
 
     my @p = @_;
 
-    croak 'No arguments for get_cluster_nextid()' unless @p;
+    Net::Proxmox::VE::Exception->throw('No arguments for get_cluster_nextid()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for get_cluster_nextid()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for get_cluster_nextid()')
           unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for get_cluster_nextid()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for get_cluster_nextid()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->get( $base, 'nextid', \%args )
+    return $self->get( $base, 'nextid', \%args );
 
 }
 
@@ -756,7 +799,7 @@ sub get_cluster_options {
 
     my $self = shift or return;
 
-    return $self->get($base, 'options')
+    return $self->get( $base, 'options' );
 
 }
 
@@ -798,24 +841,27 @@ sub update_cluster_options {
 
     my @p = @_;
 
-    croak 'No arguments for update_cluster_options()' unless @p;
+    Net::Proxmox::VE::Exception->throw(
+        'No arguments for update_cluster_options()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for update_cluster_options()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for update_cluster_options()')
           unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for update_cluster_options()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for update_cluster_options()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->put( $base, 'log', \%args )
+    return $self->put( $base, 'log', \%args );
 
 }
-
 
 =head2 get_cluster_resources
 
@@ -843,24 +889,27 @@ sub get_cluster_resources {
 
     my @p = @_;
 
-    croak 'No arguments for get_cluster_resources()' unless @p;
+    Net::Proxmox::VE::Exception->throw(
+        'No arguments for get_cluster_resources()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for get_cluster_resources()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for get_cluster_resources()')
           unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for get_cluster_resources()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for get_cluster_resources()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->get( $base, 'resources', \%args )
+    return $self->get( $base, 'resources', \%args );
 
 }
-
 
 =head2 get_cluster_status
 
@@ -876,7 +925,7 @@ sub get_cluster_status {
 
     my $self = shift or return;
 
-    return $self->get($base, 'status')
+    return $self->get( $base, 'status' );
 
 }
 
@@ -894,7 +943,7 @@ sub get_cluster_tasks {
 
     my $self = shift or return;
 
-    return $self->get($base, 'tasks')
+    return $self->get( $base, 'tasks' );
 
 }
 

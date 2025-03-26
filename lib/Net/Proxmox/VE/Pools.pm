@@ -1,5 +1,5 @@
 #!/bin/false
-# vim: softtabstop=2 tabstop=2 shiftwidth=2 ft=perl expandtab smarttab
+# vim: softtabstop=4 tabstop=4 shiftwidth=4 ft=perl expandtab smarttab
 # PODNAME: Net::Proxmox::VE::Pools
 # ABSTRACT: Presents a pool object
 
@@ -10,7 +10,7 @@ package Net::Proxmox::VE::Pools;
 
 use parent 'Exporter';
 
-use Carp qw( croak );
+use Net::Proxmox::VE::Exception;
 
 =encoding utf8
 
@@ -46,7 +46,7 @@ straight to the server API. So garbage-in, garbage-out!
 
 =cut
 
-our @EXPORT  = qw( pools get_pool create_pool delete_pool update_pool );
+our @EXPORT = qw( pools get_pool create_pool delete_pool update_pool );
 
 my $base = '/pools';
 
@@ -80,8 +80,10 @@ sub get_pool {
 
     my $self = shift or return;
 
-    my $poolid = shift or croak 'No poolid for get_pool()';
-    croak 'poolid must be a scalar for get_pool()' if ref $poolid;
+    my $poolid = shift
+      or Net::Proxmox::VE::Exception->throw('No poolid for get_pool()');
+    Net::Proxmox::VE::Exception->throw('poolid must be a scalar for get_pool()')
+      if ref $poolid;
 
     return $self->get( $base, $poolid );
 
@@ -113,23 +115,26 @@ String. This is a comment associated with the new pool, this is optional
 sub create_pool {
 
     my $self = shift or return;
-    my @p = @_;
+    my @p    = @_;
 
-    croak 'No arguments for create_pool()' unless @p;
+    Net::Proxmox::VE::Exception->throw('No arguments for create_pool()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for create_pool()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for create_pool()')
           unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for create_pool()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for create_pool()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->post( $base, \%args )
+    return $self->post( $base, \%args );
 
 }
 
@@ -145,8 +150,10 @@ Where $poolid is a string in pve-poolid format
 
 sub delete_pool {
 
-    my $self = shift or return;
-    my $poolid = shift or croak 'No argument given for delete_pool()';
+    my $self   = shift or return;
+    my $poolid = shift
+      or
+      Net::Proxmox::VE::Exception->throw('No argument given for delete_pool()');
 
     return $self->delete( $base, $poolid );
 
@@ -188,25 +195,32 @@ String. List of virtual machines in pve-vmid-list format.
 sub update_pool {
 
     my $self   = shift or return;
-    my $poolid = shift or croak 'No poolid provided for update_pool()';
-    croak 'poolid must be a scalar for update_pool()' if ref $poolid;
+    my $poolid = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No poolid provided for update_pool()');
+    Net::Proxmox::VE::Exception->throw(
+        'poolid must be a scalar for update_pool()')
+      if ref $poolid;
     my @p = @_;
 
-    croak 'No arguments for update_pool()' unless @p;
+    Net::Proxmox::VE::Exception->throw('No arguments for update_pool()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for update_pool()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for update_pool()')
           unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for update_pool()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for update_pool()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->put( $base, $poolid, \%args )
+    return $self->put( $base, $poolid, \%args );
 
 }
 

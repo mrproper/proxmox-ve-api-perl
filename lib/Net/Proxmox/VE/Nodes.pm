@@ -10,9 +10,9 @@ package Net::Proxmox::VE::Nodes;
 
 use parent 'Exporter';
 
-use Carp qw( croak );
+use Net::Proxmox::VE::Exception;
 
-our @EXPORT  = qw( nodes get_node );
+our @EXPORT = qw( nodes get_node );
 
 =encoding utf8
 
@@ -38,7 +38,7 @@ sub nodes {
 
     my $self = shift or return;
 
-    return $self->_get($BASEPATH, undef)
+    return $self->_get( $BASEPATH, undef );
 
 }
 
@@ -58,10 +58,12 @@ sub get_node {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node()';
-    croak 'node must be a scalar for get_node()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for get_node()');
+    Net::Proxmox::VE::Exception->throw('node must be a scalar for get_node()')
+      if ref $node;
 
-    return $self->get( $BASEPATH, $node )
+    return $self->get( $BASEPATH, $node );
 
 }
 
@@ -81,10 +83,13 @@ sub get_node_aplinfo {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node_aplinfo()';
-    croak 'node must be a scalar for get_node_aplinfo()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for get_node_aplinfo()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_aplinfo()')
+      if ref $node;
 
-    return $self->get( $BASEPATH, $node, 'aplinfo' )
+    return $self->get( $BASEPATH, $node, 'aplinfo' );
 
 }
 
@@ -118,26 +123,33 @@ sub create_node_aplinfo {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for create_node_aplinfo()';
-    croak 'node must be a scalar for create_node_aplinfo()' if ref $node;
+    my $node = shift
+      or
+      Net::Proxmox::VE::Exception->throw('No node for create_node_aplinfo()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for create_node_aplinfo()')
+      if ref $node;
 
     my @p = @_;
 
-    croak 'No arguments for create_node_aplinfo()' unless @p;
+    Net::Proxmox::VE::Exception->throw('No arguments for create_node_aplinfo()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for create_node_aplinfo()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for create_node_aplinfo()')
           unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for create_node_aplinfo()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for create_node_aplinfo()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->post( $BASEPATH, $node, 'aplinfo', \%args )
+    return $self->post( $BASEPATH, $node, 'aplinfo', \%args );
 
 }
 
@@ -157,10 +169,13 @@ sub get_node_dns {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node_dns()';
-    croak 'node must be a scalar for get_node_dns()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for get_node_dns()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_dns()')
+      if ref $node;
 
-    return $self->get( $BASEPATH, $node, 'dns' )
+    return $self->get( $BASEPATH, $node, 'dns' );
 
 }
 
@@ -190,26 +205,32 @@ sub update_node_dns {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for update_node_dns()';
-    croak 'node must be a scalar for update_node_dns()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for update_node_dns()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for update_node_dns()')
+      if ref $node;
 
     my @p = @_;
 
-    croak 'No arguments for update_node_dns()' unless @p;
+    Net::Proxmox::VE::Exception->throw('No arguments for update_node_dns()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for update_node_dns()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for update_node_dns()')
           unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for update_node_dns()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for update_node_dns()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->put( $BASEPATH, $node, 'dns', \%args )
+    return $self->put( $BASEPATH, $node, 'dns', \%args );
 
 }
 
@@ -247,26 +268,32 @@ sub get_node_rrd {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node_rrd()';
-    croak 'node must be a scalar for get_node_rrd()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for get_node_rrd()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_rrd()')
+      if ref $node;
 
     my @p = @_;
 
-    croak 'No arguments for get_node_rrd()' unless @p;
+    Net::Proxmox::VE::Exception->throw('No arguments for get_node_rrd()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for get_node_rrd()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for get_node_rrd()')
           unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for get_node_rrd()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for get_node_rrd()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->get( $BASEPATH, $node, 'rrd', \%args )
+    return $self->get( $BASEPATH, $node, 'rrd', \%args );
 
 }
 
@@ -300,26 +327,32 @@ sub get_node_rrddata {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node_rrddata()';
-    croak 'node must be a scalar for get_node_rrddata()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for get_node_rrddata()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_rrddata()')
+      if ref $node;
 
     my @p = @_;
 
-    croak 'No arguments for get_node_rrddata()' unless @p;
+    Net::Proxmox::VE::Exception->throw('No arguments for get_node_rrddata()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for get_node_rrddata()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for get_node_rrddata()')
           unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for get_node_rrddata()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for get_node_rrddata()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->get( $BASEPATH, $node, 'rrddata', \%args )
+    return $self->get( $BASEPATH, $node, 'rrddata', \%args );
 
 }
 
@@ -339,13 +372,15 @@ sub get_node_status {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node_status()';
-    croak 'node must be a scalar for get_node_status()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for get_node_status()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_status()')
+      if ref $node;
 
-    return $self->get( $BASEPATH, $node, 'status' )
+    return $self->get( $BASEPATH, $node, 'status' );
 
 }
-
 
 =head2 update_node_status
 
@@ -373,26 +408,32 @@ sub update_node_status {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for update_node_status()';
-    croak 'node must be a scalar for update_node_status()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for update_node_status()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for update_node_status()')
+      if ref $node;
 
     my @p = @_;
 
-    croak 'No arguments for update_node_status()' unless @p;
+    Net::Proxmox::VE::Exception->throw('No arguments for update_node_status()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for update_node_status()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for update_node_status()')
           unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for update_node_status()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for update_node_status()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->post( $BASEPATH, $node, 'status', \%args )
+    return $self->post( $BASEPATH, $node, 'status', \%args );
 
 }
 
@@ -412,10 +453,14 @@ sub get_node_subscription {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node_subscription()';
-    croak 'node must be a scalar for get_node_subscription()' if ref $node;
+    my $node = shift
+      or
+      Net::Proxmox::VE::Exception->throw('No node for get_node_subscription()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_subscription()')
+      if ref $node;
 
-    return $self->get( $BASEPATH, $node, 'subscription' )
+    return $self->get( $BASEPATH, $node, 'subscription' );
 
 }
 
@@ -445,26 +490,34 @@ sub create_node_subscription {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for create_node_subscription()';
-    croak 'node must be a scalar for create_node_subscription()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No node for create_node_subscription()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for create_node_subscription()')
+      if ref $node;
 
     my @p = @_;
 
-    croak 'No arguments for create_node_subscription()' unless @p;
+    Net::Proxmox::VE::Exception->throw(
+        'No arguments for create_node_subscription()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for create_node_subscription()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for create_node_subscription()')
           unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for create_node_subscription()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for create_node_subscription()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->post( $BASEPATH, $node, 'subscription', \%args )
+    return $self->post( $BASEPATH, $node, 'subscription', \%args );
 
 }
 
@@ -494,26 +547,34 @@ sub update_node_subscription_key {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for update_node_subscription_key()';
-    croak 'node must be a scalar for update_node_subscription_key()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No node for update_node_subscription_key()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for update_node_subscription_key()')
+      if ref $node;
 
     my @p = @_;
 
-    croak 'No arguments for update_node_subscription_key()' unless @p;
+    Net::Proxmox::VE::Exception->throw(
+        'No arguments for update_node_subscription_key()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for update_node_subscription_key()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for update_node_subscription_key()')
           unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for update_node_subscription_key()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for update_node_subscription_key()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->put( $BASEPATH, $node, 'subscription', \%args )
+    return $self->put( $BASEPATH, $node, 'subscription', \%args );
 
 }
 
@@ -533,26 +594,32 @@ sub get_node_syslog {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node_syslog()';
-    croak 'node must be a scalar for get_node_syslog()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for get_node_syslog()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_syslog()')
+      if ref $node;
 
     my @p = @_;
 
-    croak 'No arguments for get_node_syslog()' unless @p;
+    Net::Proxmox::VE::Exception->throw('No arguments for get_node_syslog()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for get_node_syslog()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for get_node_syslog()')
           unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for get_node_syslog()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for get_node_syslog()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->get( $BASEPATH, $node, 'syslog', \%args )
+    return $self->get( $BASEPATH, $node, 'syslog', \%args );
 
 }
 
@@ -572,10 +639,13 @@ sub get_node_time {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node_time()';
-    croak 'node must be a scalar for get_node_time()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for get_node_time()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_time()')
+      if ref $node;
 
-    return $self->get( $BASEPATH, $node, 'time' )
+    return $self->get( $BASEPATH, $node, 'time' );
 
 }
 
@@ -605,26 +675,32 @@ sub update_node_time {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for update_node_time()';
-    croak 'node must be a scalar for update_node_time()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for update_node_time()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for update_node_time()')
+      if ref $node;
 
     my @p = @_;
 
-    croak 'No arguments for update_node_time()' unless @p;
+    Net::Proxmox::VE::Exception->throw('No arguments for update_node_time()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for update_node_time()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for update_node_time()')
           unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for update_node_time()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for update_node_time()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->put( $BASEPATH, $node, 'time', \%args )
+    return $self->put( $BASEPATH, $node, 'time', \%args );
 
 }
 
@@ -644,10 +720,14 @@ sub get_node_ubcfailcnt {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node_ubcfailcnt()';
-    croak 'node must be a scalar for get_node_ubcfailcnt()' if ref $node;
+    my $node = shift
+      or
+      Net::Proxmox::VE::Exception->throw('No node for get_node_ubcfailcnt()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_ubcfailcnt()')
+      if ref $node;
 
-    return $self->get( $BASEPATH, $node, 'ubcfailcnt' )
+    return $self->get( $BASEPATH, $node, 'ubcfailcnt' );
 
 }
 
@@ -667,10 +747,13 @@ sub get_node_version {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node_version()';
-    croak 'node must be a scalar for get_node_version()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for get_node_version()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_version()')
+      if ref $node;
 
-    return $self->get( $BASEPATH, $node, 'version' )
+    return $self->get( $BASEPATH, $node, 'version' );
 
 }
 
@@ -690,10 +773,14 @@ sub create_node_vncshell {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for create_node_vncshell()';
-    croak 'node must be a scalar for create_node_vncshell()' if ref $node;
+    my $node = shift
+      or
+      Net::Proxmox::VE::Exception->throw('No node for create_node_vncshell()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for create_node_vncshell()')
+      if ref $node;
 
-    return $self->post( $BASEPATH, $node, 'vncshell' )
+    return $self->post( $BASEPATH, $node, 'vncshell' );
 
 }
 
@@ -803,26 +890,32 @@ sub create_node_vzdump {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for create_node_vzdump()';
-    croak 'node must be a scalar for create_node_vzdump()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for create_node_vzdump()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for create_node_vzdump()')
+      if ref $node;
 
     my @p = @_;
 
-    croak 'No arguments for create_node_vzdump()' unless @p;
+    Net::Proxmox::VE::Exception->throw('No arguments for create_node_vzdump()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for create_node_vzdump()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for create_node_vzdump()')
           unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for create_node_vzdump()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for create_node_vzdump()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->post( $BASEPATH, $node, 'dns', \%args )
+    return $self->post( $BASEPATH, $node, 'dns', \%args );
 
 }
 
@@ -852,26 +945,32 @@ sub nodes_network {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for nodes_network()';
-    croak 'node must be a scalar for nodes_network()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for nodes_network()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for nodes_network()')
+      if ref $node;
 
     my @p = @_;
 
-    croak 'No arguments for nodes_network()' unless @p;
+    Net::Proxmox::VE::Exception->throw('No arguments for nodes_network()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for nodes_network()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for nodes_network()')
           unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for nodes_network()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for nodes_network()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->get( $BASEPATH, $node, 'network', \%args )
+    return $self->get( $BASEPATH, $node, 'network', \%args );
 
 }
 
@@ -929,26 +1028,33 @@ sub create_node_network {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for create_node_network()';
-    croak 'node must be a scalar for create_node_network()' if ref $node;
+    my $node = shift
+      or
+      Net::Proxmox::VE::Exception->throw('No node for create_node_network()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for create_node_network()')
+      if ref $node;
 
     my @p = @_;
 
-    croak 'No arguments for create_node_network()' unless @p;
+    Net::Proxmox::VE::Exception->throw('No arguments for create_node_network()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for create_node_network()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for create_node_network()')
           unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for create_node_network()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for create_node_network()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->post( $BASEPATH, $node, 'network', \%args )
+    return $self->post( $BASEPATH, $node, 'network', \%args );
 
 }
 
@@ -968,13 +1074,16 @@ sub revert_nodes_network {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for revert_nodes_network()';
-    croak 'node must be a scalar for revert_nodes_network()' if ref $node;
+    my $node = shift
+      or
+      Net::Proxmox::VE::Exception->throw('No node for revert_nodes_network()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for revert_nodes_network()')
+      if ref $node;
 
-    return $self->delete( $BASEPATH, $node )
+    return $self->delete( $BASEPATH, $node );
 
 }
-
 
 =head2 get_node_network_iface
 
@@ -992,13 +1101,21 @@ sub get_node_network_iface {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node_network_iface()';
-    my $b = shift or croak 'No iface for get_node_network_iface()';
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No node for get_node_network_iface()');
+    my $b = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No iface for get_node_network_iface()');
 
-    croak 'node must be a scalar for get_node_network_iface()' if ref $node;
-    croak 'iface must be a scalar for get_node_network_iface()' if ref $b;
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_network_iface()')
+      if ref $node;
+    Net::Proxmox::VE::Exception->throw(
+        'iface must be a scalar for get_node_network_iface()')
+      if ref $b;
 
-    return $self->get( $BASEPATH, $node, 'network', $b )
+    return $self->get( $BASEPATH, $node, 'network', $b );
 
 }
 
@@ -1056,29 +1173,41 @@ sub update_node_network_iface {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for update_node_network_iface()';
-    my $b = shift or croak 'No iface for update_node_network_iface()';
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No node for update_node_network_iface()');
+    my $b = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No iface for update_node_network_iface()');
 
-    croak 'node must be a scalar for update_node_network_iface()' if ref $node;
-    croak 'iface must be a scalar for update_node_network_iface()' if ref $b;
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for update_node_network_iface()')
+      if ref $node;
+    Net::Proxmox::VE::Exception->throw(
+        'iface must be a scalar for update_node_network_iface()')
+      if ref $b;
 
     my @p = @_;
 
-    croak 'No arguments for update_node_network_iface()' unless @p;
+    Net::Proxmox::VE::Exception->throw(
+        'No arguments for update_node_network_iface()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for update_node_network_iface()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for update_node_network_iface()')
           unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for update_node_network_iface()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for update_node_network_iface()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->post( $BASEPATH, $node, 'network', $b, \%args )
+    return $self->post( $BASEPATH, $node, 'network', $b, \%args );
 
 }
 
@@ -1100,13 +1229,21 @@ sub delete_nodes_network_iface {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for delete_nodes_network_iface()';
-    my $iface = shift or croak 'No iface for delete_nodes_network_iface()';
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No node for delete_nodes_network_iface()');
+    my $iface = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No iface for delete_nodes_network_iface()');
 
-    croak 'node must be a scalar for delete_nodes_network_iface()' if ref $node;
-    croak 'iface must be a scalar for delete_nodes_network_iface()' if ref $iface;
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for delete_nodes_network_iface()')
+      if ref $node;
+    Net::Proxmox::VE::Exception->throw(
+        'iface must be a scalar for delete_nodes_network_iface()')
+      if ref $iface;
 
-    return $self->get( $BASEPATH, $node, 'network', $iface )
+    return $self->get( $BASEPATH, $node, 'network', $iface );
 
 }
 
@@ -1126,10 +1263,13 @@ sub nodes_openvz {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for nodes_openvz()';
-    croak 'node must be a scalar for nodes_openvz()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for nodes_openvz()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for nodes_openvz()')
+      if ref $node;
 
-    return $self->get( $BASEPATH, $node, 'openvz' )
+    return $self->get( $BASEPATH, $node, 'openvz' );
 
 }
 
@@ -1241,26 +1381,32 @@ sub create_node_openvz {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for create_node_openvz()';
-    croak 'node must be a scalar for create_node_openvz()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for create_node_openvz()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for create_node_openvz()')
+      if ref $node;
 
     my @p = @_;
 
-    croak 'No arguments for create_node_openvz()' unless @p;
+    Net::Proxmox::VE::Exception->throw('No arguments for create_node_openvz()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for create_node_openvz()'
+        Net::Proxmox::VE::Exception->throw(
+            'Single argument not a hash for create_node_openvz()')
           unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for create_node_openvz()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for create_node_openvz()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->get( $BASEPATH, $node, 'openvz', \%args )
+    return $self->get( $BASEPATH, $node, 'openvz', \%args );
 
 }
 
@@ -1282,13 +1428,19 @@ sub get_node_openvz {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node_openvz()';
-    croak 'node must be a scalar for get_node_openvz()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw('No node for get_node_openvz()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_openvz()')
+      if ref $node;
 
-    my $vmid = shift or croak 'No vmid for get_node_openvz()';
-    croak 'vmid must be a scalar for get_node_openvz()' if ref $vmid;
+    my $vmid = shift
+      or Net::Proxmox::VE::Exception->throw('No vmid for get_node_openvz()');
+    Net::Proxmox::VE::Exception->throw(
+        'vmid must be a scalar for get_node_openvz()')
+      if ref $vmid;
 
-    return $self->get( $BASEPATH, $node, 'openvz', $vmid )
+    return $self->get( $BASEPATH, $node, 'openvz', $vmid );
 
 }
 
@@ -1310,13 +1462,21 @@ sub delete_nodes_openvz {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for delete_nodes_openvz()';
-    croak 'node must be a scalar for delete_nodes_openvz()' if ref $node;
+    my $node = shift
+      or
+      Net::Proxmox::VE::Exception->throw('No node for delete_nodes_openvz()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for delete_nodes_openvz()')
+      if ref $node;
 
-    my $vmid = shift or croak 'No node for delete_nodes_openvz()';
-    croak 'vmid must be a scalar for delete_nodes_openvz()' if ref $vmid;
+    my $vmid = shift
+      or
+      Net::Proxmox::VE::Exception->throw('No node for delete_nodes_openvz()');
+    Net::Proxmox::VE::Exception->throw(
+        'vmid must be a scalar for delete_nodes_openvz()')
+      if ref $vmid;
 
-    return $self->delete( $BASEPATH, $node, 'openvz', $vmid )
+    return $self->delete( $BASEPATH, $node, 'openvz', $vmid );
 
 }
 
@@ -1338,13 +1498,21 @@ sub get_node_openvz_status {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node_openvz_status()';
-    croak 'node must be a scalar for get_node_openvz_status()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No node for get_node_openvz_status()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_openvz_status()')
+      if ref $node;
 
-    my $vmid = shift or croak 'No node for get_node_openvz_status()';
-    croak 'node must be a scalar for get_node_openvz_status()' if ref $vmid;
+    my $vmid = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No node for get_node_openvz_status()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_openvz_status()')
+      if ref $vmid;
 
-    return $self->get( $BASEPATH, $node, 'openvz', $vmid, 'status' )
+    return $self->get( $BASEPATH, $node, 'openvz', $vmid, 'status' );
 
 }
 
@@ -1366,13 +1534,21 @@ sub get_node_openvz_status_current {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node_openvz_status_current()';
-    croak 'node must be a scalar for get_node_openvz_status_current()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No node for get_node_openvz_status_current()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_openvz_status_current()')
+      if ref $node;
 
-    my $vmid = shift or croak 'No node for get_node_openvz_status_current()';
-    croak 'node must be a scalar for get_node_openvz_status_current()' if ref $vmid;
+    my $vmid = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No node for get_node_openvz_status_current()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_openvz_status_current()')
+      if ref $vmid;
 
-    return $self->get( $BASEPATH, $node, 'openvz', $vmid, 'status', 'current' )
+    return $self->get( $BASEPATH, $node, 'openvz', $vmid, 'status', 'current' );
 
 }
 
@@ -1394,13 +1570,21 @@ sub create_node_openvz_status_mount {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for create_node_openvz_status_mount()';
-    croak 'node must be a scalar for create_node_openvz_status_mount()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No node for create_node_openvz_status_mount()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for create_node_openvz_status_mount()')
+      if ref $node;
 
-    my $vmid = shift or croak 'No node for create_node_openvz_status_mount()';
-    croak 'node must be a scalar for create_node_openvz_status_mount()' if ref $vmid;
+    my $vmid = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No node for create_node_openvz_status_mount()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for create_node_openvz_status_mount()')
+      if ref $vmid;
 
-    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'mount' )
+    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'mount' );
 
 }
 
@@ -1436,28 +1620,41 @@ sub create_node_openvz_status_shutdown {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for create_node_openvz_status_shutdown()';
-    croak 'node must be a scalar for create_node_openvz_status_shutdown()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No node for create_node_openvz_status_shutdown()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for create_node_openvz_status_shutdown()')
+      if ref $node;
 
-    my $vmid = shift or croak 'No vmid for create_node_openvz_status_shutdown()';
-    croak 'vmid must be a scalar for create_node_openvz_status_shutdown()' if ref $vmid;
+    my $vmid = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No vmid for create_node_openvz_status_shutdown()');
+    Net::Proxmox::VE::Exception->throw(
+        'vmid must be a scalar for create_node_openvz_status_shutdown()')
+      if ref $vmid;
 
     my @p = @_;
-    croak 'No arguments for create_node_openvz_status_shutdown()' unless @p;
+    Net::Proxmox::VE::Exception->throw(
+        'No arguments for create_node_openvz_status_shutdown()')
+      unless @p;
     my %args;
 
     if ( @p == 1 ) {
-        croak 'Single argument not a hash for create_node_openvz_status_shutdown()'
-          unless ref $node eq 'HASH';
+        Net::Proxmox::VE::Exception->throw(
+'Single argument not a hash for create_node_openvz_status_shutdown()'
+        ) unless ref $node eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
-        croak 'Odd number of arguments for create_node_openvz_status_shutdown()'
+        Net::Proxmox::VE::Exception->throw(
+            'Odd number of arguments for create_node_openvz_status_shutdown()')
           if ( scalar @p % 2 != 0 );
         %args = @p;
     }
 
-    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'shutdown', \%args )
+    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status',
+        'shutdown', \%args );
 
 }
 
@@ -1479,13 +1676,21 @@ sub create_node_openvz_status_start {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for create_node_openvz_status_start()';
-    croak 'node must be a scalar for create_node_openvz_status_start()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No node for create_node_openvz_status_start()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for create_node_openvz_status_start()')
+      if ref $node;
 
-    my $vmid = shift or croak 'No vmid for create_node_openvz_status_start()';
-    croak 'vmid must be a scalar for create_node_openvz_status_start()' if ref $vmid;
+    my $vmid = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No vmid for create_node_openvz_status_start()');
+    Net::Proxmox::VE::Exception->throw(
+        'vmid must be a scalar for create_node_openvz_status_start()')
+      if ref $vmid;
 
-    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'start' )
+    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'start' );
 
 }
 
@@ -1507,13 +1712,21 @@ sub create_node_openvz_status_stop {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for create_node_openvz_status_stop()';
-    croak 'node must be a scalar for create_node_openvz_status_stop()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No node for create_node_openvz_status_stop()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for create_node_openvz_status_stop()')
+      if ref $node;
 
-    my $vmid = shift or croak 'No vmid for create_node_openvz_status_stop()';
-    croak 'vmid must be a scalar for create_node_openvz_status_stop()' if ref $vmid;
+    my $vmid = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No vmid for create_node_openvz_status_stop()');
+    Net::Proxmox::VE::Exception->throw(
+        'vmid must be a scalar for create_node_openvz_status_stop()')
+      if ref $vmid;
 
-    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'start' )
+    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'start' );
 
 }
 
@@ -1535,13 +1748,21 @@ sub get_node_openvz_status_ubc {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node_openvz_status_ubc()';
-    croak 'node must be a scalar for get_node_openvz_status_ubc()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No node for get_node_openvz_status_ubc()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_openvz_status_ubc()')
+      if ref $node;
 
-    my $vmid = shift or croak 'No vmid for get_node_openvz_status_ubc()';
-    croak 'vmid must be a scalar for get_node_openvz_status_ubc()' if ref $vmid;
+    my $vmid = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No vmid for get_node_openvz_status_ubc()');
+    Net::Proxmox::VE::Exception->throw(
+        'vmid must be a scalar for get_node_openvz_status_ubc()')
+      if ref $vmid;
 
-    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'ubc' )
+    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'ubc' );
 
 }
 
@@ -1563,13 +1784,21 @@ sub get_node_openvz_status_umount {
 
     my $self = shift or return;
 
-    my $node = shift or croak 'No node for get_node_openvz_status_umount()';
-    croak 'node must be a scalar for get_node_openvz_status_umount()' if ref $node;
+    my $node = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No node for get_node_openvz_status_umount()');
+    Net::Proxmox::VE::Exception->throw(
+        'node must be a scalar for get_node_openvz_status_umount()')
+      if ref $node;
 
-    my $vmid = shift or croak 'No vmid for get_node_openvz_status_umount()';
-    croak 'vmid must be a scalar for get_node_openvz_status_umount()' if ref $vmid;
+    my $vmid = shift
+      or Net::Proxmox::VE::Exception->throw(
+        'No vmid for get_node_openvz_status_umount()');
+    Net::Proxmox::VE::Exception->throw(
+        'vmid must be a scalar for get_node_openvz_status_umount()')
+      if ref $vmid;
 
-    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'umount' )
+    return $self->post( $BASEPATH, $node, 'openvz', $vmid, 'status', 'umount' );
 
 }
 

@@ -8,12 +8,12 @@ use warnings;
 
 package Net::Proxmox::VE;
 
-
-use Carp qw( croak );
 use HTTP::Headers;
 use HTTP::Request::Common qw(GET POST DELETE);
 use JSON::MaybeXS qw(decode_json);
 use LWP::UserAgent;
+
+use Net::Proxmox::VE::Exception;
 
 # done
 use Net::Proxmox::VE::Access;
@@ -48,8 +48,8 @@ my $API2_BASE_URL = 'https://%s:%s/api2/json/';
 
 This Class provides a framework for talking to Proxmox VE 2.0 API instances including ticket headers required for authentication.
 You can use just the get/delete/put/post abstraction layer or use the api function methods.
-This class provides the building blocks for someone wanting to use 
-Perl to talk to Proxmox PVE. 
+This class provides the building blocks for someone wanting to use
+Perl to talk to Proxmox PVE.
 It provides a get/put/post/delete abstraction layer as methods on top of Proxmox's REST API, while also handling the Login Ticket headers required for authentication.
 
 Object representations of the Proxmox VE REST API are included in seperate modules.
@@ -83,15 +83,16 @@ sub action {
     my %params = @_;
 
     unless (%params) {
-        croak 'action() requires a hash for params';
+        Net::Proxmox::VE::Exception->throw( 'action() requires a hash for params' )
     }
-    croak 'path param is required' unless $params{path};
+    Net::Proxmox::VE::Exception->throw( 'path param is required' )
+        unless $params{path};
 
     $params{method} ||= 'GET';
     $params{post_data} ||= {};
 
     # Check for a valid method
-    croak "invalid http method specified: $params{method}"
+    Net::Proxmox::VE::Exception->throw( "invalid http method specified: $params{method}" )
       unless $params{method} =~ m/^(GET|PUT|POST|DELETE)$/;
 
     # Strip prefixed / to path if present
@@ -146,7 +147,7 @@ sub action {
     else {
 
         # this shouldnt happen
-        croak 'this shouldnt happen';
+        Net::Proxmox::VE::Exception->throw( 'This shouldnt happen. Unknown method: ' . $params{method} )
     }
 
     if ( $response->is_success ) {
@@ -175,8 +176,8 @@ sub action {
 
     }
     else {
-        croak "WARNING: request failed: "  . $request->as_string . "\n" .
-              "WARNING: response status: " . $response->status_line . "\n";
+        Net::Proxmox::VE::Exception->throw( "WARNING: request failed: "  . $request->as_string . "\n" .
+              "WARNING: response status: " . $response->status_line . "\n" );
     }
     return
 
@@ -345,10 +346,10 @@ sub _get {
     my $self = shift;
     my $post_data = pop @_;
     my @path = @_;
-    return $self->action( 
-        path      => join( '/', @path ), 
-        method    => 'GET', 
-        post_data => $post_data  
+    return $self->action(
+        path      => join( '/', @path ),
+        method    => 'GET',
+        post_data => $post_data
     )
 }
 
@@ -487,30 +488,31 @@ sub new {
 
     if ( scalar @p == 1 ) {
 
-        croak 'new() requires a hash for params'
+        Net::Proxmox::VE::Exception->throw( 'new() requires a hash for params' )
           unless ref $p[0] eq 'HASH';
 
         %params = %{ $p[0] };
 
     }
     elsif ( scalar @p % 2 != 0 ) {    # 'unless' is better than != but anyway
-        croak 'new() called with an odd number of parameters'
+        Net::Proxmox::VE::Exception->throw( 'new() called with an odd number of parameters' )
 
     }
     else {
         %params = @p
-          or croak 'new() requires a hash for params';
+          or Net::Proxmox::VE::Exception->throw( 'new() requires a hash for params' )
     }
 
-    my $host     = delete $params{host}     || croak 'host param is required';
-    my $password = delete $params{password} || croak 'password param is required';
+    my $host     = delete $params{host}     || Net::Proxmox::VE::Exception->throw( 'host param is required' );
+    my $password = delete $params{password} || Net::Proxmox::VE::Exception->throw( 'password param is required' );
     my $port     = delete $params{port}     || 8006;
     my $username = delete $params{username} || 'root';
     my $realm    = delete $params{realm}    || 'pam';
     my $debug    = delete $params{debug};
     my $timeout  = delete $params{timeout}  || 10;
     my $ssl_opts = delete $params{ssl_opts};
-    croak 'unknown parameters to new: ' . join(', ', keys %params) if keys %params;
+    Net::Proxmox::VE::Exception->throw( 'unknown parameters to new: ' . join(', ', keys %params) )
+        if keys %params;
 
     my $self->{params} = {
         host     => $host,
