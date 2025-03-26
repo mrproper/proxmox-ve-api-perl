@@ -33,7 +33,7 @@ sub _new {
     my $class = ref($c) || $c;
     my $self  = \%args;
 
-    return bless $self, $class
+    return bless $self, $class;
 }
 
 =head1 PUBLIC METHODS
@@ -96,23 +96,22 @@ To be used like this
 sub throw {
 
     my $class = shift;
-    my $arg = shift;
+    my $arg   = shift;
 
     my %args;
     if ( ref $arg ) {
-        %args = %$arg
+        %args = %$arg;
     }
     else {
-        $args{message} = $arg
+        $args{message} = $arg;
     }
 
-    ($args{package}, $args{file}, $args{line}) = caller(0);
-    $args{subroutine} = (caller(1))[3];
+    ( $args{package}, $args{file}, $args{line} ) = caller(0);
+    $args{subroutine} = ( caller(1) )[3];
 
-    die $class->new(%args)
+    die $class->new(%args);
 
 }
-
 
 =head1 SEE ALSO
 
