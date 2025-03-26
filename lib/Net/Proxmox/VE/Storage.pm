@@ -80,10 +80,10 @@ sub get_storage {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No storageid for get_storage()';
-    croak 'storageid must be a scalar for get_storage()' if ref $a;
+    my $storageid = shift or croak 'No storageid for get_storage()';
+    croak 'storageid must be a scalar for get_storage()' if ref $storageid;
 
-    return $self->get( $base, $a );
+    return $self->get( $base, $storageid );
 
 }
 
@@ -104,7 +104,25 @@ String. The id of the storage you wish to access in pve-storageid format. Requir
 
 =item type
 
-Emum. This is the type of storage, options are dir, nfs, lvm, isci. Required.
+Emum. This is the type of storage, options are:
+- btrfs
+- cephfs
+- cifs
+- dir
+- esxi
+- glusterfs
+- iscsi
+- iscsidir
+- lvm
+- lvmthin
+- nfs
+- pbs
+- rbd
+- zfs
+- zfspool
+
+
+Required.
 
 =item base
 
@@ -168,7 +186,7 @@ sub create_storage {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for create_storage()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -194,9 +212,9 @@ storage is a string in pve-storage-id format
 sub delete_storage {
 
     my $self = shift or return;
-    my $a    = shift or croak 'No argument given for delete_storage()';
+    my $storageid = shift or croak 'No argument given for delete_storage()';
 
-    return $self->delete( $base, $a );
+    return $self->delete( $base, $storageid );
 
 }
 
@@ -261,7 +279,7 @@ sub update_storage {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for update_storage()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
