@@ -17,15 +17,15 @@ use Carp qw( croak );
 =head1 SYNOPSIS
 
   @pools = $obj->pools();
-  $pool  = $obj->get_pool('poolid');
+  $pool  = $obj->get_pool( $poolid );
 
   $ok = $obj->create_pool(%args);
   $ok = $obj->create_pool(\%args);
 
-  $ok = $obj->delete_pool('poolid');
+  $ok = $obj->delete_pool( $poolid );
 
-  $ok = $obj->update_pool('poolid', %args);
-  $ok = $obj->update_pool('poolid', \%args);
+  $ok = $obj->update_pool( $poolid, %args);
+  $ok = $obj->update_pool( $poolid, \%args);
 
 =head1 DESCRIPTION
 
@@ -70,9 +70,9 @@ sub pools {
 
 Gets a single pool's configuration details
 
-  $pool = $obj->get_pool('poolid');
+  $pool = $obj->get_pool( $poolid );
 
-poolid is a string in pve-poolid format
+Where $poolid is a string in pve-poolid format
 
 =cut
 
@@ -80,10 +80,10 @@ sub get_pool {
 
     my $self = shift or return;
 
-    my $a = shift or croak 'No poolid for get_pool()';
-    croak 'poolid must be a scalar for get_pool()' if ref $a;
+    my $poolid = shift or croak 'No poolid for get_pool()';
+    croak 'poolid must be a scalar for get_pool()' if ref $poolid;
 
-    return $self->get( $base, $a );
+    return $self->get( $base, $poolid );
 
 }
 
@@ -120,7 +120,7 @@ sub create_pool {
 
     if ( @p == 1 ) {
         croak 'Single argument not a hash for create_pool()'
-          unless ref $a eq 'HASH';
+          unless ref $p[0] eq 'HASH';
         %args = %{ $p[0] };
     }
     else {
@@ -137,18 +137,18 @@ sub create_pool {
 
 Deletes a single pool
 
-  $ok = $obj->delete_pool('poolid')
+  $ok = $obj->delete_pool( $poolid )
 
-poolid is a string in pve-poolid format
+Where $poolid is a string in pve-poolid format
 
 =cut
 
 sub delete_pool {
 
     my $self = shift or return;
-    my $a    = shift or croak 'No argument given for delete_pool()';
+    my $poolid = shift or croak 'No argument given for delete_pool()';
 
-    return $self->delete( $base, $a );
+    return $self->delete( $base, $poolid );
 
 }
 
@@ -156,10 +156,10 @@ sub delete_pool {
 
 Updates (sets) a pool's data
 
-  $ok = $obj->update_pool( 'poolid', %args );
-  $ok = $obj->update_pool( 'poolid', \%args );
+  $ok = $obj->update_pool( $poolid, %args );
+  $ok = $obj->update_pool( $poolid, \%args );
 
-poolid is a string in pve-poolid format
+Where $poolid is a string in pve-poolid format
 
 I<%args> may items contain from the following list
 
