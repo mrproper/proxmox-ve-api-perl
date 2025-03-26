@@ -46,11 +46,11 @@ my $API2_BASE_URL = 'https://%s:%s/api2/json/';
 
 =head1 DESCRIPTION
 
-This Class provides the framework for talking to Proxmox VE 2.0 API instances.
-This just provides a get/delete/put/post abstraction layer as methods on Proxmox VE REST API
-This also handles the ticket headers required for authentication
-
-This class provides the building blocks for someone wanting to use Perl to talk to Proxmox PVE. It provides a get/put/post/delete abstraction layer as methods on top of Proxmox's REST API, while also handling the Login Ticket headers required for authentication.
+This Class provides a framework for talking to Proxmox VE 2.0 API instances including ticket headers required for authentication.
+You can use just the get/delete/put/post abstraction layer or use the api function methods.
+This class provides the building blocks for someone wanting to use 
+Perl to talk to Proxmox PVE. 
+It provides a get/put/post/delete abstraction layer as methods on top of Proxmox's REST API, while also handling the Login Ticket headers required for authentication.
 
 Object representations of the Proxmox VE REST API are included in seperate modules.
 
@@ -83,7 +83,7 @@ sub action {
     my %params = @_;
 
     unless (%params) {
-        croak 'new requires a hash for params';
+        croak 'action() requires a hash for params';
     }
     croak 'path param is required' unless $params{path};
 
@@ -119,8 +119,6 @@ sub action {
     $request->header( 'Cookie' => 'PVEAuthCookie=' . $self->{ticket}->{ticket} )
       if defined $self->{ticket};
 
-    my $response;
-
     # all methods other than get require the prevention token
     # (ie anything that makes modification)
     unless ( $params{method} eq 'GET' ) {
@@ -128,6 +126,7 @@ sub action {
             'CSRFPreventionToken' => $self->{ticket}->{CSRFPreventionToken} );
     }
 
+    my $response;
     if ( $params{method} =~ m/^(PUT|POST)$/ ) {
         $request->method( $params{method} );
         my $content = join '&', map { $_ . '=' . $params{post_data}->{$_} }
@@ -154,7 +153,6 @@ sub action {
         print "DEBUG: successful request: " . $request->as_string . "\n"
           if $self->{params}->{debug};
 
-        # my $content = $response->decoded_content;
         my $data = decode_json( $response->decoded_content );
 
         if ( ref $data eq 'HASH'
@@ -395,7 +393,6 @@ sub login {
     );
 
     if ( $response->is_success ) {
-        # my $content           = $response->decoded_content;
         my $login_ticket_data = decode_json( $response->decoded_content );
         $self->{ticket} = $login_ticket_data->{data};
 
