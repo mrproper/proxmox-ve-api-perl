@@ -105,22 +105,40 @@ String. The id of the storage you wish to access in pve-storageid format. Requir
 =item type
 
 Emum. This is the type of storage, options are:
-- btrfs
-- cephfs
-- cifs
-- dir
-- esxi
-- glusterfs
-- iscsi
-- iscsidir
-- lvm
-- lvmthin
-- nfs
-- pbs
-- rbd
-- zfs
-- zfspool
 
+=over 4
+
+=item btrfs
+
+=item cephfs
+
+=item cifs
+
+=item dir
+
+=item esxi
+
+=item glusterfs
+
+=item iscsi
+
+=item iscsidir
+
+=item lvm
+
+=item lvmthin
+
+=item nfs
+
+=item pbs
+
+=item rbd
+
+=item zfs
+
+=item zfspool
+
+=back
 
 Required.
 
