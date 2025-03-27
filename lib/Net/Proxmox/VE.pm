@@ -10,7 +10,7 @@ package Net::Proxmox::VE;
 
 use HTTP::Headers;
 use HTTP::Request::Common qw(GET POST DELETE);
-use JSON::MaybeXS qw(decode_json);
+use JSON::MaybeXS         qw(decode_json);
 use LWP::UserAgent;
 
 use Net::Proxmox::VE::Exception;
@@ -79,20 +79,22 @@ Ideally you don't use this directly.
 
 sub action {
 
-    my $self = shift or return;
+    my $self   = shift or return;
     my %params = @_;
 
     unless (%params) {
-        Net::Proxmox::VE::Exception->throw( 'action() requires a hash for params' )
+        Net::Proxmox::VE::Exception->throw(
+            'action() requires a hash for params');
     }
-    Net::Proxmox::VE::Exception->throw( 'path param is required' )
-        unless $params{path};
+    Net::Proxmox::VE::Exception->throw('path param is required')
+      unless $params{path};
 
-    $params{method} ||= 'GET';
+    $params{method}    ||= 'GET';
     $params{post_data} ||= {};
 
     # Check for a valid method
-    Net::Proxmox::VE::Exception->throw( "invalid http method specified: $params{method}" )
+    Net::Proxmox::VE::Exception->throw(
+        "invalid http method specified: $params{method}")
       unless $params{method} =~ m/^(GET|PUT|POST|DELETE)$/;
 
     # Strip prefixed / to path if present
@@ -137,17 +139,18 @@ sub action {
     }
     elsif ( $params{method} =~ m/^(GET|DELETE)$/ ) {
         $request->method( $params{method} );
-        if ( %{$params{post_data}} ) {
+        if ( %{ $params{post_data} } ) {
             my $qstring = join '&', map { $_ . '=' . $params{post_data}->{$_} }
-                sort keys %{ $params{post_data} };
-            $request->uri( "$url?$qstring" );
+              sort keys %{ $params{post_data} };
+            $request->uri("$url?$qstring");
         }
         $response = $ua->request($request);
     }
     else {
 
         # this shouldnt happen
-        Net::Proxmox::VE::Exception->throw( 'This shouldnt happen. Unknown method: ' . $params{method} )
+        Net::Proxmox::VE::Exception->throw(
+            'This shouldnt happen. Unknown method: ' . $params{method} );
     }
 
     if ( $response->is_success ) {
@@ -167,19 +170,22 @@ sub action {
 
             }
 
-            return $data->{data}
+            return $data->{data};
 
         }
 
         # just return true
-        return 1
+        return 1;
 
     }
     else {
-        Net::Proxmox::VE::Exception->throw( "WARNING: request failed: "  . $request->as_string . "\n" .
-              "WARNING: response status: " . $response->status_line . "\n" );
+        Net::Proxmox::VE::Exception->throw( "WARNING: request failed: "
+              . $request->as_string . "\n"
+              . "WARNING: response status: "
+              . $response->status_line
+              . "\n" );
     }
-    return
+    return;
 
 }
 
@@ -239,7 +245,7 @@ sub api_version_check {
         return 1 if $version > 2.0;
     }
 
-    return
+    return;
 }
 
 =head2 check_login_ticket
@@ -255,20 +261,19 @@ sub check_login_ticket {
 
     my $self = shift or return;
 
-    if (   $self->{ticket}
-        && ref $self->{ticket} eq 'HASH'
-        && $self->{ticket}->{ticket}
-        && $self->{ticket}->{CSRFPreventionToken}
-        && $self->{ticket}->{username} eq $self->{params}->{username} . '@'
-        . $self->{params}->{realm}
-        && $self->{ticket_timestamp}
-        && ( $self->{ticket_timestamp} + $self->{ticket_life} ) > time() )
-    {
-        return 1
-    }
+    my $ticket = $self->{ticket} // return;
+    return unless ref $ticket eq 'HASH';
 
-    $self->clear_login_ticket;
-    return
+    my $is_valid =
+         $ticket->{ticket}
+      && $ticket->{CSRFPreventionToken}
+      && $ticket->{username} eq
+      "$self->{params}{username}\@$self->{params}{realm}"
+      && $self->{ticket_timestamp}
+      && ( $self->{ticket_timestamp} + $self->{ticket_life} ) > time();
+
+    $self->clear_login_ticket unless $is_valid;
+    return $is_valid;
 
 }
 
@@ -285,10 +290,10 @@ sub clear_login_ticket {
     if ( $self->{ticket} or $self->{timestamp} ) {
         $self->{ticket}           = undef;
         $self->{ticket_timestamp} = undef;
-        return 1
+        return 1;
     }
 
-    return
+    return;
 
 }
 
@@ -304,7 +309,7 @@ Returns the resultant debug status (perl style true or false)
 
 sub debug {
     my $self = shift or return;
-    my $d = shift;
+    my $d    = shift;
 
     if ($d) {
         $self->{params}->{debug} = 1;
@@ -314,7 +319,7 @@ sub debug {
     }
 
     return 1 if $self->{params}->{debug};
-    return
+    return;
 
 }
 
@@ -332,7 +337,7 @@ sub delete {
     if ( $self->nodes ) {
         return $self->action( path => join( '/', @path ), method => 'DELETE' );
     }
-    return
+    return;
 }
 
 =head2 get
@@ -343,27 +348,27 @@ value of action with the GET method
 =cut
 
 sub _get {
-    my $self = shift;
+    my $self      = shift;
     my $post_data = pop @_;
-    my @path = @_;
+    my @path      = @_;
     return $self->action(
         path      => join( '/', @path ),
         method    => 'GET',
         post_data => $post_data
-    )
+    );
 }
 
 sub get {
     my $self = shift or return;
     my $post_data;
     $post_data = pop
-        if ref $_[-1];
-    my @path = @_    or return;    # using || breaks this
+      if ref $_[-1];
+    my @path = @_ or return;    # using || breaks this
 
     # Calling nodes method here would call get method itself and so on
     # Commented out to avoid an infinite loop
     if ( $self->nodes ) {
-        return $self->_get( @path, $post_data )
+        return $self->_get( @path, $post_data );
     }
     return;
 }
@@ -397,16 +402,16 @@ sub login {
         my $login_ticket_data = decode_json( $response->decoded_content );
         $self->{ticket} = $login_ticket_data->{data};
 
-        # We use request time as the time to get the json ticket is undetermined,
-        # id rather have a ticket a few seconds shorter than have a ticket that incorrectly
-        # says its valid for a couple more
+# We use request time as the time to get the json ticket is undetermined,
+# id rather have a ticket a few seconds shorter than have a ticket that incorrectly
+# says its valid for a couple more
         $self->{ticket_timestamp} = $request_time;
         print "DEBUG: login successful\n"
           if $self->{params}->{debug};
-        return 1
+        return 1;
     }
     else {
-        if ($self->{params}->{debug}) {
+        if ( $self->{params}->{debug} ) {
             print "DEBUG: login not successful\n";
             print "DEBUG: " . $response->status_line . "\n";
         }
@@ -488,31 +493,36 @@ sub new {
 
     if ( scalar @p == 1 ) {
 
-        Net::Proxmox::VE::Exception->throw( 'new() requires a hash for params' )
+        Net::Proxmox::VE::Exception->throw('new() requires a hash for params')
           unless ref $p[0] eq 'HASH';
 
         %params = %{ $p[0] };
 
     }
     elsif ( scalar @p % 2 != 0 ) {    # 'unless' is better than != but anyway
-        Net::Proxmox::VE::Exception->throw( 'new() called with an odd number of parameters' )
+        Net::Proxmox::VE::Exception->throw(
+            'new() called with an odd number of parameters');
 
     }
     else {
         %params = @p
-          or Net::Proxmox::VE::Exception->throw( 'new() requires a hash for params' )
+          or
+          Net::Proxmox::VE::Exception->throw('new() requires a hash for params');
     }
 
-    my $host     = delete $params{host}     || Net::Proxmox::VE::Exception->throw( 'host param is required' );
-    my $password = delete $params{password} || Net::Proxmox::VE::Exception->throw( 'password param is required' );
+    my $host = delete $params{host}
+      || Net::Proxmox::VE::Exception->throw('host param is required');
+    my $password = delete $params{password}
+      || Net::Proxmox::VE::Exception->throw('password param is required');
     my $port     = delete $params{port}     || 8006;
     my $username = delete $params{username} || 'root';
     my $realm    = delete $params{realm}    || 'pam';
     my $debug    = delete $params{debug};
-    my $timeout  = delete $params{timeout}  || 10;
+    my $timeout  = delete $params{timeout} || 10;
     my $ssl_opts = delete $params{ssl_opts};
-    Net::Proxmox::VE::Exception->throw( 'unknown parameters to new: ' . join(', ', keys %params) )
-        if keys %params;
+    Net::Proxmox::VE::Exception->throw(
+        'unknown parameters to new: ' . join( ', ', keys %params ) )
+      if keys %params;
 
     my $self->{params} = {
         host     => $host,
@@ -534,12 +544,11 @@ sub new {
         $lwpUserAgentOptions{ssl_opts} = $ssl_opts;
     }
 
-    my $ua = LWP::UserAgent->new( %lwpUserAgentOptions );
+    my $ua = LWP::UserAgent->new(%lwpUserAgentOptions);
     $ua->timeout($timeout);
     $self->{ua} = $ua;
 
-    bless $self, $class;
-    return $self
+    return bless $self, $class;
 
 }
 
@@ -554,11 +563,11 @@ You are returned what action() with the POST method returns
 
 sub post {
 
-    my $self      = shift or return;
+    my $self = shift or return;
     my $post_data;
     $post_data = pop
-        if ref $_[-1];
-    my @path = @_    or return;    # using || breaks this
+      if ref $_[-1];
+    my @path = @_ or return;    # using || breaks this
 
     if ( $self->nodes ) {
 
@@ -566,10 +575,10 @@ sub post {
             path      => join( '/', @path ),
             method    => 'POST',
             post_data => $post_data
-        )
+        );
 
     }
-    return
+    return;
 }
 
 =head2 put
@@ -586,8 +595,8 @@ sub put {
     my $self = shift or return;
     my $post_data;
     $post_data = pop
-        if ref $_[-1];
-    my @path = @_    or return;    # using || breaks this
+      if ref $_[-1];
+    my @path = @_ or return;    # using || breaks this
 
     if ( $self->nodes ) {
 
@@ -595,12 +604,11 @@ sub put {
             path      => join( '/', @path ),
             method    => 'PUT',
             post_data => $post_data
-          )
+        );
 
     }
-    return
+    return;
 }
-
 
 =head2 url_prefix
 
@@ -617,7 +625,7 @@ sub url_prefix {
         $self->{params}->{host},
         $self->{params}->{port} );
 
-    return $url_prefix
+    return $url_prefix;
 
 }
 
