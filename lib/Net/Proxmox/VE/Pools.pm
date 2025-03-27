@@ -48,7 +48,7 @@ straight to the server API. So garbage-in, garbage-out!
 
 our @EXPORT = qw( pools get_pool create_pool delete_pool update_pool );
 
-my $base = '/pools';
+my $BASEPATH = '/pools';
 
 =head2 pools
 
@@ -62,7 +62,7 @@ sub pools {
 
     my $self = shift or return;
 
-    return $self->get($base);
+    return $self->get($BASEPATH);
 
 }
 
@@ -85,7 +85,7 @@ sub get_pool {
     Net::Proxmox::VE::Exception->throw('poolid must be a scalar for get_pool()')
       if ref $poolid;
 
-    return $self->get( $base, $poolid );
+    return $self->get( $BASEPATH, $poolid );
 
 }
 
@@ -134,7 +134,7 @@ sub create_pool {
         %args = @p;
     }
 
-    return $self->post( $base, \%args );
+    return $self->post( $BASEPATH, \%args );
 
 }
 
@@ -155,7 +155,7 @@ sub delete_pool {
       or
       Net::Proxmox::VE::Exception->throw('No argument given for delete_pool()');
 
-    return $self->delete( $base, $poolid );
+    return $self->delete( $BASEPATH, $poolid );
 
 }
 
@@ -220,7 +220,7 @@ sub update_pool {
         %args = @p;
     }
 
-    return $self->put( $base, $poolid, \%args );
+    return $self->put( $BASEPATH, $poolid, \%args );
 
 }
 

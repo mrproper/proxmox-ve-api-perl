@@ -48,7 +48,7 @@ straight to the server API. So garbage-in, garbage-out!
 
 our @EXPORT = qw( storages );
 
-my $base = '/storages';
+my $BASEPATH = '/storages';
 
 =head2 storages
 
@@ -62,7 +62,7 @@ sub storage {
 
     my $self = shift or return;
 
-    return $self->get($base);
+    return $self->get($BASEPATH);
 
 }
 
@@ -86,7 +86,7 @@ sub get_storage {
         'storageid must be a scalar for get_storage()')
       if ref $storageid;
 
-    return $self->get( $base, $storageid );
+    return $self->get( $BASEPATH, $storageid );
 
 }
 
@@ -107,7 +107,7 @@ String. The id of the storage you wish to access in pve-storageid format. Requir
 
 =item type
 
-Emum. This is the type of storage, options are:
+Enum. This is the type of storage, options are:
 
 =over 4
 
@@ -155,7 +155,7 @@ String. A pve-storage-content-list. Optional.
 
 =item disable
 
-Boolean. See the PVE documetnation. Optional.
+Boolean. See the PVE documentation. Optional.
 
 =item export
 
@@ -219,7 +219,7 @@ sub create_storage {
         %args = @p;
     }
 
-    return $self->post( $base, \%args );
+    return $self->post( $BASEPATH, \%args );
 
 }
 
@@ -240,7 +240,7 @@ sub delete_storage {
       or Net::Proxmox::VE::Exception->throw(
         'No argument given for delete_storage()');
 
-    return $self->delete( $base, $storageid );
+    return $self->delete( $BASEPATH, $storageid );
 
 }
 
@@ -321,7 +321,7 @@ sub update_storage {
         %args = @p;
     }
 
-    return $self->put( $base, $storageid, \%args );
+    return $self->put( $BASEPATH, $storageid, \%args );
 
 }
 

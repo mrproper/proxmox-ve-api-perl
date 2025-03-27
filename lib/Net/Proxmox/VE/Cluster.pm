@@ -56,13 +56,13 @@ Note: Accessible by all authententicated users.
 
 =cut
 
-my $base = '/cluster';
+my $BASEPATH = '/cluster';
 
 sub cluster {
 
     my $self = shift or return;
 
-    return $self->get($base);
+    return $self->get($BASEPATH);
 
 }
 
@@ -80,7 +80,7 @@ sub cluster_backup {
 
     my $self = shift or return;
 
-    return $self->get( $base, 'backup' );
+    return $self->get( $BASEPATH, 'backup' );
 
 }
 
@@ -218,7 +218,7 @@ sub create_cluster_backup {
         %args = @p;
     }
 
-    return $self->post( $base, 'backup', \%args );
+    return $self->post( $BASEPATH, 'backup', \%args );
 
 }
 
@@ -244,7 +244,7 @@ sub get_cluster_backup {
         'id must be a scalar for get_cluster_backup()')
       if ref $id;
 
-    return $self->get( $base, $id );
+    return $self->get( $BASEPATH, $id );
 
 }
 
@@ -389,7 +389,7 @@ sub update_cluster_backup {
         %args = @p;
     }
 
-    return $self->put( $base, 'backup', $id, \%args );
+    return $self->put( $BASEPATH, 'backup', $id, \%args );
 
 }
 
@@ -416,7 +416,7 @@ sub delete_cluster_backup {
         'id must be a scalar for delete_cluster_backup()')
       if ref $id;
 
-    return $self->delete( $base, $id );
+    return $self->delete( $BASEPATH, $id );
 
 }
 
@@ -434,7 +434,7 @@ sub cluster_ha {
 
     my $self = shift or return;
 
-    return $self->get( $base, 'ha' );
+    return $self->get( $BASEPATH, 'ha' );
 
 }
 
@@ -452,7 +452,7 @@ sub get_cluster_ha_config {
 
     my $self = shift or return;
 
-    return $self->get( $base, 'ha', 'config' );
+    return $self->get( $BASEPATH, 'ha', 'config' );
 
 }
 
@@ -470,7 +470,7 @@ sub get_cluster_ha_changes {
 
     my $self = shift or return;
 
-    return $self->get( $base, 'ha', 'changes' );
+    return $self->get( $BASEPATH, 'ha', 'changes' );
 
 }
 
@@ -488,7 +488,7 @@ sub commit_cluster_ha_changes {
 
     my $self = shift or return;
 
-    return $self->post( $base, 'ha', 'changes' );
+    return $self->post( $BASEPATH, 'ha', 'changes' );
 
 }
 
@@ -506,7 +506,7 @@ sub revert_cluster_ha_changes {
 
     my $self = shift or return;
 
-    return $self->delete( $base, 'ha', 'changes' );
+    return $self->delete( $BASEPATH, 'ha', 'changes' );
 
 }
 
@@ -524,7 +524,7 @@ sub cluster_ha_groups {
 
     my $self = shift or return;
 
-    return $self->get( $base, 'ha', 'groups' );
+    return $self->get( $BASEPATH, 'ha', 'groups' );
 
 }
 
@@ -576,7 +576,7 @@ sub create_cluster_ha_groups {
         %args = @p;
     }
 
-    return $self->put( $base, 'ha', 'groups', \%args );
+    return $self->put( $BASEPATH, 'ha', 'groups', \%args );
 
 }
 
@@ -603,7 +603,7 @@ sub get_cluster_ha_groups {
         'id must be a scalar for get_cluster_ha_groups()')
       if ref $id;
 
-    return $self->get( $base, 'ha', 'groups', $id );
+    return $self->get( $BASEPATH, 'ha', 'groups', $id );
 
 }
 
@@ -660,7 +660,7 @@ sub update_cluster_ha_groups {
         %args = @p;
     }
 
-    return $self->put( $base, 'ha', 'groups', $id, \%args );
+    return $self->put( $BASEPATH, 'ha', 'groups', $id, \%args );
 
 }
 
@@ -687,7 +687,7 @@ sub delete_cluster_ha_group {
         'id must be a scalar for delete_cluster_ha_group()')
       if ref $id;
 
-    return $self->delete( $base, 'ha', 'groups', $id );
+    return $self->delete( $BASEPATH, 'ha', 'groups', $id );
 
 }
 
@@ -734,7 +734,7 @@ sub get_cluster_log {
         %args = @p;
     }
 
-    return $self->get( $base, 'log', \%args );
+    return $self->get( $BASEPATH, 'log', \%args );
 
 }
 
@@ -781,7 +781,7 @@ sub get_cluster_nextid {
         %args = @p;
     }
 
-    return $self->get( $base, 'nextid', \%args );
+    return $self->get( $BASEPATH, 'nextid', \%args );
 
 }
 
@@ -799,7 +799,7 @@ sub get_cluster_options {
 
     my $self = shift or return;
 
-    return $self->get( $base, 'options' );
+    return $self->get( $BASEPATH, 'options' );
 
 }
 
@@ -859,7 +859,7 @@ sub update_cluster_options {
         %args = @p;
     }
 
-    return $self->put( $base, 'log', \%args );
+    return $self->put( $BASEPATH, 'log', \%args );
 
 }
 
@@ -907,7 +907,7 @@ sub get_cluster_resources {
         %args = @p;
     }
 
-    return $self->get( $base, 'resources', \%args );
+    return $self->get( $BASEPATH, 'resources', \%args );
 
 }
 
@@ -925,7 +925,7 @@ sub get_cluster_status {
 
     my $self = shift or return;
 
-    return $self->get( $base, 'status' );
+    return $self->get( $BASEPATH, 'status' );
 
 }
 
@@ -943,7 +943,7 @@ sub get_cluster_tasks {
 
     my $self = shift or return;
 
-    return $self->get( $base, 'tasks' );
+    return $self->get( $BASEPATH, 'tasks' );
 
 }
 
